@@ -1,0 +1,6 @@
+-r base.txt
+
+# Pytest for running the tests
+pytest
+pytest-django
+ipdb
