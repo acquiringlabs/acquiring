@@ -1,6 +1,14 @@
 -r base.txt
 
-# Pytest for running the tests
+# Tox to automate and standardize testing in Python
+tox
+
+# Pytest to run the tests
 pytest
 pytest-django
+
+# Django specific testing libraries
+django-test-migrations
+
+# ipdb to access the IPython debugger as if it were the pdb module.
 ipdb
