@@ -1,5 +1,5 @@
-# Wheel for PyPI installs.
-wheel
 
 # Twine for secured PyPI uploads.
 twine
+# Wheel for PyPI installs.
+wheel

@@ -3,7 +3,6 @@ import django
 
 # https://docs.pytest.org/en/7.1.x/reference/reference.html?highlight=pytest_config#pytest.hookspec.pytest_configure
 def pytest_configure(config):
-
     from django.conf import settings
     from django_acquiring import settings as project_settings
 
