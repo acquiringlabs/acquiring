@@ -3,6 +3,9 @@
 # Django specific testing libraries
 django-test-migrations
 
+# factory_boy to generate dummy data in the database
+factory_boy
+
 # ipdb to access the IPython debugger as if it were the pdb module.
 ipdb
 

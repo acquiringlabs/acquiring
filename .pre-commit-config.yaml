@@ -11,8 +11,6 @@ repos:
     -   id: check-yaml
     -   id: debug-statements
     -   id: end-of-file-fixer
-    -   id: name-tests-test
-        args: ["--pytest-test-first"]
     # -   id: no-commit-to-branch
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace

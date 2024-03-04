@@ -1,12 +1,19 @@
 from django.db import models
 from uuid import uuid4
+from django_acquiring.payments import PaymentAttempt as DomainPaymentAttempt
 
 
-class Payment(models.Model):
+class PaymentAttempt(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     # https://docs.djangoproject.com/en/5.0/ref/models/fields/#uuidfield
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
     def __str__(self):
-        return f"Payment[id={self.id}]"
+        return f"PaymentAttempt[id={self.id}]"
+
+    def to_domain(self):
+        return DomainPaymentAttempt(
+            id=self.id,
+            created_at=self.created_at,
+        )
