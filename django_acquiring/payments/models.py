@@ -1,6 +1,6 @@
 from django.db import models
 from uuid import uuid4
-from django_acquiring.payments import PaymentAttempt as DomainPaymentAttempt
+from .domain import PaymentAttempt as DomainPaymentAttempt
 
 
 class PaymentAttempt(models.Model):
@@ -9,10 +9,10 @@ class PaymentAttempt(models.Model):
     # https://docs.djangoproject.com/en/5.0/ref/models/fields/#uuidfield
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"PaymentAttempt[id={self.id}]"
 
-    def to_domain(self):
+    def to_domain(self) -> DomainPaymentAttempt:
         return DomainPaymentAttempt(
             id=self.id,
             created_at=self.created_at,

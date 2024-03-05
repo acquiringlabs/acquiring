@@ -1,4 +1,4 @@
-from django_acquiring.payments import PaymentAttempt
+from .domain import PaymentAttempt
 from .models import PaymentAttempt as DbPaymentAttempt
 from uuid import UUID
 

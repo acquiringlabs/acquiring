@@ -5,5 +5,5 @@ from dataclasses import dataclass
 
 @dataclass
 class PaymentAttempt:
-    id: UUID | None
+    id: UUID
     created_at: datetime

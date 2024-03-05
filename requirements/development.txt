@@ -9,6 +9,9 @@ factory_boy
 # ipdb to access the IPython debugger as if it were the pdb module.
 ipdb
 
+# Mypy to support typing
+mypy
+
 # Pytest to run the tests
 pytest
 pytest-django
