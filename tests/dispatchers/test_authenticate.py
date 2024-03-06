@@ -1,7 +1,8 @@
 import pytest
-from tests.payments.factories import PaymentAttemptFactory
-from django_acquiring.payments.protocols import StageNameEnum
+
 from django_acquiring.dispatchers import Dispatcher
+from django_acquiring.payments.protocols import StageNameEnum
+from tests.payments.factories import PaymentAttemptFactory
 
 
 @pytest.mark.django_db

@@ -1,8 +1,10 @@
-from django_acquiring.payments.repositories import PaymentRepository
-from django_acquiring.payments.protocols import AbstractPaymentAttempt, StageNameEnum
-from .protocols import payment_type
-import django_acquiring.dispatchers.decision_logic as dl
 from dataclasses import dataclass
+
+import django_acquiring.dispatchers.decision_logic as dl
+from django_acquiring.payments.protocols import AbstractPaymentAttempt, StageNameEnum
+from django_acquiring.payments.repositories import PaymentRepository
+
+from .protocols import payment_type
 
 
 @dataclass
@@ -33,9 +35,7 @@ class Dispatcher:
     def authenticate(self, payment_attempt: AbstractPaymentAttempt) -> StageResponse:
         # Refresh the payment from the database
         if (_payment_attempt := self.repository.get(id=payment_attempt.id)) is None:
-            return UnsuccessfulStageResponse(
-                "Payment not found", stage_name=StageNameEnum.authenticate
-            )
+            return UnsuccessfulStageResponse("Payment not found", stage_name=StageNameEnum.authenticate)
         payment_attempt = _payment_attempt
 
         # Verify that the payment can go through this step
@@ -44,6 +44,4 @@ class Dispatcher:
                 error_message="Payment cannot go through this stage",
                 stage_name=StageNameEnum.authenticate,
             )
-        return SuccessfulStageResponse(
-            payment_attempt=payment_attempt, stage_name=StageNameEnum.authenticate
-        )
+        return SuccessfulStageResponse(payment_attempt=payment_attempt, stage_name=StageNameEnum.authenticate)

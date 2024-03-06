@@ -1,7 +1,7 @@
 import pytest
-from django_acquiring.payments.repositories import PaymentRepository
-from django_acquiring.payments.models import PaymentAttempt
 
+from django_acquiring.payments.models import PaymentAttempt
+from django_acquiring.payments.repositories import PaymentRepository
 from tests.payments.factories import PaymentAttemptFactory
 
 

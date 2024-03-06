@@ -23,7 +23,26 @@ repos:
     hooks:
     -   id: ruff
         args: [ --fix ]
-    -   id: ruff-format
+-   repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint
+-   repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [-d, "{extends: relaxed, rules: {line-length: {max: 120}}}"]
+-   repo: https://github.com/ambv/black
+    rev: 24.2.0
+    hooks:
+      - id: black
+        args: [-l120]
+-   repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: [-l120, -m3, --trailing-comma, --ignore-whitespace]
+        types: [python]
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:

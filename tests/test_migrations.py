@@ -1,5 +1,5 @@
-from django_test_migrations.plan import all_migrations, nodes_to_tuples
 import pytest
+from django_test_migrations.plan import all_migrations, nodes_to_tuples
 
 
 @pytest.mark.django_db

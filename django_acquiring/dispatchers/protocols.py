@@ -1,7 +1,8 @@
-from typing import Protocol, Callable
-from dataclasses import dataclass
-from django_acquiring.payments.protocols import AbstractPaymentAttempt, StageNameEnum
 import functools
+from dataclasses import dataclass
+from typing import Callable, Protocol
+
+from django_acquiring.payments.protocols import AbstractPaymentAttempt, StageNameEnum
 
 
 @dataclass

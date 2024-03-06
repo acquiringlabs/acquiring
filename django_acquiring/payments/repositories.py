@@ -1,6 +1,7 @@
+from uuid import UUID
+
 from .domain import PaymentAttempt
 from .models import PaymentAttempt as DbPaymentAttempt
-from uuid import UUID
 
 
 class PaymentRepository:
