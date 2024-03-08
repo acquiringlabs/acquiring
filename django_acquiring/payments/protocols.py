@@ -24,3 +24,10 @@ class StageNameEnum(StrEnum):
     refund = "refund"
     synchronize = "synchronize"
     mark_as_canceled = "mark_as_canceled"
+
+
+class StageStatusEnum(StrEnum):
+    started = "started"
+    failed = "failed"
+    completed = "completed"
+    requires_action = "requires_action"

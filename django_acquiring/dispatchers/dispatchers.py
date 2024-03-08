@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import django_acquiring.dispatchers.decision_logic as dl
 from django_acquiring.payments.protocols import AbstractPaymentAttempt, StageNameEnum
-from django_acquiring.payments.repositories import PaymentRepository
+from django_acquiring.payments.repositories import PaymentAttemptRepository
 
 from .protocols import payment_type
 
@@ -29,7 +29,7 @@ StageResponse = SuccessfulStageResponse | UnsuccessfulStageResponse
 
 # TODO Decorate this class to ensure that all payment_types are implemented as methods
 class Dispatcher:
-    repository: PaymentRepository = PaymentRepository()
+    repository: PaymentAttemptRepository = PaymentAttemptRepository()
 
     @payment_type
     def authenticate(self, payment_attempt: AbstractPaymentAttempt) -> StageResponse:
