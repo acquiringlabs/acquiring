@@ -11,12 +11,6 @@ from typing import Protocol
 from uuid import UUID
 
 
-class AbstractPaymentMethod(Protocol):
-    id: UUID
-    created_at: datetime
-    payment_attempt_id: UUID
-
-
 class PaymentOperationTypeEnum(StrEnum):
     authenticate = "authenticate"
     authorize = "authorize"
@@ -32,3 +26,27 @@ class PaymentOperationStatusEnum(StrEnum):
     failed = "failed"
     completed = "completed"
     requires_action = "requires_action"
+
+
+class AbstractPaymentOperation(Protocol):
+    payment_method_id: UUID
+    type: PaymentOperationTypeEnum
+    status: PaymentOperationStatusEnum
+
+
+class AbstractPaymentMethod(Protocol):
+    id: UUID
+    created_at: datetime
+    payment_attempt_id: UUID
+    payment_operations: list
+
+    def has_payment_operation(
+        self: "AbstractPaymentMethod",
+        type: PaymentOperationTypeEnum,
+        status: PaymentOperationStatusEnum,
+    ): ...
+
+
+class AbstractPaymentAttempt(Protocol):
+    id: UUID
+    created_at: datetime

@@ -41,14 +41,14 @@ class PaymentFlow:
         # Refresh the payment from the database
         if (_payment_method := self.method_repository.get(id=payment_method.id)) is None:
             return UnsuccessfulOperationResponse(
-                "Payment not found", payment_operation_type=PaymentOperationTypeEnum.authenticate
+                "PaymentMethod not found", payment_operation_type=PaymentOperationTypeEnum.authenticate
             )
         payment_method = _payment_method
 
         # Verify that the payment can go through this step
         if not dl.can_authenticate(payment_method):
             return UnsuccessfulOperationResponse(
-                error_message="Payment cannot go through this operation",
+                error_message="PaymentMethod cannot go through this operation",
                 payment_operation_type=PaymentOperationTypeEnum.authenticate,
             )
         # Create Started PaymentOperation
