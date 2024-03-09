@@ -1,39 +1,15 @@
 import functools
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Protocol
 
 from django_acquiring.payments.protocols import AbstractPaymentMethod, PaymentOperationTypeEnum
 
 
-@dataclass(kw_only=True, frozen=True)
-class SuccessfulOperationResponse:
-    success = True
-    payment_method: AbstractPaymentMethod
-    error_message = None
-    actions: List[Dict] = field(default_factory=list)
-    payment_operation_type: PaymentOperationTypeEnum
-
-
-@dataclass(kw_only=True, frozen=True)
-class UnsuccessfulOperationResponse:
-    success = False
-    payment_method = None
-    actions: list = field(default_factory=list)
-    payment_operation_type: PaymentOperationTypeEnum
-    error_message: str
-
-
-@dataclass(kw_only=True, frozen=True)
-class OperationResponse:
+class AbstractOperationResponse(Protocol):
     success: bool
     actions: List[Dict] = field(default_factory=list)
-    payment_method: AbstractPaymentMethod
     payment_operation_type: PaymentOperationTypeEnum
     error_message: str | None = None
-
-
-# TODO Figure out how to replace this with an OperationResponse typing.Protocol
-AbstractOperationResponse = OperationResponse | SuccessfulOperationResponse | UnsuccessfulOperationResponse
 
 
 def payment_operation_type(function: Callable):
@@ -46,3 +22,15 @@ def payment_operation_type(function: Callable):
         return function(*args, **kwargs)
 
     return wrapper
+
+
+@dataclass(kw_only=True, frozen=True)
+class AbstractBlockResponse:
+    success: bool
+    payment_method: AbstractPaymentMethod
+    actions: List[Dict] = field(default_factory=list)
+
+
+class AbstractBlock(Protocol):
+
+    def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse: ...
