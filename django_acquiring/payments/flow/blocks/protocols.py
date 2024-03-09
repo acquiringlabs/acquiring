@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Protocol
+from dataclasses import dataclass, field
+from typing import Dict, List, Protocol
 
 from django_acquiring.payments.protocols import AbstractPaymentMethod
 
@@ -8,6 +8,7 @@ from django_acquiring.payments.protocols import AbstractPaymentMethod
 class AbstractBlockResponse:
     success: bool
     payment_method: AbstractPaymentMethod
+    actions: List[Dict] = field(default_factory=list)
 
 
 class AbstractBlock(Protocol):

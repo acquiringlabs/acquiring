@@ -46,7 +46,7 @@ class PaymentMethod(models.Model):
 
 
 class PaymentOperationTypeChoices(models.TextChoices):
-    authenticate = "authenticate"
+    initialize = "initialize"
     authorize = "authorize"
     charge = "charge"
     void = "void"

@@ -12,7 +12,7 @@ from uuid import UUID
 
 
 class PaymentOperationTypeEnum(StrEnum):
-    authenticate = "authenticate"
+    initialize = "initialize"
     authorize = "authorize"
     charge = "charge"
     void = "void"

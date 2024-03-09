@@ -1,4 +1,4 @@
-from dataclasses import field
+from dataclasses import dataclass, field
 from typing import List
 
 import django_acquiring.payments.flow.decision_logic as dl
@@ -12,45 +12,53 @@ from django_acquiring.payments.repositories import PaymentAttemptRepository, Pay
 from .blocks.protocols import AbstractBlock
 from .protocols import (
     AbstractOperationResponse,
-    SuccessfulOperationResponse,
+    OperationResponse,
     UnsuccessfulOperationResponse,
     payment_operation_type,
 )
 
 
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
+@dataclass(kw_only=True, frozen=True)
 class PaymentFlow:
     attempt_repository: PaymentAttemptRepository = PaymentAttemptRepository()
     method_repository: PaymentMethodRepository = PaymentMethodRepository()
 
-    authenticate_blocks: List[AbstractBlock] = field(default_factory=list)
+    initialize_blocks: List[AbstractBlock] = field(default_factory=list)
 
     @payment_operation_type
-    def authenticate(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
+    def initialize(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
         # Refresh the payment from the database
         if (_payment_method := self.method_repository.get(id=payment_method.id)) is None:
             return UnsuccessfulOperationResponse(
-                error_message="PaymentMethod not found", payment_operation_type=PaymentOperationTypeEnum.authenticate
+                error_message="PaymentMethod not found", payment_operation_type=PaymentOperationTypeEnum.initialize
             )
         payment_method = _payment_method
 
         # Verify that the payment can go through this operation type
-        if not dl.can_authenticate(payment_method):
+        if not dl.can_initialize(payment_method):
             return UnsuccessfulOperationResponse(
                 error_message="PaymentMethod cannot go through this operation",
-                payment_operation_type=PaymentOperationTypeEnum.authenticate,
+                payment_operation_type=PaymentOperationTypeEnum.initialize,
             )
         # Create Started PaymentOperation
         self.method_repository.add_payment_operation(
             payment_method=payment_method,
-            type=PaymentOperationTypeEnum.authenticate,
+            type=PaymentOperationTypeEnum.initialize,
             status=PaymentOperationStatusEnum.started,
         )
 
         # Run Operation Blocks
-        for block in self.authenticate_blocks:
-            block.run(payment_method=payment_method)
+        success = True
+        actions = []
+        for block in self.initialize_blocks:
+            block_response = block.run(payment_method=payment_method)
+            success = success and block_response.success
+            actions += block_response.actions
 
-        return SuccessfulOperationResponse(
-            payment_method=payment_method, payment_operation_type=PaymentOperationTypeEnum.authenticate
+        return OperationResponse(
+            success=success,
+            actions=actions,
+            payment_method=payment_method,
+            payment_operation_type=PaymentOperationTypeEnum.initialize,
         )

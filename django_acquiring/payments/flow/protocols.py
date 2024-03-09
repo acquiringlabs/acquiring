@@ -1,6 +1,6 @@
 import functools
-from dataclasses import dataclass
-from typing import Callable
+from dataclasses import dataclass, field
+from typing import Callable, Dict, List
 
 from django_acquiring.payments.protocols import AbstractPaymentMethod, PaymentOperationTypeEnum
 
@@ -10,6 +10,7 @@ class SuccessfulOperationResponse:
     success = True
     payment_method: AbstractPaymentMethod
     error_message = None
+    actions: List[Dict] = field(default_factory=list)
     payment_operation_type: PaymentOperationTypeEnum
 
 
@@ -17,6 +18,7 @@ class SuccessfulOperationResponse:
 class UnsuccessfulOperationResponse:
     success = False
     payment_method = None
+    actions: list = field(default_factory=list)
     payment_operation_type: PaymentOperationTypeEnum
     error_message: str
 
@@ -24,6 +26,7 @@ class UnsuccessfulOperationResponse:
 @dataclass(kw_only=True, frozen=True)
 class OperationResponse:
     success: bool
+    actions: List[Dict] = field(default_factory=list)
     payment_method: AbstractPaymentMethod
     payment_operation_type: PaymentOperationTypeEnum
     error_message: str | None = None

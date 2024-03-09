@@ -10,42 +10,42 @@ from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 
 @pytest.mark.django_db
-def test_givenAValidPaymentMethod_whenAuthenticating_thenPaymentFlowReturnsASuccessfulOperationResponse():
+def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsASuccessfulOperationResponse():
     # given a valid payment attempt
     db_payment_attempt = PaymentAttemptFactory.create()
     db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
 
-    # when authenticating
-    result = PaymentFlow().authenticate(db_payment_method.to_domain())
+    # when Initializing
+    result = PaymentFlow().initialize(db_payment_method.to_domain())
 
     # then the payment flow returns a successful Operation Response
-    assert result.payment_operation_type == PaymentOperationTypeEnum.authenticate
+    assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
     assert result.success is True
     assert result.payment_method.id == db_payment_method.id
 
 
 @pytest.mark.django_db
-def test_givenAnAlreadyStartedPaymentMethod_whenAuthenticating_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse():
+def test_givenAnAlreadyStartedPaymentMethod_whenInitializing_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse():
     # Given an already started payment method
     db_payment_attempt = PaymentAttemptFactory.create()
     db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
     PaymentOperationFactory.create(
         payment_method_id=db_payment_method.id,
-        type=PaymentOperationTypeEnum.authenticate,
+        type=PaymentOperationTypeEnum.initialize,
         status=PaymentOperationStatusEnum.started,
     )
 
-    # When Authenticating
-    result = PaymentFlow().authenticate(db_payment_method.to_domain())
+    # When Initializing
+    result = PaymentFlow().initialize(db_payment_method.to_domain())
 
     # then the payment flow returns an unsuccessful operation response
-    assert result.payment_operation_type == PaymentOperationTypeEnum.authenticate
+    assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
     assert result.success is False
     result.error_message == "PaymentMethod cannot go through this operation"
 
 
 @pytest.mark.django_db
-def test_givenANonExistingPaymentMethod_whenAuthenticating_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse():
+def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse():
     # Given a non existing payment method
     payment_method = PaymentMethod(
         id=uuid4(),
@@ -53,10 +53,10 @@ def test_givenANonExistingPaymentMethod_whenAuthenticating_thenPaymentFlowReturn
         payment_attempt_id=uuid4(),
     )
 
-    # When Authenticating
-    result = PaymentFlow().authenticate(payment_method)
+    # When Initializing
+    result = PaymentFlow().initialize(payment_method)
 
     # then the payment flow returns an unsuccessful operation response
-    assert result.payment_operation_type == PaymentOperationTypeEnum.authenticate
+    assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
     assert result.success is False
     result.error_message == "PaymentMethod not found"
