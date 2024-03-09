@@ -1,5 +1,5 @@
 import functools
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Callable, Dict, List, Protocol
 
 from django_acquiring.payments.protocols import AbstractPaymentMethod, PaymentOperationTypeEnum
@@ -24,8 +24,7 @@ def payment_operation_type(function: Callable):
     return wrapper
 
 
-@dataclass(kw_only=True, frozen=True)
-class AbstractBlockResponse:
+class AbstractBlockResponse(Protocol):
     success: bool
     payment_method: AbstractPaymentMethod
     actions: List[Dict] = field(default_factory=list)
