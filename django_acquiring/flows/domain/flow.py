@@ -1,21 +1,20 @@
 from dataclasses import dataclass, field
 from typing import List
 
-import django_acquiring.payments.flow.decision_logic as dl
+import django_acquiring.flows.domain.decision_logic as dl
+from django_acquiring.flows.blocks.protocols import AbstractBlock
+from django_acquiring.flows.protocols import (
+    AbstractOperationResponse,
+    OperationResponse,
+    UnsuccessfulOperationResponse,
+    payment_operation_type,
+)
 from django_acquiring.payments.protocols import (
     AbstractPaymentMethod,
     PaymentOperationStatusEnum,
     PaymentOperationTypeEnum,
 )
 from django_acquiring.payments.repositories import PaymentAttemptRepository, PaymentMethodRepository
-
-from .blocks.protocols import AbstractBlock
-from .protocols import (
-    AbstractOperationResponse,
-    OperationResponse,
-    UnsuccessfulOperationResponse,
-    payment_operation_type,
-)
 
 
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods

@@ -3,8 +3,8 @@ from uuid import uuid4
 
 import pytest
 
+from django_acquiring.flows import PaymentFlow
 from django_acquiring.payments.domain import PaymentMethod
-from django_acquiring.payments.flow import PaymentFlow
 from django_acquiring.payments.protocols import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
