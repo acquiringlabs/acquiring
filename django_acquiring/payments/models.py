@@ -4,7 +4,7 @@ from django.db import models
 
 from .domain import PaymentAttempt as DomainPaymentAttempt
 from .domain import PaymentMethod as DomainPaymentMethod
-from .domain import StageEvent as DomainStageEvent
+from .domain import PaymentOperation as DomainPaymentOperation
 
 
 class PaymentAttempt(models.Model):
@@ -40,11 +40,11 @@ class PaymentMethod(models.Model):
             id=self.id,
             created_at=self.created_at,
             payment_attempt_id=self.payment_attempt_id,
-            stage_events=[stage_event.to_domain() for stage_event in self.stage_events.all()],
+            payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations.all()],
         )
 
 
-class StageEventNameChoices(models.TextChoices):
+class PaymentOperationTypeChoices(models.TextChoices):
     authenticate = "authenticate"
     authorize = "authorize"
     charge = "charge"
@@ -54,26 +54,26 @@ class StageEventNameChoices(models.TextChoices):
     mark_as_canceled = "mark_as_canceled"
 
 
-class StageEventStatusChoices(models.TextChoices):
+class PaymentOperationStatusChoices(models.TextChoices):
     started = "started"
     failed = "failed"
     completed = "completed"
     requires_action = "requires_action"
 
 
-class StageEvent(models.Model):
+class PaymentOperation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
-    name = models.CharField(max_length=16, choices=StageEventNameChoices)
-    status = models.CharField(max_length=15, choices=StageEventStatusChoices)
-    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE, related_name="stage_events")
+    type = models.CharField(max_length=16, choices=PaymentOperationTypeChoices)
+    status = models.CharField(max_length=15, choices=PaymentOperationStatusChoices)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE, related_name="payment_operations")
 
     def __str__(self) -> str:
-        return f"StageEvent[name={self.name}, status={self.status}]"
+        return f"PaymentOperation[type={self.type}, status={self.status}]"
 
-    def to_domain(self) -> DomainStageEvent:
-        return DomainStageEvent(
-            name=self.name,
+    def to_domain(self) -> DomainPaymentOperation:
+        return DomainPaymentOperation(
+            type=self.type,
             status=self.status,
             payment_method_id=self.payment_method_id,
         )

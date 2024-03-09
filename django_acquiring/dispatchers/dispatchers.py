@@ -1,47 +1,51 @@
 from dataclasses import dataclass
 
 import django_acquiring.dispatchers.decision_logic as dl
-from django_acquiring.payments.protocols import AbstractPaymentAttempt, StageNameEnum
+from django_acquiring.payments.protocols import AbstractPaymentAttempt, PaymentOperationTypeEnum
 from django_acquiring.payments.repositories import PaymentAttemptRepository
 
-from .protocols import payment_type
+from .protocols import payment_operation_type
 
 
 @dataclass
-class SuccessfulStageResponse:
+class SuccessfulOperationResponse:
     success = True
     payment_attempt: AbstractPaymentAttempt
     error_message = None
-    stage_name: StageNameEnum
+    payment_operation_type: PaymentOperationTypeEnum
 
 
 @dataclass
-class UnsuccessfulStageResponse:
+class UnsuccessfulOperationResponse:
     success = False
     payment_attempt = None
     error_message: str
-    stage_name: StageNameEnum
+    payment_operation_type: PaymentOperationTypeEnum
 
 
-# TODO Figure out how to replace this with StageResponse protocol
-StageResponse = SuccessfulStageResponse | UnsuccessfulStageResponse
+# TODO Figure out how to replace this with OperationResponse protocol
+OperationResponse = SuccessfulOperationResponse | UnsuccessfulOperationResponse
 
 
-# TODO Decorate this class to ensure that all payment_types are implemented as methods
+# TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
 class Dispatcher:
     repository: PaymentAttemptRepository = PaymentAttemptRepository()
 
-    @payment_type
-    def authenticate(self, payment_attempt: AbstractPaymentAttempt) -> StageResponse:
+    @payment_operation_type
+    def authenticate(self, payment_attempt: AbstractPaymentAttempt) -> OperationResponse:
         # Refresh the payment from the database
         if (_payment_attempt := self.repository.get(id=payment_attempt.id)) is None:
-            return UnsuccessfulStageResponse("Payment not found", stage_name=StageNameEnum.authenticate)
+            return UnsuccessfulOperationResponse(
+                "Payment not found", payment_operation_type=PaymentOperationTypeEnum.authenticate
+            )
         payment_attempt = _payment_attempt
 
         # Verify that the payment can go through this step
         if not dl.can_authenticate(payment_attempt):
-            return UnsuccessfulStageResponse(
-                error_message="Payment cannot go through this stage",
-                stage_name=StageNameEnum.authenticate,
+            return UnsuccessfulOperationResponse(
+                error_message="Payment cannot go through this operation",
+                payment_operation_type=PaymentOperationTypeEnum.authenticate,
             )
-        return SuccessfulStageResponse(payment_attempt=payment_attempt, stage_name=StageNameEnum.authenticate)
+        return SuccessfulOperationResponse(
+            payment_attempt=payment_attempt, payment_operation_type=PaymentOperationTypeEnum.authenticate
+        )

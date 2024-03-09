@@ -1,17 +1,17 @@
-from django_acquiring.payments.models import StageEventNameChoices, StageEventStatusChoices
-from django_acquiring.payments.protocols import StageNameEnum, StageStatusEnum
+from django_acquiring.payments.models import PaymentOperationStatusChoices, PaymentOperationTypeChoices
+from django_acquiring.payments.protocols import OperationStatusEnum, PaymentOperationTypeEnum
 
 
 # TODO Figure out a way to ensure that these two enums match at compile time/initialization time
-def test_stageEventNameChoices_match_stageNameEnum():
-    choices = set(member.value for member in StageEventNameChoices)
-    enums = set(item.value for item in StageNameEnum)
+def test_PaymentOperationTypeChoices_match_PaymentOperationTypeEnum():
+    choices = set(member.value for member in PaymentOperationTypeChoices)
+    enums = set(item.value for item in PaymentOperationTypeEnum)
 
     assert choices == enums
 
 
-def test_stageEventStatusChoices_match_stageEventStatusEnum():
-    choices = set(member.value for member in StageEventStatusChoices)
-    enums = set(item.value for item in StageStatusEnum)
+def test_PaymentOperationStatusChoices_match_PaymentOperationStatusEnum():
+    choices = set(member.value for member in PaymentOperationStatusChoices)
+    enums = set(item.value for item in OperationStatusEnum)
 
     assert choices == enums

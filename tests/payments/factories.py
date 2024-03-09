@@ -11,6 +11,6 @@ class PaymentMethodFactory(factory.django.DjangoModelFactory):
         model = "payments.PaymentMethod"
 
 
-class StageEventFactory(factory.django.DjangoModelFactory):
+class PaymentOperationFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "payments.StageEvent"
+        model = "payments.PaymentOperation"

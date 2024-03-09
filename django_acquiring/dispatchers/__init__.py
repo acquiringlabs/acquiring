@@ -1,3 +1,3 @@
-from .dispatchers import Dispatcher, SuccessfulStageResponse, UnsuccessfulStageResponse
+from .dispatchers import Dispatcher, SuccessfulOperationResponse, UnsuccessfulOperationResponse
 
-__all__ = ["Dispatcher", "SuccessfulStageResponse", "UnsuccessfulStageResponse"]
+__all__ = ["Dispatcher", "SuccessfulOperationResponse", "UnsuccessfulOperationResponse"]

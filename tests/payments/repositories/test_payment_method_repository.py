@@ -1,8 +1,12 @@
+import itertools
+
 import pytest
 
-from django_acquiring.payments.models import PaymentMethod
+from django_acquiring.payments.models import PaymentMethod as DbPaymentMethod
+from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
+from django_acquiring.payments.protocols import OperationStatusEnum, PaymentOperationTypeEnum
 from django_acquiring.payments.repositories import PaymentMethodRepository
-from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory, StageEventFactory
+from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @pytest.mark.django_db
@@ -20,7 +24,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     # Then PaymentMethod gets created
     assert result is not None
 
-    db_payment_methods = PaymentMethod.objects.all()
+    db_payment_methods = DbPaymentMethod.objects.all()
     assert len(db_payment_methods) == 1
     db_payment_method = db_payment_methods[0]
 
@@ -33,10 +37,10 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
 def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
     django_assert_num_queries,
 ):
-    # Given existing payment method row in payments table
+    # Given existing payment method row in payment methods table
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
-    StageEventFactory.create_batch(3, payment_method_id=db_payment_method.id)
+    PaymentOperationFactory.create_batch(3, payment_method_id=db_payment_method.id)
 
     # When calling PaymentMethodRepository.get
     with django_assert_num_queries(2):
@@ -47,7 +51,28 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
 
 
 @pytest.mark.django_db
-def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryAddStageEvent_thenStageEventGetsCreated(
+@pytest.mark.parametrize(
+    "payment_operation_type, payment_operation_status", itertools.product(PaymentOperationTypeEnum, OperationStatusEnum)
+)
+def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryAddPaymentOperation_thenPaymentOperationGetsCreated(
     django_assert_num_queries,
+    payment_operation_type,
+    payment_operation_status,
 ):
-    pass
+    # Given existing payment method row in payment methods table
+    db_payment_attempt = PaymentAttemptFactory()
+    db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
+    payment_method = db_payment_method.to_domain()
+
+    # When calling PaymentMethodRepository.add_payment_operation
+    with django_assert_num_queries(1):
+        PaymentMethodRepository().add_payment_operation(
+            payment_method=payment_method, type=payment_operation_type, status=payment_operation_status
+        )
+
+    # Then PaymentOperation gets created
+    assert DbPaymentOperation.objects.count() == 1
+    payment_operation = DbPaymentOperation.objects.first()
+
+    # And payment method gets the payment operation added after add_payment_operation
+    assert payment_method.payment_operations[0] == payment_operation.to_domain()

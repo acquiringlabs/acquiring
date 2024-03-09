@@ -16,7 +16,7 @@ class AbstractPaymentAttempt(Protocol):
     id: UUID
 
 
-class StageNameEnum(StrEnum):
+class PaymentOperationTypeEnum(StrEnum):
     authenticate = "authenticate"
     authorize = "authorize"
     charge = "charge"
@@ -26,7 +26,7 @@ class StageNameEnum(StrEnum):
     mark_as_canceled = "mark_as_canceled"
 
 
-class StageStatusEnum(StrEnum):
+class OperationStatusEnum(StrEnum):
     started = "started"
     failed = "failed"
     completed = "completed"

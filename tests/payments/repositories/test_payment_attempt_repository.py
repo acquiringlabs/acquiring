@@ -2,7 +2,7 @@ import pytest
 
 from django_acquiring.payments.models import PaymentAttempt
 from django_acquiring.payments.repositories import PaymentAttemptRepository
-from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory, StageEventFactory
+from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @pytest.mark.django_db
@@ -33,7 +33,7 @@ def test_givenExistingPaymentAttemptRowInPaymentAttemptsTable_whenCallingReposit
     # Given existing payment attempt row in payments table
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_methods = PaymentMethodFactory.create_batch(3, payment_attempt_id=db_payment_attempt.id)
-    StageEventFactory.create_batch(3, payment_method_id=db_payment_methods[0].id)
+    PaymentOperationFactory.create_batch(3, payment_method_id=db_payment_methods[0].id)
 
     # When calling PaymentAttemptRepository.get
     with django_assert_num_queries(3):

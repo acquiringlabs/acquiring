@@ -3,13 +3,13 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
-from .protocols import StageNameEnum, StageStatusEnum
+from .protocols import OperationStatusEnum, PaymentOperationTypeEnum
 
 
 @dataclass
-class StageEvent:
-    name: StageNameEnum
-    status: StageStatusEnum
+class PaymentOperation:
+    type: PaymentOperationTypeEnum
+    status: OperationStatusEnum
     payment_method_id: UUID
 
 
@@ -18,7 +18,7 @@ class PaymentMethod:
     id: UUID
     created_at: datetime
     payment_attempt_id: UUID
-    stage_events: List[StageEvent]
+    payment_operations: List[PaymentOperation]
 
 
 @dataclass
