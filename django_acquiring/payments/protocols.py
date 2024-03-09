@@ -11,9 +11,10 @@ from typing import Protocol
 from uuid import UUID
 
 
-class AbstractPaymentAttempt(Protocol):
-    created_at: datetime
+class AbstractPaymentMethod(Protocol):
     id: UUID
+    created_at: datetime
+    payment_attempt_id: UUID
 
 
 class PaymentOperationTypeEnum(StrEnum):
@@ -26,7 +27,7 @@ class PaymentOperationTypeEnum(StrEnum):
     mark_as_canceled = "mark_as_canceled"
 
 
-class OperationStatusEnum(StrEnum):
+class PaymentOperationStatusEnum(StrEnum):
     started = "started"
     failed = "failed"
     completed = "completed"

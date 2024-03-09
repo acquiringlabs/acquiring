@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 
-import django_acquiring.dispatchers.decision_logic as dl
-from django_acquiring.payments.protocols import AbstractPaymentAttempt, PaymentOperationTypeEnum
-from django_acquiring.payments.repositories import PaymentAttemptRepository
+import django_acquiring.payments.flow.decision_logic as dl
+from django_acquiring.payments.protocols import (
+    AbstractPaymentMethod,
+    PaymentOperationStatusEnum,
+    PaymentOperationTypeEnum,
+)
+from django_acquiring.payments.repositories import PaymentAttemptRepository, PaymentMethodRepository
 
 from .protocols import payment_operation_type
 
@@ -10,7 +14,7 @@ from .protocols import payment_operation_type
 @dataclass
 class SuccessfulOperationResponse:
     success = True
-    payment_attempt: AbstractPaymentAttempt
+    payment_method: AbstractPaymentMethod
     error_message = None
     payment_operation_type: PaymentOperationTypeEnum
 
@@ -18,7 +22,7 @@ class SuccessfulOperationResponse:
 @dataclass
 class UnsuccessfulOperationResponse:
     success = False
-    payment_attempt = None
+    payment_method = None
     error_message: str
     payment_operation_type: PaymentOperationTypeEnum
 
@@ -28,24 +32,32 @@ OperationResponse = SuccessfulOperationResponse | UnsuccessfulOperationResponse
 
 
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
-class Dispatcher:
-    repository: PaymentAttemptRepository = PaymentAttemptRepository()
+class PaymentFlow:
+    attempt_repository: PaymentAttemptRepository = PaymentAttemptRepository()
+    method_repository: PaymentMethodRepository = PaymentMethodRepository()
 
     @payment_operation_type
-    def authenticate(self, payment_attempt: AbstractPaymentAttempt) -> OperationResponse:
+    def authenticate(self, payment_method: AbstractPaymentMethod) -> OperationResponse:
         # Refresh the payment from the database
-        if (_payment_attempt := self.repository.get(id=payment_attempt.id)) is None:
+        if (_payment_method := self.method_repository.get(id=payment_method.id)) is None:
             return UnsuccessfulOperationResponse(
                 "Payment not found", payment_operation_type=PaymentOperationTypeEnum.authenticate
             )
-        payment_attempt = _payment_attempt
+        payment_method = _payment_method
 
         # Verify that the payment can go through this step
-        if not dl.can_authenticate(payment_attempt):
+        if not dl.can_authenticate(payment_method):
             return UnsuccessfulOperationResponse(
                 error_message="Payment cannot go through this operation",
                 payment_operation_type=PaymentOperationTypeEnum.authenticate,
             )
+        # Create Started PaymentOperation
+        self.method_repository.add_payment_operation(
+            payment_method=payment_method,
+            type=PaymentOperationTypeEnum.authenticate,
+            status=PaymentOperationStatusEnum.started,
+        )
+
         return SuccessfulOperationResponse(
-            payment_attempt=payment_attempt, payment_operation_type=PaymentOperationTypeEnum.authenticate
+            payment_method=payment_method, payment_operation_type=PaymentOperationTypeEnum.authenticate
         )

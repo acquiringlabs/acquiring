@@ -2,13 +2,13 @@ import functools
 from dataclasses import dataclass
 from typing import Callable, Protocol
 
-from django_acquiring.payments.protocols import AbstractPaymentAttempt, PaymentOperationTypeEnum
+from django_acquiring.payments.protocols import AbstractPaymentMethod, PaymentOperationTypeEnum
 
 
 @dataclass
 class OperationResponse(Protocol):
     success: bool
-    payment_attempt: AbstractPaymentAttempt | None
+    payment_method: AbstractPaymentMethod | None
     error_message: str | None
     payment_operation_type: PaymentOperationTypeEnum
 

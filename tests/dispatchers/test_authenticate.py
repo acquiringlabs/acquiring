@@ -1,18 +1,20 @@
 import pytest
 
-from django_acquiring.dispatchers import Dispatcher
+from django_acquiring.payments.flow import PaymentFlow
 from django_acquiring.payments.protocols import PaymentOperationTypeEnum
-from tests.payments.factories import PaymentAttemptFactory
+from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 
 @pytest.mark.django_db
-def test_givenAValidPaymentAttempt_whenAuthenticating_thenTheDispatcherReturnsASuccessfulOperationResponse():
+def test_givenAValidPaymentMethod_whenAuthenticating_thenThePaymentFlowReturnsASuccessfulOperationResponse():
     # given a valid payment attempt
     payment_attempt = PaymentAttemptFactory.create()
+    payment_method = PaymentMethodFactory.create(payment_attempt_id=payment_attempt.id)
 
     # when authenticating
-    result = Dispatcher().authenticate(payment_attempt)
+    result = PaymentFlow().authenticate(payment_method)
 
-    # then the dispatcher returns a successful Operation Response
+    # then the payment flow returns a successful Operation Response
     assert result.payment_operation_type == PaymentOperationTypeEnum.authenticate
-    assert result.payment_attempt.id == payment_attempt.id
+    assert result.success is True
+    assert result.payment_method.id == payment_method.id

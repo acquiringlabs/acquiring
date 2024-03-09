@@ -3,13 +3,13 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
-from .protocols import OperationStatusEnum, PaymentOperationTypeEnum
+from .protocols import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 
 
 @dataclass
 class PaymentOperation:
     type: PaymentOperationTypeEnum
-    status: OperationStatusEnum
+    status: PaymentOperationStatusEnum
     payment_method_id: UUID
 
 

@@ -4,7 +4,7 @@ from .domain import PaymentAttempt, PaymentMethod, PaymentOperation
 from .models import PaymentAttempt as DbPaymentAttempt
 from .models import PaymentMethod as DbPaymentMethod
 from .models import PaymentOperation as DbPaymentOperation
-from .protocols import OperationStatusEnum, PaymentOperationTypeEnum
+from .protocols import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 
 
 class PaymentAttemptRepository:
@@ -39,7 +39,7 @@ class PaymentMethodRepository:
             return None
 
     def add_payment_operation(
-        self, payment_method: PaymentMethod, type: PaymentOperationTypeEnum, status: OperationStatusEnum
+        self, payment_method: PaymentMethod, type: PaymentOperationTypeEnum, status: PaymentOperationStatusEnum
     ) -> PaymentOperation:
         db_payment_operation = DbPaymentOperation(
             payment_method_id=payment_method.id,
