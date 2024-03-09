@@ -5,6 +5,7 @@ from django.db import models
 from .domain import PaymentAttempt as DomainPaymentAttempt
 from .domain import PaymentMethod as DomainPaymentMethod
 from .domain import PaymentOperation as DomainPaymentOperation
+from .protocols import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
 
 
 class PaymentAttempt(models.Model):
@@ -16,7 +17,7 @@ class PaymentAttempt(models.Model):
     def __str__(self) -> str:
         return f"PaymentAttempt[id={self.id}]"
 
-    def to_domain(self) -> DomainPaymentAttempt:
+    def to_domain(self) -> AbstractPaymentAttempt:
         return DomainPaymentAttempt(
             id=self.id,
             created_at=self.created_at,
@@ -35,7 +36,7 @@ class PaymentMethod(models.Model):
     def __str__(self) -> str:
         return f"PaymentMethod[id={self.id}]"
 
-    def to_domain(self) -> DomainPaymentMethod:
+    def to_domain(self) -> AbstractPaymentMethod:
         return DomainPaymentMethod(
             id=self.id,
             created_at=self.created_at,
@@ -71,7 +72,7 @@ class PaymentOperation(models.Model):
     def __str__(self) -> str:
         return f"PaymentOperation[type={self.type}, status={self.status}]"
 
-    def to_domain(self) -> DomainPaymentOperation:
+    def to_domain(self) -> AbstractPaymentOperation:
         return DomainPaymentOperation(
             type=self.type,
             status=self.status,

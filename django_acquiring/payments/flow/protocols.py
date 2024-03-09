@@ -1,16 +1,36 @@
 import functools
 from dataclasses import dataclass
-from typing import Callable, Protocol
+from typing import Callable
 
 from django_acquiring.payments.protocols import AbstractPaymentMethod, PaymentOperationTypeEnum
 
 
-@dataclass
-class OperationResponse(Protocol):
-    success: bool
-    payment_method: AbstractPaymentMethod | None
-    error_message: str | None
+@dataclass(kw_only=True, frozen=True)
+class SuccessfulOperationResponse:
+    success = True
+    payment_method: AbstractPaymentMethod
+    error_message = None
     payment_operation_type: PaymentOperationTypeEnum
+
+
+@dataclass(kw_only=True, frozen=True)
+class UnsuccessfulOperationResponse:
+    success = False
+    payment_method = None
+    payment_operation_type: PaymentOperationTypeEnum
+    error_message: str
+
+
+@dataclass(kw_only=True, frozen=True)
+class OperationResponse:
+    success: bool
+    payment_method: AbstractPaymentMethod
+    payment_operation_type: PaymentOperationTypeEnum
+    error_message: str | None = None
+
+
+# TODO Figure out how to replace this with an OperationResponse typing.Protocol
+AbstractOperationResponse = OperationResponse | SuccessfulOperationResponse | UnsuccessfulOperationResponse
 
 
 def payment_operation_type(function: Callable):
