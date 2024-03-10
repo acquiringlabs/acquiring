@@ -1,4 +1,4 @@
-from django_acquiring.payments.protocols import (
+from django_acquiring.protocols.payments import (
     AbstractPaymentMethod,
     PaymentOperationStatusEnum,
     PaymentOperationTypeEnum,
@@ -21,7 +21,7 @@ def can_initialize(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has already started cannot go through initialize.
     >>> from django_acquiring.payments.domain import PaymentOperation
-    >>> from django_acquiring.payments.protocols import PaymentOperationTypeEnum, PaymentOperationStatusEnum
+    >>> from django_acquiring.protocols.payments import PaymentOperationTypeEnum, PaymentOperationStatusEnum
     >>> payment_operation_initialize_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=PaymentOperationTypeEnum.initialize,

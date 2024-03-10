@@ -1,15 +1,16 @@
 from uuid import UUID
 
-from .models import PaymentAttempt as DbPaymentAttempt
-from .models import PaymentMethod as DbPaymentMethod
-from .models import PaymentOperation as DbPaymentOperation
-from .protocols import (
+from django_acquiring.protocols.payments import (
     AbstractPaymentAttempt,
     AbstractPaymentMethod,
     AbstractPaymentOperation,
     PaymentOperationStatusEnum,
     PaymentOperationTypeEnum,
 )
+
+from .models import PaymentAttempt as DbPaymentAttempt
+from .models import PaymentMethod as DbPaymentMethod
+from .models import PaymentOperation as DbPaymentOperation
 
 
 class PaymentAttemptRepository:

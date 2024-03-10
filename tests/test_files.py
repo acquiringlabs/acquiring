@@ -10,7 +10,7 @@ def test_allProtocolFilesContainSubclassesOfDecoratorProtocolOrEnum():
     django_acquiring_dir = os.path.join(project_dir, "django_acquiring")
     for root, dirs, files in os.walk(django_acquiring_dir):
         for file in files:
-            if file.endswith("protocols.py"):
+            if "protocols" in root.split(os.path.sep):  # in protocols folder
                 file_path = os.path.join(root, file)
                 module_name = os.path.splitext(os.path.basename(file_path))[0]
                 spec = importlib.util.spec_from_file_location(module_name, file_path)

@@ -3,7 +3,12 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
-from .protocols import PaymentOperationStatusEnum, PaymentOperationTypeEnum
+from django_acquiring.protocols.payments import (
+    AbstractPaymentMethod,
+    AbstractPaymentOperation,
+    PaymentOperationStatusEnum,
+    PaymentOperationTypeEnum,
+)
 
 
 # TODO frozen=True compatible with AbstractPaymentOperation (expected settable variable, got read-only attribute)
@@ -19,7 +24,7 @@ class PaymentMethod:
     id: UUID
     created_at: datetime
     payment_attempt_id: UUID
-    payment_operations: List[PaymentOperation] = field(default_factory=list, repr=True)
+    payment_operations: List[AbstractPaymentOperation] = field(default_factory=list, repr=True)
 
     def has_payment_operation(self, type: PaymentOperationTypeEnum, status: PaymentOperationStatusEnum) -> bool:
         return any(operation.type == type and operation.status == status for operation in self.payment_operations)
@@ -29,4 +34,4 @@ class PaymentMethod:
 class PaymentAttempt:
     id: UUID
     created_at: datetime
-    payment_methods: List[PaymentMethod] = field(default_factory=list, repr=True)
+    payment_methods: List[AbstractPaymentMethod] = field(default_factory=list, repr=True)

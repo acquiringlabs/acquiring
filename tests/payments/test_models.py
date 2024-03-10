@@ -1,5 +1,5 @@
 from django_acquiring.payments.models import PaymentOperationStatusChoices, PaymentOperationTypeChoices
-from django_acquiring.payments.protocols import PaymentOperationStatusEnum, PaymentOperationTypeEnum
+from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 
 
 # TODO Figure out a way to ensure that these two enums match at compile time/initialization time

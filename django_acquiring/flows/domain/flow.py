@@ -2,13 +2,13 @@ from dataclasses import dataclass, field
 from typing import Dict, List
 
 import django_acquiring.flows.domain.decision_logic as dl
-from django_acquiring.flows.protocols import AbstractBlock, AbstractOperationResponse, payment_operation_type
-from django_acquiring.payments.protocols import (
+from django_acquiring.payments.repositories import PaymentAttemptRepository, PaymentMethodRepository
+from django_acquiring.protocols.flows import AbstractBlock, AbstractOperationResponse, payment_operation_type
+from django_acquiring.protocols.payments import (
     AbstractPaymentMethod,
     PaymentOperationStatusEnum,
     PaymentOperationTypeEnum,
 )
-from django_acquiring.payments.repositories import PaymentAttemptRepository, PaymentMethodRepository
 
 
 @dataclass(kw_only=True)

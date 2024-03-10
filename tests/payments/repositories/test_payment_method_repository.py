@@ -4,8 +4,8 @@ import pytest
 
 from django_acquiring.payments.models import PaymentMethod as DbPaymentMethod
 from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
-from django_acquiring.payments.protocols import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from django_acquiring.payments.repositories import PaymentMethodRepository
+from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 

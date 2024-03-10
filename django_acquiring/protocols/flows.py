@@ -2,7 +2,7 @@ import functools
 from dataclasses import field
 from typing import Callable, Dict, List, Protocol
 
-from django_acquiring.payments.protocols import AbstractPaymentMethod, PaymentOperationTypeEnum
+from django_acquiring.protocols.payments import AbstractPaymentMethod, PaymentOperationTypeEnum
 
 
 class AbstractOperationResponse(Protocol):

@@ -2,10 +2,11 @@ from uuid import uuid4
 
 from django.db import models
 
+from django_acquiring.protocols.payments import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
+
 from .domain import PaymentAttempt as DomainPaymentAttempt
 from .domain import PaymentMethod as DomainPaymentMethod
 from .domain import PaymentOperation as DomainPaymentOperation
-from .protocols import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
 
 
 class PaymentAttempt(models.Model):
