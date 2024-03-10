@@ -8,6 +8,7 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django_acquiring",
     "django_acquiring.payments",
+    "django_acquiring.events",
 )
 
 TEMPLATES = [
