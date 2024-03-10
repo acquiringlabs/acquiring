@@ -6,17 +6,22 @@ import pytest
 from django_acquiring.flows import PaymentFlow
 from django_acquiring.payments.domain import PaymentMethod
 from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
-from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @pytest.mark.django_db
-def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsASuccessfulOperationResponse():
+def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsASuccessfulOperationResponse(
+    fake_payment_method_repository, fake_payment_operation_repository
+):
     # given a valid payment attempt
     db_payment_attempt = PaymentAttemptFactory.create()
     db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
 
     # when Initializing
-    result = PaymentFlow().initialize(db_payment_method.to_domain())
+    payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
+    result = PaymentFlow(
+        repository=payment_method_repository, operations_repository=fake_payment_operation_repository()
+    ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns a successful Operation Response
     assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
@@ -25,7 +30,9 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsASucces
 
 
 @pytest.mark.django_db
-def test_givenAnAlreadyStartedPaymentMethod_whenInitializing_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse():
+def test_givenAnAlreadyStartedPaymentMethod_whenInitializing_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse(
+    fake_payment_method_repository, fake_payment_operation_repository
+):
     # Given an already started payment method
     db_payment_attempt = PaymentAttemptFactory.create()
     db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
@@ -36,7 +43,10 @@ def test_givenAnAlreadyStartedPaymentMethod_whenInitializing_thenPaymentFlowRetu
     )
 
     # When Initializing
-    result = PaymentFlow().initialize(db_payment_method.to_domain())
+    payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
+    result = PaymentFlow(
+        repository=payment_method_repository, operations_repository=fake_payment_operation_repository()
+    ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns an unsuccessful operation response
     assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
@@ -45,7 +55,9 @@ def test_givenAnAlreadyStartedPaymentMethod_whenInitializing_thenPaymentFlowRetu
 
 
 @pytest.mark.django_db
-def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse():
+def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse(
+    fake_payment_method_repository, fake_payment_operation_repository
+):
     # Given a non existing payment method
     payment_method = PaymentMethod(
         id=uuid4(),
@@ -54,7 +66,10 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
     )
 
     # When Initializing
-    result = PaymentFlow().initialize(payment_method)
+    payment_method_repository = fake_payment_method_repository()
+    result = PaymentFlow(
+        repository=payment_method_repository, operations_repository=fake_payment_operation_repository()
+    ).initialize(payment_method)
 
     # then the payment flow returns an unsuccessful operation response
     assert result.payment_operation_type == PaymentOperationTypeEnum.initialize

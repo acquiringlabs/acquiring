@@ -1,5 +1,8 @@
 from uuid import UUID
 
+from django_acquiring.payments.models import PaymentAttempt as DbPaymentAttempt
+from django_acquiring.payments.models import PaymentMethod as DbPaymentMethod
+from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
 from django_acquiring.protocols.payments import (
     AbstractPaymentAttempt,
     AbstractPaymentMethod,
@@ -7,10 +10,6 @@ from django_acquiring.protocols.payments import (
     PaymentOperationStatusEnum,
     PaymentOperationTypeEnum,
 )
-
-from .models import PaymentAttempt as DbPaymentAttempt
-from .models import PaymentMethod as DbPaymentMethod
-from .models import PaymentOperation as DbPaymentOperation
 
 
 class PaymentAttemptRepository:
@@ -44,7 +43,10 @@ class PaymentMethodRepository:
         except DbPaymentMethod.DoesNotExist:
             return None
 
-    def add_payment_operation(
+
+class PaymentOperationRepository:
+
+    def add(
         self, payment_method: AbstractPaymentMethod, type: PaymentOperationTypeEnum, status: PaymentOperationStatusEnum
     ) -> AbstractPaymentOperation:
         db_payment_operation = DbPaymentOperation(
@@ -56,3 +58,5 @@ class PaymentMethodRepository:
         payment_operation = db_payment_operation.to_domain()
         payment_method.payment_operations.append(payment_operation)
         return payment_operation
+
+    def get(self, id: UUID): ...

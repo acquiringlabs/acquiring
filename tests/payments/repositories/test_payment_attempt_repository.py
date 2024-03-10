@@ -2,7 +2,7 @@ import pytest
 
 from django_acquiring.payments.models import PaymentAttempt
 from django_acquiring.payments.repositories import PaymentAttemptRepository
-from tests.payments.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @pytest.mark.django_db

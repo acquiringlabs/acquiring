@@ -2,13 +2,13 @@ from dataclasses import dataclass, field
 from typing import Dict, List
 
 import django_acquiring.flows.domain.decision_logic as dl
-from django_acquiring.payments.repositories import PaymentAttemptRepository, PaymentMethodRepository
 from django_acquiring.protocols.flows import AbstractBlock, AbstractOperationResponse, payment_operation_type
 from django_acquiring.protocols.payments import (
     AbstractPaymentMethod,
     PaymentOperationStatusEnum,
     PaymentOperationTypeEnum,
 )
+from django_acquiring.protocols.repositories import AbstractRepository
 
 
 @dataclass(kw_only=True)
@@ -23,15 +23,15 @@ class OperationResponse:
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
 @dataclass(kw_only=True, frozen=True)
 class PaymentFlow:
-    attempt_repository: PaymentAttemptRepository = PaymentAttemptRepository()
-    method_repository: PaymentMethodRepository = PaymentMethodRepository()
+    repository: AbstractRepository
+    operations_repository: AbstractRepository
 
     initialize_blocks: List[AbstractBlock] = field(default_factory=list)
 
     @payment_operation_type
     def initialize(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
         # Refresh the payment from the database
-        if (_payment_method := self.method_repository.get(id=payment_method.id)) is None:
+        if (_payment_method := self.repository.get(id=payment_method.id)) is None:
             return OperationResponse(
                 success=False,
                 payment_method=None,
@@ -50,7 +50,7 @@ class PaymentFlow:
             )
 
         # Create Started PaymentOperation
-        self.method_repository.add_payment_operation(
+        self.operations_repository.add(
             payment_method=payment_method,
             type=PaymentOperationTypeEnum.initialize,
             status=PaymentOperationStatusEnum.started,
