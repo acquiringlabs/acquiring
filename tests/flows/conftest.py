@@ -1,7 +1,7 @@
 import uuid
 
 import pytest
-
+from django_acquiring.payments.domain import PaymentMethod
 from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation
 from django_acquiring.protocols.repositories import AbstractRepository
 
@@ -20,11 +20,11 @@ def fake_payment_method_repository():
             self.db_payment_methods.append(db_payment_method)
             return db_payment_method.to_domain()
 
-        def get(self, id: uuid.UUID) -> AbstractPaymentMethod | None:
+        def get(self, id: uuid.UUID) -> AbstractPaymentMethod:
             for pm in self.db_payment_methods:
                 if pm.id == id:
                     return pm.to_domain()
-            return None
+            raise PaymentMethod.DoesNotExist
 
     assert issubclass(FakePaymentMethodRepository, AbstractRepository)
     return FakePaymentMethodRepository
@@ -42,11 +42,7 @@ def fake_payment_operation_repository():
         def add(self, payment_method, type, status) -> AbstractPaymentOperation:
             return PaymentOperationFactory(payment_method_id=payment_method.id, type=type, status=status)
 
-        def get(self, id: uuid.UUID) -> AbstractPaymentOperation | None:
-            for po in self.db_payment_operations:
-                if po.id == id:
-                    return po.to_domain()
-            return None
+        def get(self, id: uuid.UUID): ...
 
     assert issubclass(FakePaymentOperationRepository, AbstractRepository)
     return FakePaymentOperationRepository

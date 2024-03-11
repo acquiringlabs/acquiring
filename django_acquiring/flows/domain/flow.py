@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List
 
 import django_acquiring.flows.domain.decision_logic as dl
+from django_acquiring.payments.domain import PaymentMethod
 from django_acquiring.protocols.flows import AbstractBlock, AbstractOperationResponse, payment_operation_type
 from django_acquiring.protocols.payments import (
     AbstractPaymentMethod,
@@ -31,14 +32,15 @@ class PaymentFlow:
     @payment_operation_type
     def initialize(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
         # Refresh the payment from the database
-        if (_payment_method := self.repository.get(id=payment_method.id)) is None:
+        try:
+            payment_method = self.repository.get(id=payment_method.id)
+        except PaymentMethod.DoesNotExist:
             return OperationResponse(
                 success=False,
                 payment_method=None,
                 error_message="PaymentMethod not found",
                 payment_operation_type=PaymentOperationTypeEnum.initialize,
             )
-        payment_method = _payment_method
 
         # Verify that the payment can go through this operation type
         if not dl.can_initialize(payment_method):

@@ -34,6 +34,7 @@ class AbstractPaymentOperation(Protocol):
     status: PaymentOperationStatusEnum
 
 
+# TODO Have this class the DoesNotExist internal class
 class AbstractPaymentMethod(Protocol):
     id: UUID
     created_at: datetime
@@ -47,6 +48,7 @@ class AbstractPaymentMethod(Protocol):
     ): ...
 
 
+# TODO Have this class the DoesNotExist internal class
 class AbstractPaymentAttempt(Protocol):
     id: UUID
     created_at: datetime

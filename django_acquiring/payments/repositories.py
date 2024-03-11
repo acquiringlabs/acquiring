@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from django_acquiring.payments.domain import PaymentAttempt as DomainPaymentAttempt
+from django_acquiring.payments.domain import PaymentMethod as DomainPaymentMethod
 from django_acquiring.payments.models import PaymentAttempt as DbPaymentAttempt
 from django_acquiring.payments.models import PaymentMethod as DbPaymentMethod
 from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
@@ -18,14 +20,14 @@ class PaymentAttemptRepository:
         payment_attempt.save()
         return payment_attempt.to_domain()
 
-    def get(self, id: UUID) -> AbstractPaymentAttempt | None:
+    def get(self, id: UUID) -> AbstractPaymentAttempt:
         try:
             payment_attempt = DbPaymentAttempt.objects.prefetch_related(
                 "payment_methods", "payment_methods__payment_operations"
             ).get(id=id)
             return payment_attempt.to_domain()
         except DbPaymentAttempt.DoesNotExist:
-            return None
+            raise DomainPaymentAttempt.DoesNotExist
 
 
 class PaymentMethodRepository:
@@ -36,12 +38,12 @@ class PaymentMethodRepository:
         db_payment_method.save()
         return db_payment_method.to_domain()
 
-    def get(self, id: UUID) -> AbstractPaymentMethod | None:
+    def get(self, id: UUID) -> AbstractPaymentMethod:
         try:
             payment_attempt = DbPaymentMethod.objects.prefetch_related("payment_operations").get(id=id)
             return payment_attempt.to_domain()
         except DbPaymentMethod.DoesNotExist:
-            return None
+            raise DomainPaymentMethod.DoesNotExist
 
 
 class PaymentOperationRepository:

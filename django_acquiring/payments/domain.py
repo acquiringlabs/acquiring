@@ -29,9 +29,15 @@ class PaymentMethod:
     def has_payment_operation(self, type: PaymentOperationTypeEnum, status: PaymentOperationStatusEnum) -> bool:
         return any(operation.type == type and operation.status == status for operation in self.payment_operations)
 
+    class DoesNotExist(Exception):
+        pass
+
 
 @dataclass(kw_only=True)
 class PaymentAttempt:
     id: UUID
     created_at: datetime
     payment_methods: List[AbstractPaymentMethod] = field(default_factory=list, repr=True)
+
+    class DoesNotExist(Exception):
+        pass

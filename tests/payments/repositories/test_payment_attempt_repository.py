@@ -1,6 +1,10 @@
+import uuid
+from datetime import datetime
+
 import pytest
 
-from django_acquiring.payments.models import PaymentAttempt
+from django_acquiring.payments.domain import PaymentAttempt
+from django_acquiring.payments.models import PaymentAttempt as DbPaymentAttempt
 from django_acquiring.payments.repositories import PaymentAttemptRepository
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
@@ -17,7 +21,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
     # Then PaymentAttempt gets created
     assert result is not None
 
-    db_payments = PaymentAttempt.objects.all()
+    db_payments = DbPaymentAttempt.objects.all()
     assert len(db_payments) == 1
     db_payment = db_payments[0]
 
@@ -41,3 +45,18 @@ def test_givenExistingPaymentAttemptRowInPaymentAttemptsTable_whenCallingReposit
 
     # Then PaymentAttempt gets retrieved
     assert result == db_payment_attempt.to_domain()
+
+
+@pytest.mark.django_db
+def test_givenNonExistingPaymentAttemptRow_whenCallingRepositoryGet_thenDoesNotExistGetsRaise(
+    django_assert_num_queries,
+):
+    # Given a non existing payment method
+    payment_method = PaymentAttempt(
+        id=uuid.uuid4(),
+        created_at=datetime.now(),
+    )
+
+    # When calling PaymentMethodRepository.get
+    with django_assert_num_queries(1), pytest.raises(PaymentAttempt.DoesNotExist):
+        PaymentAttemptRepository().get(id=payment_method.id)
