@@ -2,11 +2,15 @@ import functools
 from dataclasses import field
 from typing import Callable, Dict, List, Protocol, runtime_checkable
 
-from django_acquiring.protocols.payments import AbstractPaymentMethod, PaymentOperationTypeEnum
+from django_acquiring.protocols.payments import (
+    AbstractPaymentMethod,
+    PaymentOperationStatusEnum,
+    PaymentOperationTypeEnum,
+)
 
 
 class AbstractOperationResponse(Protocol):
-    success: bool
+    status: PaymentOperationStatusEnum
     actions: List[Dict] = field(default_factory=list)
     payment_operation_type: PaymentOperationTypeEnum
     error_message: str | None = None
@@ -25,7 +29,7 @@ def payment_operation_type(function: Callable):
 
 
 class AbstractBlockResponse(Protocol):
-    success: bool
+    status: PaymentOperationStatusEnum
     payment_method: AbstractPaymentMethod
     actions: List[Dict] = field(default_factory=list)
 

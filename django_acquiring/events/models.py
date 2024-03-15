@@ -4,9 +4,16 @@ from django_acquiring.protocols.events import AbstractBlockEvent
 from .domain import BlockEvent as DomainBlockEvent
 
 
+class BlockEventStatusChoices(models.TextChoices):
+    started = "started"
+    failed = "failed"
+    completed = "completed"
+    requires_action = "requires_action"
+
+
 class BlockEvent(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    success = models.BooleanField()
+    status = models.CharField(max_length=15, choices=BlockEventStatusChoices)
     payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
     block_name = models.CharField(max_length=20)
 
@@ -15,7 +22,7 @@ class BlockEvent(models.Model):
 
     def to_domain(self) -> AbstractBlockEvent:
         return DomainBlockEvent(
-            success=self.success,
+            status=self.status,
             payment_method_id=self.payment_method.id,
             block_name=self.block_name,
         )

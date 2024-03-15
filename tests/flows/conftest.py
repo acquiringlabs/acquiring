@@ -6,7 +6,11 @@ import pytest
 from django_acquiring.flows.domain.blocks import BlockResponse
 from django_acquiring.payments.domain import PaymentMethod
 from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockResponse
-from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation
+from django_acquiring.protocols.payments import (
+    AbstractPaymentMethod,
+    AbstractPaymentOperation,
+    PaymentOperationStatusEnum,
+)
 from django_acquiring.protocols.repositories import AbstractRepository
 
 
@@ -41,15 +45,15 @@ def fake_initialize_block():
 
         def __init__(
             self,
-            fake_response_success: bool = True,
+            fake_response_status: PaymentOperationStatusEnum = PaymentOperationStatusEnum.completed,
             fake_response_actions: List[Dict] | None = None,
         ):
-            self.response_success = fake_response_success
+            self.response_status = fake_response_status
             self.response_actions = fake_response_actions or []
 
         def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse:
             return BlockResponse(
-                success=self.response_success,
+                status=self.response_status,
                 actions=self.response_actions,
                 payment_method=payment_method,
             )
@@ -65,12 +69,13 @@ def fake_process_actions_block():
 
         def __init__(
             self,
-            fake_response_success: bool = True,
+            fake_response_status: PaymentOperationStatusEnum = PaymentOperationStatusEnum.completed,
         ):
-            self.response_success = fake_response_success
+            assert fake_response_status != PaymentOperationStatusEnum.requires_action
+            self.response_status = fake_response_status
 
         def run(self, payment_method: AbstractPaymentMethod, action_data: Dict) -> AbstractBlockResponse:
-            return BlockResponse(success=self.response_success, actions=[], payment_method=payment_method)
+            return BlockResponse(status=self.response_status, actions=[], payment_method=payment_method)
 
     assert issubclass(FakeProcessActionsBlock, AbstractBlock)
     return FakeProcessActionsBlock

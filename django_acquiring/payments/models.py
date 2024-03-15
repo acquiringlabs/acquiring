@@ -49,8 +49,7 @@ class PaymentMethod(models.Model):
 class PaymentOperationTypeChoices(models.TextChoices):
     initialize = "initialize"
     process_actions = "process_actions"
-    authorize = "authorize"
-    charge = "charge"
+    pay = "pay"
     void = "void"
     refund = "refund"
     mark_as_canceled = "mark_as_canceled"

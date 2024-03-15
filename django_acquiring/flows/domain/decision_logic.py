@@ -190,3 +190,7 @@ def can_process_actions(payment_method: AbstractPaymentMethod) -> bool:
         return False
 
     return True
+
+
+def can_pay(payment_method: AbstractPaymentMethod) -> bool:
+    return True
