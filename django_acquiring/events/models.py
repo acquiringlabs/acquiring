@@ -9,6 +9,7 @@ class BlockEventStatusChoices(models.TextChoices):
     failed = "failed"
     completed = "completed"
     requires_action = "requires_action"
+    pending = "pending"
 
 
 class BlockEvent(models.Model):

@@ -9,3 +9,4 @@ class BlockResponse:
     status: PaymentOperationStatusEnum
     payment_method: AbstractPaymentMethod
     actions: List[Dict] = field(default_factory=list)
+    error_message: str | None = None

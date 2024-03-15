@@ -60,6 +60,10 @@ class PaymentOperationStatusChoices(models.TextChoices):
     failed = "failed"
     completed = "completed"
     requires_action = "requires_action"
+    pending = "pending"
+
+
+# TODO Add failure reason to Payment Operation as an optional string
 
 
 class PaymentOperation(models.Model):

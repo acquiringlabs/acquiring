@@ -63,11 +63,37 @@ class PaymentFlow:
         # Run Operation Block
         block_response = self.initialize_block.run(payment_method=payment_method)
 
-        # Create PaymentOperation with the outcome
-        assert (
-            block_response.actions or block_response.status != PaymentOperationStatusEnum.requires_action
-        )  # make sure that status isn't inconsistent
+        # Validate that status is one of the expected ones
+        if block_response.status not in [
+            PaymentOperationStatusEnum.completed,
+            PaymentOperationStatusEnum.failed,
+            PaymentOperationStatusEnum.requires_action,
+        ]:
+            self.operations_repository.add(
+                payment_method=payment_method,
+                type=PaymentOperationTypeEnum.initialize,  # TODO Refer to function name rather than explicit input in all cases
+                status=PaymentOperationStatusEnum.failed,
+            )
+            return OperationResponse(
+                status=PaymentOperationStatusEnum.failed,
+                payment_method=payment_method,
+                payment_operation_type=PaymentOperationTypeEnum.initialize,  # TODO Refer to function name rather than explicit input in all cases
+                error_message=f"Invalid status {block_response.status}",
+            )
+        if block_response.status == PaymentOperationStatusEnum.requires_action and not block_response.actions:
+            self.operations_repository.add(
+                payment_method=payment_method,
+                type=PaymentOperationTypeEnum.initialize,
+                status=PaymentOperationStatusEnum.failed,
+            )
+            return OperationResponse(
+                status=PaymentOperationStatusEnum.failed,
+                payment_method=payment_method,
+                payment_operation_type=PaymentOperationTypeEnum.initialize,
+                error_message="Status is require actions, but no actions were provided",
+            )
 
+        # Create PaymentOperation with the outcome
         self.operations_repository.add(
             payment_method=payment_method,
             type=PaymentOperationTypeEnum.initialize,
@@ -114,9 +140,24 @@ class PaymentFlow:
         # Run Operation Block
         block_response = self.process_actions_block.run(payment_method=payment_method, action_data=action_data)
 
-        # Create PaymentOperation with the outcome
-        assert block_response.status != PaymentOperationStatusEnum.requires_action
+        # Validate that status is one of the expected ones
+        if block_response.status not in [
+            PaymentOperationStatusEnum.completed,
+            PaymentOperationStatusEnum.failed,
+        ]:
+            self.operations_repository.add(
+                payment_method=payment_method,
+                type=PaymentOperationTypeEnum.process_actions,
+                status=PaymentOperationStatusEnum.failed,
+            )
+            return OperationResponse(
+                status=PaymentOperationStatusEnum.failed,
+                payment_method=payment_method,
+                payment_operation_type=PaymentOperationTypeEnum.process_actions,
+                error_message=f"Invalid status {block_response.status}",
+            )
 
+        # Create PaymentOperation with the outcome
         self.operations_repository.add(
             payment_method=payment_method,
             type=PaymentOperationTypeEnum.process_actions,
@@ -129,4 +170,48 @@ class PaymentFlow:
             actions=block_response.actions,
             payment_method=payment_method,
             payment_operation_type=PaymentOperationTypeEnum.process_actions,
+        )
+
+    def _pay(self, payment_method: AbstractPaymentMethod) -> OperationResponse:
+        # No need to refresh from DB
+
+        # Verify that the payment can go through this operation type
+        if not dl.can_pay(payment_method):
+            return OperationResponse(
+                status=PaymentOperationStatusEnum.failed,
+                payment_method=None,
+                error_message="PaymentMethod cannot go through this operation",
+                payment_operation_type=PaymentOperationTypeEnum.pay,
+            )
+
+        # Create Started PaymentOperation
+        self.operations_repository.add(
+            payment_method=payment_method,
+            type=PaymentOperationTypeEnum.pay,
+            status=PaymentOperationStatusEnum.started,
+        )
+
+        # Run Operation Blocks
+        responses = [block.run(payment_method) for block in self.pay_blocks]
+
+        has_completed = all([response.status == PaymentOperationStatusEnum.completed for response in responses])
+
+        is_pending = any([response.status == PaymentOperationStatusEnum.pending for response in responses])
+
+        if has_completed:
+            status = PaymentOperationStatusEnum.completed
+        elif not has_completed and is_pending:
+            status = PaymentOperationStatusEnum.pending
+        else:
+            # TODO Allow for the possibility of any block forcing the response to be failed
+            status = PaymentOperationStatusEnum.failed
+
+        # Return Response
+        return OperationResponse(
+            status=status,
+            payment_method=payment_method,
+            payment_operation_type=PaymentOperationTypeEnum.pay,
+            error_message=", ".join(
+                [response.error_message for response in responses if response.error_message is not None]
+            ),
         )

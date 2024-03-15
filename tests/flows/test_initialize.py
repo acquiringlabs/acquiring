@@ -10,25 +10,23 @@ from django_acquiring.payments.models import PaymentOperation as DbPaymentOperat
 from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
+VALID_RESPONSE_STATUS = [
+    PaymentOperationStatusEnum.completed,
+    PaymentOperationStatusEnum.failed,
+    PaymentOperationStatusEnum.requires_action,
+]
 
-# TODO Enum as List
+
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     "block_response_actions, payment_operations_status",
     [
         (
-            [],
-            PaymentOperationStatusEnum.completed,
-        ),
-        (
             [{"action_data": "test"}],
             PaymentOperationStatusEnum.requires_action,
         ),
-        (
-            [],
-            PaymentOperationStatusEnum.failed,
-        ),
-    ],
+    ]
+    + [([], status) for status in PaymentOperationStatusEnum if status != PaymentOperationStatusEnum.requires_action],
 )
 def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorrectOperationResponse(
     fake_payment_method_repository,
@@ -56,7 +54,11 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
 
     # then the payment flow returns the correct Operation Response
     assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
-    assert result.status == payment_operations_status
+    assert result.status == (
+        payment_operations_status
+        if payment_operations_status in VALID_RESPONSE_STATUS
+        else PaymentOperationStatusEnum.failed
+    )
     assert result.actions == block_response_actions
     assert result.payment_method.id == db_payment_method.id
 
@@ -67,7 +69,11 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
     assert db_payment_operations[0].status == PaymentOperationStatusEnum.started
 
     assert db_payment_operations[1].type == PaymentOperationTypeEnum.initialize
-    assert db_payment_operations[1].status == payment_operations_status
+    assert db_payment_operations[1].status == (
+        payment_operations_status
+        if payment_operations_status in VALID_RESPONSE_STATUS
+        else PaymentOperationStatusEnum.failed
+    )
 
 
 @pytest.mark.django_db

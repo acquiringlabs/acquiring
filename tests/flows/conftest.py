@@ -71,7 +71,6 @@ def fake_process_actions_block():
             self,
             fake_response_status: PaymentOperationStatusEnum = PaymentOperationStatusEnum.completed,
         ):
-            assert fake_response_status != PaymentOperationStatusEnum.requires_action
             self.response_status = fake_response_status
 
         def run(self, payment_method: AbstractPaymentMethod, action_data: Dict) -> AbstractBlockResponse:

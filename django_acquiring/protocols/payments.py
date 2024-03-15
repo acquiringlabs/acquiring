@@ -25,6 +25,7 @@ class PaymentOperationStatusEnum(StrEnum):
     failed = "failed"
     completed = "completed"
     requires_action = "requires_action"
+    pending = "pending"
 
 
 class AbstractPaymentOperation(Protocol):

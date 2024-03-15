@@ -10,15 +10,14 @@ from django_acquiring.payments.models import PaymentOperation as DbPaymentOperat
 from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
+VALID_RESPONSE_STATUS = [
+    PaymentOperationStatusEnum.completed,
+    PaymentOperationStatusEnum.failed,
+]
+
 
 @pytest.mark.django_db
-@pytest.mark.parametrize(
-    "payment_operations_status",
-    [
-        PaymentOperationStatusEnum.completed,
-        PaymentOperationStatusEnum.failed,
-    ],
-)
+@pytest.mark.parametrize("payment_operations_status", PaymentOperationStatusEnum)
 def test_givenAValidPaymentMethod_whenProcessingActions_thenPaymentFlowReturnsTheCorrectOperationResponse(
     fake_payment_method_repository,
     fake_payment_operation_repository,
@@ -52,7 +51,11 @@ def test_givenAValidPaymentMethod_whenProcessingActions_thenPaymentFlowReturnsTh
 
     # # then the payment flow returns a failed status Operation Response
     assert result.payment_operation_type == PaymentOperationTypeEnum.process_actions
-    assert result.status == payment_operations_status
+    assert result.status == (
+        payment_operations_status
+        if payment_operations_status in VALID_RESPONSE_STATUS
+        else PaymentOperationStatusEnum.failed
+    )
     assert result.payment_method.id == db_payment_method.id
 
     assert DbPaymentOperation.objects.count() == 4
@@ -67,7 +70,11 @@ def test_givenAValidPaymentMethod_whenProcessingActions_thenPaymentFlowReturnsTh
     assert db_payment_operations[2].type == PaymentOperationTypeEnum.process_actions
     assert db_payment_operations[2].status == PaymentOperationStatusEnum.started
     assert db_payment_operations[3].type == PaymentOperationTypeEnum.process_actions
-    assert db_payment_operations[3].status == payment_operations_status
+    assert db_payment_operations[3].status == (
+        payment_operations_status
+        if payment_operations_status in VALID_RESPONSE_STATUS
+        else PaymentOperationStatusEnum.failed
+    )
 
 
 @pytest.mark.django_db
