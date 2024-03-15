@@ -27,7 +27,7 @@ class PaymentFlow:
     repository: AbstractRepository
     operations_repository: AbstractRepository
 
-    initialize_blocks: List[AbstractBlock] = field(default_factory=list)
+    initialize_block: AbstractBlock
 
     @payment_operation_type
     def initialize(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
@@ -58,18 +58,13 @@ class PaymentFlow:
             status=PaymentOperationStatusEnum.started,
         )
 
-        # Run Operation Blocks
-        success = True
-        actions = []
-        for block in self.initialize_blocks:
-            block_response = block.run(payment_method=payment_method)
-            success = success and block_response.success
-            actions += block_response.actions
+        # Run Operation Block
+        block_response = self.initialize_block.run(payment_method=payment_method)
 
         # Return Response
         return OperationResponse(
-            success=success,
-            actions=actions,
+            success=block_response.success,
+            actions=block_response.actions,
             payment_method=payment_method,
             payment_operation_type=PaymentOperationTypeEnum.initialize,
         )

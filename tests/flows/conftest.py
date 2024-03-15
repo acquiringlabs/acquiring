@@ -1,7 +1,11 @@
 import uuid
+from typing import Dict, List
 
 import pytest
+
+from django_acquiring.flows.domain.blocks import BlockResponse
 from django_acquiring.payments.domain import PaymentMethod
+from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockResponse
 from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation
 from django_acquiring.protocols.repositories import AbstractRepository
 
@@ -28,6 +32,30 @@ def fake_payment_method_repository():
 
     assert issubclass(FakePaymentMethodRepository, AbstractRepository)
     return FakePaymentMethodRepository
+
+
+@pytest.fixture
+def fake_initialize_block():
+
+    class FakeInitializeBlock:
+
+        def __init__(
+            self,
+            fake_response_success: bool = True,
+            fake_response_actions: List[Dict] | None = None,
+        ):
+            self.response_success = fake_response_success
+            self.response_actions = fake_response_actions or []
+
+        def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse:
+            return BlockResponse(
+                success=self.response_success,
+                actions=self.response_actions,
+                payment_method=payment_method,
+            )
+
+    assert issubclass(FakeInitializeBlock, AbstractBlock)
+    return FakeInitializeBlock
 
 
 @pytest.fixture

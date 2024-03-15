@@ -1,6 +1,6 @@
 import functools
 from dataclasses import field
-from typing import Callable, Dict, List, Protocol
+from typing import Callable, Dict, List, Protocol, runtime_checkable
 
 from django_acquiring.protocols.payments import AbstractPaymentMethod, PaymentOperationTypeEnum
 
@@ -30,6 +30,7 @@ class AbstractBlockResponse(Protocol):
     actions: List[Dict] = field(default_factory=list)
 
 
+@runtime_checkable
 class AbstractBlock(Protocol):
 
     def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse: ...
