@@ -6,6 +6,9 @@ django-test-migrations
 # factory_boy to generate dummy data in the database
 factory_boy
 
+# Flit to simplify package management
+flit
+
 # ipdb to access the IPython debugger as if it were the pdb module.
 ipdb
 
