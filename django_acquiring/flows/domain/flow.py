@@ -100,10 +100,10 @@ class PaymentFlow:
             status=block_response.status,
         )
 
+        # Return Response
         if block_response.status == PaymentOperationStatusEnum.completed:
             return self.__pay(payment_method)
 
-        # Return Response
         return OperationResponse(
             status=block_response.status,
             actions=block_response.actions,
@@ -168,6 +168,9 @@ class PaymentFlow:
         )
 
         # Return Response
+        if block_response.status == PaymentOperationStatusEnum.completed:
+            return self.__pay(payment_method)
+
         return OperationResponse(
             status=block_response.status,
             actions=block_response.actions,
