@@ -63,6 +63,20 @@ def fake_initialize_block():
 
 
 @pytest.fixture
+def fake_pay_block():
+
+    class FakePayBlock:
+
+        def __init__(self, fake_response_status: PaymentOperationStatusEnum):
+            self.response_status = fake_response_status
+
+        def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse:
+            return BlockResponse(status=self.response_status, payment_method=payment_method)
+
+    return FakePayBlock
+
+
+@pytest.fixture
 def fake_process_actions_block():
 
     class FakeProcessActionsBlock:
@@ -74,7 +88,7 @@ def fake_process_actions_block():
             self.response_status = fake_response_status
 
         def run(self, payment_method: AbstractPaymentMethod, action_data: Dict) -> AbstractBlockResponse:
-            return BlockResponse(status=self.response_status, actions=[], payment_method=payment_method)
+            return BlockResponse(status=self.response_status, payment_method=payment_method)
 
     assert issubclass(FakeProcessActionsBlock, AbstractBlock)
     return FakeProcessActionsBlock

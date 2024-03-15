@@ -100,6 +100,9 @@ class PaymentFlow:
             status=block_response.status,
         )
 
+        if block_response.status == PaymentOperationStatusEnum.completed:
+            return self.__pay(payment_method)
+
         # Return Response
         return OperationResponse(
             status=block_response.status,
@@ -172,7 +175,8 @@ class PaymentFlow:
             payment_operation_type=PaymentOperationTypeEnum.process_actions,
         )
 
-    def _pay(self, payment_method: AbstractPaymentMethod) -> OperationResponse:
+    @payment_operation_type
+    def __pay(self, payment_method: AbstractPaymentMethod) -> OperationResponse:
         # No need to refresh from DB
 
         # Verify that the payment can go through this operation type
@@ -205,6 +209,12 @@ class PaymentFlow:
         else:
             # TODO Allow for the possibility of any block forcing the response to be failed
             status = PaymentOperationStatusEnum.failed
+
+        self.operations_repository.add(
+            payment_method=payment_method,
+            type=PaymentOperationTypeEnum.pay,
+            status=status,
+        )
 
         # Return Response
         return OperationResponse(

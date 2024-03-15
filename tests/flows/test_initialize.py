@@ -26,7 +26,15 @@ VALID_RESPONSE_STATUS = [
             PaymentOperationStatusEnum.requires_action,
         ),
     ]
-    + [([], status) for status in PaymentOperationStatusEnum if status != PaymentOperationStatusEnum.requires_action],
+    + [
+        ([], status)
+        for status in PaymentOperationStatusEnum
+        if status
+        not in [
+            PaymentOperationStatusEnum.requires_action,
+            PaymentOperationStatusEnum.completed,  # check test below
+        ]
+    ],
 )
 def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorrectOperationResponse(
     fake_payment_method_repository,
@@ -53,16 +61,6 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
     ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns the correct Operation Response
-    assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
-    assert result.status == (
-        payment_operations_status
-        if payment_operations_status in VALID_RESPONSE_STATUS
-        else PaymentOperationStatusEnum.failed
-    )
-    assert result.actions == block_response_actions
-    assert result.payment_method.id == db_payment_method.id
-
-    assert DbPaymentOperation.objects.count() == 2
     db_payment_operations = DbPaymentOperation.objects.order_by("created_at").all()
 
     assert db_payment_operations[0].type == PaymentOperationTypeEnum.initialize
@@ -74,6 +72,63 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
         if payment_operations_status in VALID_RESPONSE_STATUS
         else PaymentOperationStatusEnum.failed
     )
+
+    assert DbPaymentOperation.objects.count() == 2
+
+    assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
+    assert result.status == (
+        payment_operations_status
+        if payment_operations_status in VALID_RESPONSE_STATUS
+        else PaymentOperationStatusEnum.failed
+    )
+    assert result.actions == block_response_actions
+    assert result.payment_method.id == db_payment_method.id
+
+
+@pytest.mark.django_db
+def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
+    fake_payment_method_repository,
+    fake_payment_operation_repository,
+    fake_initialize_block,
+    fake_process_actions_block,
+):
+    # given a valid payment attempt
+    db_payment_attempt = PaymentAttemptFactory.create()
+    db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
+
+    # when Initializing
+    payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
+    payment_flow = PaymentFlow(
+        repository=payment_method_repository,
+        operations_repository=fake_payment_operation_repository(),
+        initialize_block=fake_initialize_block(
+            fake_response_status=PaymentOperationStatusEnum.completed,
+            fake_response_actions=[],
+        ),
+        process_actions_block=fake_process_actions_block(),
+    )
+
+    result = payment_flow.initialize(db_payment_method.to_domain())
+
+    # then the payment flow returns the correct Operation Response
+    assert DbPaymentOperation.objects.count() == 4
+    db_payment_operations = DbPaymentOperation.objects.order_by("created_at").all()
+    assert db_payment_operations[0].type == PaymentOperationTypeEnum.initialize
+    assert db_payment_operations[0].status == PaymentOperationStatusEnum.started
+
+    assert db_payment_operations[1].type == PaymentOperationTypeEnum.initialize
+    assert db_payment_operations[1].status == PaymentOperationStatusEnum.completed
+
+    assert db_payment_operations[2].type == PaymentOperationTypeEnum.pay
+    assert db_payment_operations[2].status == PaymentOperationStatusEnum.started
+
+    assert db_payment_operations[3].type == PaymentOperationTypeEnum.pay
+    assert db_payment_operations[3].status == PaymentOperationStatusEnum.completed
+
+    assert result.payment_operation_type == PaymentOperationTypeEnum.pay
+    assert result.status == PaymentOperationStatusEnum.completed
+    assert result.actions == []
+    assert result.payment_method.id == db_payment_method.id
 
 
 @pytest.mark.django_db
