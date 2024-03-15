@@ -25,7 +25,7 @@ Some reasons you might want to check it out:
 Install using pip...
 
 ```
-pip install djangorestframework
+pip install django-acquiring
 ```
 
 Add 'django_acquiring' to your INSTALLED_APPS setting.
