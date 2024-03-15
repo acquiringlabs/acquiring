@@ -59,6 +59,24 @@ def fake_initialize_block():
 
 
 @pytest.fixture
+def fake_process_actions_block():
+
+    class FakeProcessActionsBlock:
+
+        def __init__(
+            self,
+            fake_response_success: bool = True,
+        ):
+            self.response_success = fake_response_success
+
+        def run(self, payment_method: AbstractPaymentMethod, action_data: Dict) -> AbstractBlockResponse:
+            return BlockResponse(success=self.response_success, actions=[], payment_method=payment_method)
+
+    assert issubclass(FakeProcessActionsBlock, AbstractBlock)
+    return FakeProcessActionsBlock
+
+
+@pytest.fixture
 def fake_payment_operation_repository():
     from tests.factories import PaymentOperationFactory
 

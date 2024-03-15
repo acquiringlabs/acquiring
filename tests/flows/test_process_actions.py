@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from django_acquiring.flows import PaymentFlow
+from django_acquiring.flows.domain import PaymentFlow
 from django_acquiring.flows.domain import decision_logic as dl
 from django_acquiring.payments.domain import PaymentMethod
 from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
@@ -13,57 +13,69 @@ from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, Payment
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "block_response_success, block_response_actions, payment_operations_status",
+    "block_response_success, payment_operations_status",
     [
-        (True, [], PaymentOperationStatusEnum.completed),
-        (True, [{"action_data": "test"}], PaymentOperationStatusEnum.requires_action),
-        (False, [], PaymentOperationStatusEnum.failed),
-        (False, [{"action_data": "impossible"}], PaymentOperationStatusEnum.failed),
+        (True, PaymentOperationStatusEnum.completed),
+        (False, PaymentOperationStatusEnum.failed),
     ],
 )
-def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenProcessingActions_thenPaymentFlowReturnsTheCorrectOperationResponse(
     fake_payment_method_repository,
     fake_payment_operation_repository,
     fake_initialize_block,
     fake_process_actions_block,
     block_response_success,
-    block_response_actions,
     payment_operations_status,
 ):
     # given a valid payment attempt
     db_payment_attempt = PaymentAttemptFactory.create()
     db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
 
-    # when Initializing
+    PaymentOperationFactory(
+        type=PaymentOperationTypeEnum.initialize,
+        status=PaymentOperationStatusEnum.started,
+        payment_method_id=db_payment_method.id,
+    ),
+    PaymentOperationFactory(
+        type=PaymentOperationTypeEnum.initialize,
+        status=PaymentOperationStatusEnum.requires_action,
+        payment_method_id=db_payment_method.id,
+    ),
+
+    # when Processing Actions
     payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
     result = PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
-        initialize_block=fake_initialize_block(
+        initialize_block=fake_initialize_block(),
+        process_actions_block=fake_process_actions_block(
             fake_response_success=block_response_success,
-            fake_response_actions=block_response_actions,
         ),
-        process_actions_block=fake_process_actions_block(),
-    ).initialize(db_payment_method.to_domain())
+    ).process_actions(db_payment_method.to_domain(), action_data={})
 
-    # then the payment flow returns the correct Operation Response
-    assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
+    # # then the payment flow returns a successful Operation Response
+    assert result.payment_operation_type == PaymentOperationTypeEnum.process_actions
     assert result.success is block_response_success
-    assert result.actions == block_response_actions
     assert result.payment_method.id == db_payment_method.id
 
-    assert DbPaymentOperation.objects.count() == 2
+    assert DbPaymentOperation.objects.count() == 4
     db_payment_operations = DbPaymentOperation.objects.order_by("created_at").all()
 
     assert db_payment_operations[0].type == PaymentOperationTypeEnum.initialize
     assert db_payment_operations[0].status == PaymentOperationStatusEnum.started
 
     assert db_payment_operations[1].type == PaymentOperationTypeEnum.initialize
-    assert db_payment_operations[1].status == payment_operations_status
+    assert db_payment_operations[1].status == PaymentOperationStatusEnum.requires_action
+
+    assert db_payment_operations[2].type == PaymentOperationTypeEnum.process_actions
+    assert db_payment_operations[2].status == PaymentOperationStatusEnum.started
+
+    assert db_payment_operations[3].type == PaymentOperationTypeEnum.process_actions
+    assert db_payment_operations[3].status == payment_operations_status
 
 
 @pytest.mark.django_db
-def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse(
+def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse(
     fake_payment_method_repository,
     fake_payment_operation_repository,
     fake_initialize_block,
@@ -77,25 +89,27 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
         type=PaymentOperationTypeEnum.initialize,
         status=PaymentOperationStatusEnum.started,
     )
-    assert dl.can_initialize(db_payment_method.to_domain()) is False
+    assert dl.can_process_actions(db_payment_method.to_domain()) is False
 
-    # When Initializing
+    # when Processing Actions
     payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
     result = PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_initialize_block(),
-        process_actions_block=fake_process_actions_block(),
-    ).initialize(db_payment_method.to_domain())
+        process_actions_block=fake_process_actions_block(
+            fake_response_success=True,
+        ),
+    ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # then the payment flow returns an unsuccessful operation response
-    assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
+    assert result.payment_operation_type == PaymentOperationTypeEnum.process_actions
     assert result.success is False
     result.error_message == "PaymentMethod cannot go through this operation"
 
 
 @pytest.mark.django_db
-def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse(
+def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowReturnsAnUnsuccessfulOperationResponse(
     fake_payment_method_repository,
     fake_payment_operation_repository,
     fake_initialize_block,
@@ -108,16 +122,16 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         payment_attempt_id=uuid4(),
     )
 
-    # When Initializing
+    # When Processing Actions
     payment_method_repository = fake_payment_method_repository()
     result = PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_initialize_block(),
         process_actions_block=fake_process_actions_block(),
-    ).initialize(payment_method)
+    ).process_actions(payment_method, action_data={})
 
     # then the payment flow returns an unsuccessful operation response
-    assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
+    assert result.payment_operation_type == PaymentOperationTypeEnum.process_actions
     assert result.success is False
     result.error_message == "PaymentMethod not found"
