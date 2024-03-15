@@ -12,14 +12,14 @@ from django_acquiring.protocols.payments import (
 
 
 # TODO frozen=True compatible with AbstractPaymentOperation (expected settable variable, got read-only attribute)
-@dataclass(kw_only=True)
+@dataclass
 class PaymentOperation:
     type: PaymentOperationTypeEnum
     status: PaymentOperationStatusEnum
     payment_method_id: UUID
 
 
-@dataclass(kw_only=True)
+@dataclass
 class PaymentMethod:
     id: UUID
     created_at: datetime
@@ -33,7 +33,7 @@ class PaymentMethod:
         pass
 
 
-@dataclass(kw_only=True)
+@dataclass
 class PaymentAttempt:
     id: UUID
     created_at: datetime

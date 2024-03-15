@@ -12,17 +12,17 @@ from django_acquiring.protocols.payments import (
 from django_acquiring.protocols.repositories import AbstractRepository
 
 
-@dataclass(kw_only=True)
+@dataclass
 class OperationResponse:
     success: bool
-    actions: List[Dict] = field(default_factory=list)
     payment_method: AbstractPaymentMethod | None
     payment_operation_type: PaymentOperationTypeEnum
     error_message: str | None = None
+    actions: List[Dict] = field(default_factory=list)
 
 
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
-@dataclass(kw_only=True, frozen=True)
+@dataclass(frozen=True)
 class PaymentFlow:
     repository: AbstractRepository
     operations_repository: AbstractRepository
