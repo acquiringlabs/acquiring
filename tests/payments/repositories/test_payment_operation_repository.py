@@ -2,8 +2,7 @@ import itertools
 
 import pytest
 
-from django_acquiring.payments import models
-from django_acquiring.payments.repositories import PaymentOperationRepository
+from django_acquiring.payments import models, repositories
 from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
@@ -25,8 +24,10 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
 
     # When calling PaymentOperationRepository.add_payment_operation
     with django_assert_num_queries(1):
-        PaymentOperationRepository().add(
-            payment_method=payment_method, type=payment_operation_type, status=payment_operation_status
+        repositories.PaymentOperationRepository().add(
+            payment_method=payment_method,
+            type=payment_operation_type,
+            status=payment_operation_status,
         )
 
     # Then PaymentOperation gets created

@@ -3,8 +3,7 @@ from datetime import datetime
 
 import pytest
 
-from django_acquiring.payments import domain, models
-from django_acquiring.payments.repositories import PaymentAttemptRepository
+from django_acquiring.payments import domain, models, repositories
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
@@ -15,7 +14,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
 
     # When calling PaymentAttemptRepository.add
     with django_assert_num_queries(2):
-        result = PaymentAttemptRepository().add(data)
+        result = repositories.PaymentAttemptRepository().add(data)
 
     # Then PaymentAttempt gets created
     assert result is not None
@@ -40,7 +39,7 @@ def test_givenExistingPaymentAttemptRowInPaymentAttemptsTable_whenCallingReposit
 
     # When calling PaymentAttemptRepository.get
     with django_assert_num_queries(3):
-        result = PaymentAttemptRepository().get(id=db_payment_attempt.id)
+        result = repositories.PaymentAttemptRepository().get(id=db_payment_attempt.id)
 
     # Then PaymentAttempt gets retrieved
     assert result == db_payment_attempt.to_domain()
@@ -58,4 +57,4 @@ def test_givenNonExistingPaymentAttemptRow_whenCallingRepositoryGet_thenDoesNotE
 
     # When calling PaymentMethodRepository.get
     with django_assert_num_queries(1), pytest.raises(domain.PaymentAttempt.DoesNotExist):
-        PaymentAttemptRepository().get(id=payment_method.id)
+        repositories.PaymentAttemptRepository().get(id=payment_method.id)
