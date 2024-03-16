@@ -1,44 +1,45 @@
 from uuid import uuid4
 
-from django.db import models
+import django.db.models
 
+from django_acquiring.payments import domain
 from django_acquiring.protocols.payments import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
 
-from .domain import PaymentAttempt as DomainPaymentAttempt
-from .domain import PaymentMethod as DomainPaymentMethod
-from .domain import PaymentOperation as DomainPaymentOperation
 
-
-class PaymentAttempt(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+class PaymentAttempt(django.db.models.Model):
+    created_at = django.db.models.DateTimeField(auto_now_add=True)
 
     # https://docs.djangoproject.com/en/5.0/ref/models/fields/#uuidfield
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    id = django.db.models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
     def __str__(self) -> str:
         return f"PaymentAttempt[id={self.id}]"
 
     def to_domain(self) -> AbstractPaymentAttempt:
-        return DomainPaymentAttempt(
+        return domain.PaymentAttempt(
             id=self.id,
             created_at=self.created_at,
             payment_methods=[payment_method.to_domain() for payment_method in self.payment_methods.all()],
         )
 
 
-class PaymentMethod(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+class PaymentMethod(django.db.models.Model):
+    created_at = django.db.models.DateTimeField(auto_now_add=True)
 
     # https://docs.djangoproject.com/en/5.0/ref/models/fields/#uuidfield
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    id = django.db.models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
-    payment_attempt = models.ForeignKey(PaymentAttempt, on_delete=models.CASCADE, related_name="payment_methods")
+    payment_attempt = django.db.models.ForeignKey(
+        PaymentAttempt,
+        on_delete=django.db.models.CASCADE,
+        related_name="payment_methods",
+    )
 
     def __str__(self) -> str:
         return f"PaymentMethod[id={self.id}]"
 
     def to_domain(self) -> AbstractPaymentMethod:
-        return DomainPaymentMethod(
+        return domain.PaymentMethod(
             id=self.id,
             created_at=self.created_at,
             payment_attempt_id=self.payment_attempt_id,
@@ -46,7 +47,7 @@ class PaymentMethod(models.Model):
         )
 
 
-class PaymentOperationTypeChoices(models.TextChoices):
+class PaymentOperationTypeChoices(django.db.models.TextChoices):
     initialize = "initialize"
     process_actions = "process_actions"
     pay = "pay"
@@ -57,7 +58,7 @@ class PaymentOperationTypeChoices(models.TextChoices):
     after_pay = "after_pay"
 
 
-class PaymentOperationStatusChoices(models.TextChoices):
+class PaymentOperationStatusChoices(django.db.models.TextChoices):
     started = "started"
     failed = "failed"
     completed = "completed"
@@ -68,18 +69,22 @@ class PaymentOperationStatusChoices(models.TextChoices):
 # TODO Add failure reason to Payment Operation as an optional string
 
 
-class PaymentOperation(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+class PaymentOperation(django.db.models.Model):
+    created_at = django.db.models.DateTimeField(auto_now_add=True)
 
-    type = models.CharField(max_length=16, choices=PaymentOperationTypeChoices)
-    status = models.CharField(max_length=15, choices=PaymentOperationStatusChoices)
-    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE, related_name="payment_operations")
+    type = django.db.models.CharField(max_length=16, choices=PaymentOperationTypeChoices)
+    status = django.db.models.CharField(max_length=15, choices=PaymentOperationStatusChoices)
+    payment_method = django.db.models.ForeignKey(
+        PaymentMethod,
+        on_delete=django.db.models.CASCADE,
+        related_name="payment_operations",
+    )
 
     def __str__(self) -> str:
         return f"PaymentOperation[type={self.type}, status={self.status}]"
 
     def to_domain(self) -> AbstractPaymentOperation:
-        return DomainPaymentOperation(
+        return domain.PaymentOperation(
             type=self.type,
             status=self.status,
             payment_method_id=self.payment_method_id,

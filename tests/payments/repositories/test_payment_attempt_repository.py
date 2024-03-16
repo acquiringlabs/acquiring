@@ -3,8 +3,7 @@ from datetime import datetime
 
 import pytest
 
-from django_acquiring.payments import domain
-from django_acquiring.payments.models import PaymentAttempt as DbPaymentAttempt
+from django_acquiring.payments import domain, models
 from django_acquiring.payments.repositories import PaymentAttemptRepository
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
@@ -21,7 +20,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
     # Then PaymentAttempt gets created
     assert result is not None
 
-    db_payments = DbPaymentAttempt.objects.all()
+    db_payments = models.PaymentAttempt.objects.all()
     assert len(db_payments) == 1
     db_payment = db_payments[0]
 

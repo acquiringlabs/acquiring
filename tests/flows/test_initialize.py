@@ -5,8 +5,7 @@ import pytest
 
 from django_acquiring.flows import PaymentFlow
 from django_acquiring.flows.domain import decision_logic as dl
-from django_acquiring.payments import domain
-from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
+from django_acquiring.payments import domain, models
 from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
@@ -63,7 +62,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
     ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns the correct Operation Response
-    db_payment_operations = DbPaymentOperation.objects.order_by("created_at").all()
+    db_payment_operations = models.PaymentOperation.objects.order_by("created_at").all()
 
     assert db_payment_operations[0].type == PaymentOperationTypeEnum.initialize
     assert db_payment_operations[0].status == PaymentOperationStatusEnum.started
@@ -75,7 +74,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
         else PaymentOperationStatusEnum.failed
     )
 
-    assert DbPaymentOperation.objects.count() == 2
+    assert models.PaymentOperation.objects.count() == 2
 
     assert result.payment_operation_type == PaymentOperationTypeEnum.initialize
     assert result.status == (
@@ -115,8 +114,8 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
     result = payment_flow.initialize(db_payment_method.to_domain())
 
     # then the payment flow returns the correct Operation Response
-    assert DbPaymentOperation.objects.count() == 4
-    db_payment_operations = DbPaymentOperation.objects.order_by("created_at").all()
+    assert models.PaymentOperation.objects.count() == 4
+    db_payment_operations = models.PaymentOperation.objects.order_by("created_at").all()
     assert db_payment_operations[0].type == PaymentOperationTypeEnum.initialize
     assert db_payment_operations[0].status == PaymentOperationStatusEnum.started
 

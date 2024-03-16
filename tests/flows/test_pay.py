@@ -1,7 +1,7 @@
 import pytest
 
 from django_acquiring.flows import PaymentFlow
-from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
+from django_acquiring.payments import models
 from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
@@ -56,8 +56,8 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
     result = payment_flow.initialize(db_payment_method.to_domain())
 
     # then the payment flow returns the correct Operation Response
-    assert DbPaymentOperation.objects.count() == 4
-    db_payment_operations = DbPaymentOperation.objects.order_by("created_at").all()
+    assert models.PaymentOperation.objects.count() == 4
+    db_payment_operations = models.PaymentOperation.objects.order_by("created_at").all()
     assert db_payment_operations[0].type == PaymentOperationTypeEnum.initialize
     assert db_payment_operations[0].status == PaymentOperationStatusEnum.started
 

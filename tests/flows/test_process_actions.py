@@ -5,8 +5,7 @@ import pytest
 
 from django_acquiring.flows.domain import PaymentFlow
 from django_acquiring.flows.domain import decision_logic as dl
-from django_acquiring.payments import domain
-from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
+from django_acquiring.payments import domain, models
 from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
@@ -50,8 +49,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
 
     assert result.payment_method.id == db_payment_method.id
 
-    assert DbPaymentOperation.objects.count() == 4
-    db_payment_operations = DbPaymentOperation.objects.order_by("created_at").all()
+    assert models.PaymentOperation.objects.count() == 4
+    db_payment_operations = models.PaymentOperation.objects.order_by("created_at").all()
 
     assert db_payment_operations[0].type == PaymentOperationTypeEnum.initialize
     assert db_payment_operations[0].status == PaymentOperationStatusEnum.started
@@ -105,8 +104,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
 
     assert result.payment_method.id == db_payment_method.id
 
-    assert DbPaymentOperation.objects.count() == 6
-    db_payment_operations = DbPaymentOperation.objects.order_by("created_at").all()
+    assert models.PaymentOperation.objects.count() == 6
+    db_payment_operations = models.PaymentOperation.objects.order_by("created_at").all()
 
     assert db_payment_operations[0].type == PaymentOperationTypeEnum.initialize
     assert db_payment_operations[0].status == PaymentOperationStatusEnum.started

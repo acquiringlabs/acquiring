@@ -1,10 +1,10 @@
-from django.db import models
-from django_acquiring.payments.models import PaymentMethod
+import django.db.models
+from django_acquiring.payments import models
 from django_acquiring.protocols.events import AbstractBlockEvent
 from .domain import BlockEvent as DomainBlockEvent
 
 
-class BlockEventStatusChoices(models.TextChoices):
+class BlockEventStatusChoices(django.db.models.TextChoices):
     started = "started"
     failed = "failed"
     completed = "completed"
@@ -12,11 +12,11 @@ class BlockEventStatusChoices(models.TextChoices):
     pending = "pending"
 
 
-class BlockEvent(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=15, choices=BlockEventStatusChoices)
-    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
-    block_name = models.CharField(max_length=20)
+class BlockEvent(django.db.models.Model):
+    created_at = django.db.models.DateTimeField(auto_now_add=True)
+    status = django.db.models.CharField(max_length=15, choices=BlockEventStatusChoices)
+    payment_method = django.db.models.ForeignKey(models.PaymentMethod, on_delete=django.db.models.CASCADE)
+    block_name = django.db.models.CharField(max_length=20)
 
     def __str__(self) -> str:
         return f"PaymentAttempt[id={self.id}]"

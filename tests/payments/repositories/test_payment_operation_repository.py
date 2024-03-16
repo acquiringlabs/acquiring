@@ -2,7 +2,7 @@ import itertools
 
 import pytest
 
-from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
+from django_acquiring.payments import models
 from django_acquiring.payments.repositories import PaymentOperationRepository
 from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
@@ -30,8 +30,8 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
         )
 
     # Then PaymentOperation gets created
-    assert DbPaymentOperation.objects.count() == 1
-    payment_operation = DbPaymentOperation.objects.first()
+    assert models.PaymentOperation.objects.count() == 1
+    payment_operation = models.PaymentOperation.objects.first()
 
     # And payment method gets the payment operation added after add_payment_operation
     assert len(payment_method.payment_operations) == 1
