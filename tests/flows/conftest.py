@@ -77,6 +77,20 @@ def fake_pay_block():
 
 
 @pytest.fixture
+def fake_after_pay_block():
+
+    class FakePayBlock:
+
+        def __init__(self, fake_response_status: PaymentOperationStatusEnum):
+            self.response_status = fake_response_status
+
+        def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse:
+            return BlockResponse(status=self.response_status, payment_method=payment_method)
+
+    return FakePayBlock
+
+
+@pytest.fixture
 def fake_process_actions_block():
 
     class FakeProcessActionsBlock:
@@ -104,7 +118,9 @@ def fake_payment_operation_repository():
             self.db_payment_operations = db_payment_operations or []
 
         def add(self, payment_method, type, status) -> AbstractPaymentOperation:
-            return PaymentOperationFactory(payment_method_id=payment_method.id, type=type, status=status)
+            payment_operation = PaymentOperationFactory(payment_method_id=payment_method.id, type=type, status=status)
+            payment_method.payment_operations.append(payment_operation)
+            return payment_operation
 
         def get(self, id: uuid.UUID): ...
 

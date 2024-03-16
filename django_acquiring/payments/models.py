@@ -54,6 +54,8 @@ class PaymentOperationTypeChoices(models.TextChoices):
     refund = "refund"
     mark_as_canceled = "mark_as_canceled"
 
+    after_pay = "after_pay"
+
 
 class PaymentOperationStatusChoices(models.TextChoices):
     started = "started"

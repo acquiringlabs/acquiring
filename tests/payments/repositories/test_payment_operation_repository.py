@@ -34,4 +34,5 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
     payment_operation = DbPaymentOperation.objects.first()
 
     # And payment method gets the payment operation added after add_payment_operation
+    assert len(payment_method.payment_operations) == 1
     assert payment_method.payment_operations[0] == payment_operation.to_domain()

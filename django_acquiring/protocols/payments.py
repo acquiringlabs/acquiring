@@ -19,6 +19,8 @@ class PaymentOperationTypeEnum(StrEnum):
     refund = "refund"
     mark_as_canceled = "mark_as_canceled"
 
+    after_pay = "after_pay"
+
 
 class PaymentOperationStatusEnum(StrEnum):
     started = "started"

@@ -27,7 +27,7 @@ def test_statusListsAreComplete():
     + [(PaymentOperationStatusEnum.pending, status) for status in PENDING_STATUS]
     + [(PaymentOperationStatusEnum.failed, status) for status in FAILED_STATUS],
 )
-def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowCallsPayAndReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPayAndReturnsTheCorrectOperationResponse(
     fake_payment_method_repository,
     fake_payment_operation_repository,
     fake_initialize_block,
@@ -51,6 +51,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowCalls
         ),
         process_actions_block=fake_process_actions_block(),
         pay_blocks=[fake_pay_block(fake_response_status=payment_operation_status)],
+        after_pay_blocks=[],
     )
 
     result = payment_flow.initialize(db_payment_method.to_domain())

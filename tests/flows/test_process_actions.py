@@ -40,6 +40,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_initialize_block(),
         process_actions_block=fake_process_actions_block(fake_response_status=PaymentOperationStatusEnum.failed),
+        pay_blocks=[],
+        after_pay_blocks=[],
     ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # # then the payment flow returns a failed status Operation Response
@@ -95,6 +97,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
         initialize_block=fake_initialize_block(),
         process_actions_block=fake_process_actions_block(fake_response_status=PaymentOperationStatusEnum.completed),
         pay_blocks=[fake_pay_block(fake_response_status=PaymentOperationStatusEnum.completed)],
+        after_pay_blocks=[],
     ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # # then the payment flow returns a failed status Operation Response
@@ -149,6 +152,8 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_initialize_block(),
         process_actions_block=fake_process_actions_block(fake_response_status=PaymentOperationStatusEnum.completed),
+        pay_blocks=[],
+        after_pay_blocks=[],
     ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # then the payment flow returns a failed status operation response
@@ -178,6 +183,8 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_initialize_block(),
         process_actions_block=fake_process_actions_block(),
+        pay_blocks=[],
+        after_pay_blocks=[],
     ).process_actions(payment_method, action_data={})
 
     # then the payment flow returns a failed status operation response
