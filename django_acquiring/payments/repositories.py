@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from django_acquiring.payments.domain import PaymentAttempt as DomainPaymentAttempt
-from django_acquiring.payments.domain import PaymentMethod as DomainPaymentMethod
+from django_acquiring.payments import domain
+
 from django_acquiring.payments.models import PaymentAttempt as DbPaymentAttempt
 from django_acquiring.payments.models import PaymentMethod as DbPaymentMethod
 from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
@@ -27,7 +27,7 @@ class PaymentAttemptRepository:
             ).get(id=id)
             return payment_attempt.to_domain()
         except DbPaymentAttempt.DoesNotExist:
-            raise DomainPaymentAttempt.DoesNotExist
+            raise domain.PaymentAttempt.DoesNotExist
 
 
 class PaymentMethodRepository:
@@ -43,7 +43,7 @@ class PaymentMethodRepository:
             payment_attempt = DbPaymentMethod.objects.prefetch_related("payment_operations").get(id=id)
             return payment_attempt.to_domain()
         except DbPaymentMethod.DoesNotExist:
-            raise DomainPaymentMethod.DoesNotExist
+            raise domain.PaymentMethod.DoesNotExist
 
 
 class PaymentOperationRepository:

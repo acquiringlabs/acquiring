@@ -5,7 +5,7 @@ import pytest
 
 from django_acquiring.flows.domain import PaymentFlow
 from django_acquiring.flows.domain import decision_logic as dl
-from django_acquiring.payments.domain import PaymentMethod
+from django_acquiring.payments import domain
 from django_acquiring.payments.models import PaymentOperation as DbPaymentOperation
 from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
@@ -169,7 +169,7 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
     fake_process_actions_block,
 ):
     # Given a non existing payment method
-    payment_method = PaymentMethod(
+    payment_method = domain.PaymentMethod(
         id=uuid4(),
         created_at=datetime.now(),
         payment_attempt_id=uuid4(),

@@ -4,7 +4,7 @@ from typing import Dict, List
 import pytest
 
 from django_acquiring.flows.domain.blocks import BlockResponse
-from django_acquiring.payments.domain import PaymentMethod
+from django_acquiring.payments import domain
 from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockResponse
 from django_acquiring.protocols.payments import (
     AbstractPaymentMethod,
@@ -32,7 +32,7 @@ def fake_payment_method_repository():
             for pm in self.db_payment_methods:
                 if pm.id == id:
                     return pm.to_domain()
-            raise PaymentMethod.DoesNotExist
+            raise domain.PaymentMethod.DoesNotExist
 
     assert issubclass(FakePaymentMethodRepository, AbstractRepository)
     return FakePaymentMethodRepository

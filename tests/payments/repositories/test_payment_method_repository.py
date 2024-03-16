@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytest
 
-from django_acquiring.payments.domain import PaymentMethod
+from django_acquiring.payments import domain
 from django_acquiring.payments.models import PaymentMethod as DbPaymentMethod
 from django_acquiring.payments.repositories import PaymentMethodRepository
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
@@ -55,12 +55,12 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
     django_assert_num_queries,
 ):
     # Given a non existing payment method
-    payment_method = PaymentMethod(
+    payment_method = domain.PaymentMethod(
         id=uuid.uuid4(),
         payment_attempt_id=uuid.uuid4(),
         created_at=datetime.now(),
     )
 
     # When calling PaymentMethodRepository.get
-    with django_assert_num_queries(1), pytest.raises(PaymentMethod.DoesNotExist):
+    with django_assert_num_queries(1), pytest.raises(domain.PaymentMethod.DoesNotExist):
         PaymentMethodRepository().get(id=payment_method.id)
