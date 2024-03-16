@@ -3,8 +3,8 @@ from typing import Dict, List
 
 import pytest
 
-from django_acquiring.flows.domain.blocks import BlockResponse
-from django_acquiring.payments import domain
+from django_acquiring.flows import domain as flows_domain
+from django_acquiring.payments import domain as payments_domain
 from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockResponse
 from django_acquiring.protocols.payments import (
     AbstractPaymentMethod,
@@ -32,7 +32,7 @@ def fake_payment_method_repository():
             for pm in self.db_payment_methods:
                 if pm.id == id:
                     return pm.to_domain()
-            raise domain.PaymentMethod.DoesNotExist
+            raise payments_domain.PaymentMethod.DoesNotExist
 
     assert issubclass(FakePaymentMethodRepository, AbstractRepository)
     return FakePaymentMethodRepository
@@ -70,7 +70,7 @@ def fake_block():
             self.response_actions = fake_response_actions or []
 
         def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse:
-            return BlockResponse(
+            return flows_domain.BlockResponse(
                 status=self.response_status,
                 actions=self.response_actions,
                 payment_method=payment_method,
@@ -92,7 +92,7 @@ def fake_process_actions_block():
             self.response_status = fake_response_status
 
         def run(self, payment_method: AbstractPaymentMethod, action_data: Dict) -> AbstractBlockResponse:
-            return BlockResponse(status=self.response_status, payment_method=payment_method)
+            return flows_domain.BlockResponse(status=self.response_status, payment_method=payment_method)
 
     assert issubclass(FakeProcessActionsBlock, AbstractBlock)
     return FakeProcessActionsBlock
