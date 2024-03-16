@@ -30,9 +30,8 @@ def test_statusListsAreComplete():
 def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPayAndReturnsTheCorrectOperationResponse(
     fake_payment_method_repository,
     fake_payment_operation_repository,
-    fake_initialize_block,
+    fake_block,
     fake_process_actions_block,
-    fake_pay_block,
     result_status,
     payment_operation_status,
 ):
@@ -45,12 +44,12 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
     payment_flow = PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
-        initialize_block=fake_initialize_block(
+        initialize_block=fake_block(
             fake_response_status=PaymentOperationStatusEnum.completed,
             fake_response_actions=[],
         ),
         process_actions_block=fake_process_actions_block(),
-        pay_blocks=[fake_pay_block(fake_response_status=payment_operation_status)],
+        pay_blocks=[fake_block(fake_response_status=payment_operation_status)],
         after_pay_blocks=[],
     )
 

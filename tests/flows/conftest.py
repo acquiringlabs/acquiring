@@ -39,76 +39,6 @@ def fake_payment_method_repository():
 
 
 @pytest.fixture
-def fake_initialize_block():
-
-    class FakeInitializeBlock:
-
-        def __init__(
-            self,
-            fake_response_status: PaymentOperationStatusEnum = PaymentOperationStatusEnum.completed,
-            fake_response_actions: List[Dict] | None = None,
-        ):
-            self.response_status = fake_response_status
-            self.response_actions = fake_response_actions or []
-
-        def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse:
-            return BlockResponse(
-                status=self.response_status,
-                actions=self.response_actions,
-                payment_method=payment_method,
-            )
-
-    assert issubclass(FakeInitializeBlock, AbstractBlock)
-    return FakeInitializeBlock
-
-
-@pytest.fixture
-def fake_pay_block():
-
-    class FakePayBlock:
-
-        def __init__(self, fake_response_status: PaymentOperationStatusEnum):
-            self.response_status = fake_response_status
-
-        def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse:
-            return BlockResponse(status=self.response_status, payment_method=payment_method)
-
-    return FakePayBlock
-
-
-@pytest.fixture
-def fake_after_pay_block():
-
-    class FakePayBlock:
-
-        def __init__(self, fake_response_status: PaymentOperationStatusEnum):
-            self.response_status = fake_response_status
-
-        def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse:
-            return BlockResponse(status=self.response_status, payment_method=payment_method)
-
-    return FakePayBlock
-
-
-@pytest.fixture
-def fake_process_actions_block():
-
-    class FakeProcessActionsBlock:
-
-        def __init__(
-            self,
-            fake_response_status: PaymentOperationStatusEnum = PaymentOperationStatusEnum.completed,
-        ):
-            self.response_status = fake_response_status
-
-        def run(self, payment_method: AbstractPaymentMethod, action_data: Dict) -> AbstractBlockResponse:
-            return BlockResponse(status=self.response_status, payment_method=payment_method)
-
-    assert issubclass(FakeProcessActionsBlock, AbstractBlock)
-    return FakeProcessActionsBlock
-
-
-@pytest.fixture
 def fake_payment_operation_repository():
     from tests.factories import PaymentOperationFactory
 
@@ -126,3 +56,43 @@ def fake_payment_operation_repository():
 
     assert issubclass(FakePaymentOperationRepository, AbstractRepository)
     return FakePaymentOperationRepository
+
+
+@pytest.fixture(scope="module")
+def fake_block():
+    class FakeBlock:
+        def __init__(
+            self,
+            fake_response_status: PaymentOperationStatusEnum = PaymentOperationStatusEnum.completed,
+            fake_response_actions: List[Dict] | None = None,
+        ):
+            self.response_status = fake_response_status
+            self.response_actions = fake_response_actions or []
+
+        def run(self, payment_method: AbstractPaymentMethod) -> AbstractBlockResponse:
+            return BlockResponse(
+                status=self.response_status,
+                actions=self.response_actions,
+                payment_method=payment_method,
+            )
+
+    assert issubclass(FakeBlock, AbstractBlock)
+    return FakeBlock
+
+
+@pytest.fixture(scope="module")
+def fake_process_actions_block():
+
+    class FakeProcessActionsBlock:
+
+        def __init__(
+            self,
+            fake_response_status: PaymentOperationStatusEnum = PaymentOperationStatusEnum.completed,
+        ):
+            self.response_status = fake_response_status
+
+        def run(self, payment_method: AbstractPaymentMethod, action_data: Dict) -> AbstractBlockResponse:
+            return BlockResponse(status=self.response_status, payment_method=payment_method)
+
+    assert issubclass(FakeProcessActionsBlock, AbstractBlock)
+    return FakeProcessActionsBlock

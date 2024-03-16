@@ -39,7 +39,7 @@ VALID_RESPONSE_STATUS = [
 def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorrectOperationResponse(
     fake_payment_method_repository,
     fake_payment_operation_repository,
-    fake_initialize_block,
+    fake_block,
     fake_process_actions_block,
     block_response_actions,
     payment_operations_status,
@@ -53,7 +53,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
     result = PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
-        initialize_block=fake_initialize_block(
+        initialize_block=fake_block(
             fake_response_status=payment_operations_status,
             fake_response_actions=block_response_actions,
         ),
@@ -91,7 +91,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
 def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
     fake_payment_method_repository,
     fake_payment_operation_repository,
-    fake_initialize_block,
+    fake_block,
     fake_process_actions_block,
 ):
     # given a valid payment attempt
@@ -103,7 +103,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
     payment_flow = PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
-        initialize_block=fake_initialize_block(
+        initialize_block=fake_block(
             fake_response_status=PaymentOperationStatusEnum.completed,
             fake_response_actions=[],
         ),
@@ -139,7 +139,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
 def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlowReturnsAFailedStatusOperationResponse(
     fake_payment_method_repository,
     fake_payment_operation_repository,
-    fake_initialize_block,
+    fake_block,
     fake_process_actions_block,
 ):
     # Given a payment method that cannot initialize
@@ -157,7 +157,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
     result = PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
-        initialize_block=fake_initialize_block(),
+        initialize_block=fake_block(),
         process_actions_block=fake_process_actions_block(),
         pay_blocks=[],
         after_pay_blocks=[],
@@ -173,7 +173,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
 def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsAFailedStatusOperationResponse(
     fake_payment_method_repository,
     fake_payment_operation_repository,
-    fake_initialize_block,
+    fake_block,
     fake_process_actions_block,
 ):
     # Given a non existing payment method
@@ -188,7 +188,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
     result = PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
-        initialize_block=fake_initialize_block(),
+        initialize_block=fake_block(),
         process_actions_block=fake_process_actions_block(),
         pay_blocks=[],
         after_pay_blocks=[],
