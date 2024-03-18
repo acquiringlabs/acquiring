@@ -1,7 +1,8 @@
 import django.db.models
+
+from django_acquiring.events import domain
 from django_acquiring.payments import models
 from django_acquiring.protocols.events import AbstractBlockEvent
-from .domain import BlockEvent as DomainBlockEvent
 
 
 class BlockEventStatusChoices(django.db.models.TextChoices):
@@ -22,7 +23,7 @@ class BlockEvent(django.db.models.Model):
         return f"PaymentAttempt[id={self.id}]"
 
     def to_domain(self) -> AbstractBlockEvent:
-        return DomainBlockEvent(
+        return domain.BlockEvent(
             status=self.status,
             payment_method_id=self.payment_method.id,
             block_name=self.block_name,

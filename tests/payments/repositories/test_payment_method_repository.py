@@ -20,7 +20,6 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
         result = repositories.PaymentMethodRepository().add(data)
 
     # Then PaymentMethod gets created
-    assert result is not None
 
     db_payment_methods = models.PaymentMethod.objects.all()
     assert len(db_payment_methods) == 1

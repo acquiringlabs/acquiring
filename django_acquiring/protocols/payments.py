@@ -22,7 +22,6 @@ class PaymentOperationTypeEnum(StrEnum):
 
     after_pay = "after_pay"
     after_confirm = "after_confirm"
-    after_void = "after_void"
     after_refund = "after_refund"
 
 

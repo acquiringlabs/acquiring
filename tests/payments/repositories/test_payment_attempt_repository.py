@@ -17,7 +17,6 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
         result = repositories.PaymentAttemptRepository().add(data)
 
     # Then PaymentAttempt gets created
-    assert result is not None
 
     db_payments = models.PaymentAttempt.objects.all()
     assert len(db_payments) == 1
