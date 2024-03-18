@@ -232,6 +232,7 @@ class PaymentFlow:
             ),
         )
 
+    @payment_operation_type
     def after_pay(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
         # Refresh the payment from the database
         try:

@@ -14,12 +14,16 @@ from uuid import UUID
 class PaymentOperationTypeEnum(StrEnum):
     initialize = "initialize"
     process_actions = "process_actions"
+
     pay = "pay"
-    void = "void"
+    confirm = "confirm"
+
     refund = "refund"
-    mark_as_canceled = "mark_as_canceled"
 
     after_pay = "after_pay"
+    after_confirm = "after_confirm"
+    after_void = "after_void"
+    after_refund = "after_refund"
 
 
 class PaymentOperationStatusEnum(StrEnum):

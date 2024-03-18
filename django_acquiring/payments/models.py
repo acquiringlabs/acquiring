@@ -51,11 +51,11 @@ class PaymentOperationTypeChoices(django.db.models.TextChoices):
     initialize = "initialize"
     process_actions = "process_actions"
     pay = "pay"
-    void = "void"
+    confirm = "confirm"
     refund = "refund"
-    mark_as_canceled = "mark_as_canceled"
-
     after_pay = "after_pay"
+    after_confirm = "after_confirm"
+    after_refund = "after_refund"
 
 
 class PaymentOperationStatusChoices(django.db.models.TextChoices):
