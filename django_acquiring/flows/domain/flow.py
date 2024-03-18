@@ -181,7 +181,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
-    def __pay(self, payment_method: AbstractPaymentMethod) -> OperationResponse:
+    def __pay(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
         # No need to refresh from DB
 
         # Verify that the payment can go through this operation type
@@ -232,7 +232,7 @@ class PaymentFlow:
             ),
         )
 
-    def after_pay(self, payment_method: AbstractPaymentMethod) -> OperationResponse:
+    def after_pay(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
         # Refresh the payment from the database
         try:
             payment_method = self.repository.get(id=payment_method.id)

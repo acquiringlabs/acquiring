@@ -7,7 +7,7 @@ https://typing.readthedocs.io/en/latest/spec/protocol.html#protocols
 
 from datetime import datetime
 from enum import StrEnum
-from typing import Protocol
+from typing import List, Protocol
 from uuid import UUID
 
 
@@ -41,13 +41,13 @@ class AbstractPaymentMethod(Protocol):
     id: UUID
     created_at: datetime
     payment_attempt_id: UUID
-    payment_operations: list
+    payment_operations: List[AbstractPaymentOperation]
 
     def has_payment_operation(
         self: "AbstractPaymentMethod",
         type: PaymentOperationTypeEnum,
         status: PaymentOperationStatusEnum,
-    ): ...
+    ) -> bool: ...
 
 
 # TODO Have this class the DoesNotExist internal class

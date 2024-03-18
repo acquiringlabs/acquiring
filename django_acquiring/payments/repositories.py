@@ -57,4 +57,4 @@ class PaymentOperationRepository:
         payment_method.payment_operations.append(payment_operation)
         return payment_operation
 
-    def get(self, id: UUID): ...
+    def get(self, id: UUID) -> AbstractPaymentOperation: ...  # type: ignore[empty-body]

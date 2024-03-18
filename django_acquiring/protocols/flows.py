@@ -1,6 +1,6 @@
 import functools
 from dataclasses import field
-from typing import Callable, Dict, List, Protocol, runtime_checkable
+from typing import Callable, Dict, List, Protocol, Sequence, runtime_checkable
 
 from django_acquiring.protocols.payments import (
     AbstractPaymentMethod,
@@ -16,7 +16,7 @@ class AbstractOperationResponse(Protocol):
     error_message: str | None = None
 
 
-def payment_operation_type(function: Callable):
+def payment_operation_type(function: Callable) -> Callable:
     """
     This decorator verifies that the name of this function belongs to one of the PaymentOperationTypeEnums
 
@@ -41,7 +41,7 @@ def payment_operation_type(function: Callable):
     """
 
     @functools.wraps(function)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
         if function.__name__ not in PaymentOperationTypeEnum:
 
             # Private methods that start with double _ and have a name that belongs to enum are also allowed
@@ -65,4 +65,4 @@ class AbstractBlockResponse(Protocol):
 @runtime_checkable
 class AbstractBlock(Protocol):
 
-    def run(self, payment_method: AbstractPaymentMethod, *args, **kwargs) -> AbstractBlockResponse: ...
+    def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: Dict) -> AbstractBlockResponse: ...
