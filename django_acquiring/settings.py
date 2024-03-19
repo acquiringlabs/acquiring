@@ -9,6 +9,7 @@ INSTALLED_APPS = (
     "django_acquiring",
     "django_acquiring.payments",
     "django_acquiring.events",
+    "django_acquiring.providers",
 )
 
 TEMPLATES = [
