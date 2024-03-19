@@ -5,8 +5,8 @@ from django_acquiring.protocols.payments import (
     AbstractPaymentAttempt,
     AbstractPaymentMethod,
     AbstractPaymentOperation,
-    PaymentOperationStatusEnum,
-    PaymentOperationTypeEnum,
+    OperationStatusEnum,
+    OperationTypeEnum,
 )
 
 
@@ -46,7 +46,10 @@ class PaymentMethodRepository:
 class PaymentOperationRepository:
 
     def add(
-        self, payment_method: AbstractPaymentMethod, type: PaymentOperationTypeEnum, status: PaymentOperationStatusEnum
+        self,
+        payment_method: AbstractPaymentMethod,
+        type: OperationTypeEnum,
+        status: OperationStatusEnum,
     ) -> AbstractPaymentOperation:
         db_payment_operation = models.PaymentOperation(
             payment_method_id=payment_method.id,

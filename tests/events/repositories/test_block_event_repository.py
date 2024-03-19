@@ -1,12 +1,12 @@
 import pytest
 
 from django_acquiring.events import domain, models, repositories
-from django_acquiring.protocols.payments import PaymentOperationStatusEnum
+from django_acquiring.protocols.payments import OperationStatusEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("status", PaymentOperationStatusEnum)
+@pytest.mark.parametrize("status", OperationStatusEnum)
 def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(django_assert_num_queries, status):
     # Given Correct Data
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())

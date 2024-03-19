@@ -6,11 +6,7 @@ import pytest
 from django_acquiring.flows import domain as flows_domain
 from django_acquiring.payments import domain as payments_domain
 from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockResponse
-from django_acquiring.protocols.payments import (
-    AbstractPaymentMethod,
-    AbstractPaymentOperation,
-    PaymentOperationStatusEnum,
-)
+from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation, OperationStatusEnum
 from django_acquiring.protocols.repositories import AbstractRepository
 
 
@@ -64,9 +60,10 @@ def fake_payment_operation_repository():
 @pytest.fixture(scope="module")
 def fake_block():
     class FakeBlock:
+
         def __init__(
             self,
-            fake_response_status: PaymentOperationStatusEnum = PaymentOperationStatusEnum.completed,
+            fake_response_status: OperationStatusEnum = OperationStatusEnum.completed,
             fake_response_actions: List[Dict] | None = None,
         ):
             self.response_status = fake_response_status
@@ -90,7 +87,7 @@ def fake_process_actions_block():
 
         def __init__(
             self,
-            fake_response_status: PaymentOperationStatusEnum = PaymentOperationStatusEnum.completed,
+            fake_response_status: OperationStatusEnum = OperationStatusEnum.completed,
         ):
             self.response_status = fake_response_status
 

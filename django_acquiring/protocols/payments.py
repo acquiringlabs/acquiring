@@ -11,7 +11,7 @@ from typing import List, Protocol
 from uuid import UUID
 
 
-class PaymentOperationTypeEnum(StrEnum):
+class OperationTypeEnum(StrEnum):
     initialize = "initialize"
     process_actions = "process_actions"
 
@@ -25,7 +25,7 @@ class PaymentOperationTypeEnum(StrEnum):
     after_refund = "after_refund"
 
 
-class PaymentOperationStatusEnum(StrEnum):
+class OperationStatusEnum(StrEnum):
     started = "started"
     failed = "failed"
     completed = "completed"
@@ -35,8 +35,8 @@ class PaymentOperationStatusEnum(StrEnum):
 
 class AbstractPaymentOperation(Protocol):
     payment_method_id: UUID
-    type: PaymentOperationTypeEnum
-    status: PaymentOperationStatusEnum
+    type: OperationTypeEnum
+    status: OperationStatusEnum
 
 
 # TODO Have this class the DoesNotExist internal class
@@ -49,8 +49,8 @@ class AbstractPaymentMethod(Protocol):
 
     def has_payment_operation(
         self: "AbstractPaymentMethod",
-        type: PaymentOperationTypeEnum,
-        status: PaymentOperationStatusEnum,
+        type: OperationTypeEnum,
+        status: OperationStatusEnum,
     ) -> bool: ...
 
 

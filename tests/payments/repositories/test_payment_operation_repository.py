@@ -3,14 +3,14 @@ import itertools
 import pytest
 
 from django_acquiring.payments import models, repositories
-from django_acquiring.protocols.payments import PaymentOperationStatusEnum, PaymentOperationTypeEnum
+from django_acquiring.protocols.payments import OperationStatusEnum, OperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
     "payment_operation_type, payment_operation_status",
-    itertools.product(PaymentOperationTypeEnum, PaymentOperationStatusEnum),
+    itertools.product(OperationTypeEnum, OperationStatusEnum),
 )
 def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
     django_assert_num_queries,

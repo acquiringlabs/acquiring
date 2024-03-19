@@ -4,12 +4,12 @@ from typing import Callable, Dict, List
 
 from django_acquiring.events import domain as events_domain
 from django_acquiring.protocols.flows import AbstractBlockResponse
-from django_acquiring.protocols.payments import AbstractPaymentMethod, PaymentOperationStatusEnum
+from django_acquiring.protocols.payments import AbstractPaymentMethod, OperationStatusEnum
 
 
 @dataclass
 class BlockResponse:
-    status: PaymentOperationStatusEnum
+    status: OperationStatusEnum
     payment_method: AbstractPaymentMethod
     actions: List[Dict] = field(default_factory=list)
     error_message: str | None = None
@@ -30,7 +30,7 @@ def wrapped_by_block_events(function: Callable[[], AbstractBlockResponse]) -> Ca
 
         repository.add(
             block_event=events_domain.BlockEvent(
-                status=PaymentOperationStatusEnum.started,
+                status=OperationStatusEnum.started,
                 payment_method_id=payment_method.id,
                 block_name=block_name,
             )
