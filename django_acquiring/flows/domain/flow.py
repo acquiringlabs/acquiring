@@ -12,7 +12,7 @@ from django_acquiring.protocols.repositories import AbstractRepository
 class OperationResponse:
     status: OperationStatusEnum
     payment_method: AbstractPaymentMethod | None
-    payment_operation_type: OperationTypeEnum
+    type: OperationTypeEnum
     error_message: str | None = None
     actions: List[Dict] = field(default_factory=list)
 
@@ -39,7 +39,7 @@ class PaymentFlow:
                 status=OperationStatusEnum.failed,
                 payment_method=None,
                 error_message="PaymentMethod not found",
-                payment_operation_type=OperationTypeEnum.initialize,
+                type=OperationTypeEnum.initialize,
             )
 
         # Verify that the payment can go through this operation type
@@ -48,7 +48,7 @@ class PaymentFlow:
                 status=OperationStatusEnum.failed,
                 payment_method=None,
                 error_message="PaymentMethod cannot go through this operation",
-                payment_operation_type=OperationTypeEnum.initialize,
+                type=OperationTypeEnum.initialize,
             )
 
         # Create Started PaymentOperation
@@ -75,7 +75,7 @@ class PaymentFlow:
             return OperationResponse(
                 status=OperationStatusEnum.failed,
                 payment_method=payment_method,
-                payment_operation_type=OperationTypeEnum.initialize,  # TODO Refer to function name rather than explicit input in all cases
+                type=OperationTypeEnum.initialize,  # TODO Refer to function name rather than explicit input in all cases
                 error_message=f"Invalid status {block_response.status}",
             )
         if block_response.status == OperationStatusEnum.requires_action and not block_response.actions:
@@ -87,7 +87,7 @@ class PaymentFlow:
             return OperationResponse(
                 status=OperationStatusEnum.failed,
                 payment_method=payment_method,
-                payment_operation_type=OperationTypeEnum.initialize,
+                type=OperationTypeEnum.initialize,
                 error_message="Status is require actions, but no actions were provided",
             )
 
@@ -106,7 +106,7 @@ class PaymentFlow:
             status=block_response.status,
             actions=block_response.actions,
             payment_method=payment_method,
-            payment_operation_type=OperationTypeEnum.initialize,
+            type=OperationTypeEnum.initialize,
         )
 
     @payment_operation_type
@@ -119,7 +119,7 @@ class PaymentFlow:
                 status=OperationStatusEnum.failed,
                 payment_method=None,
                 error_message="PaymentMethod not found",
-                payment_operation_type=OperationTypeEnum.process_actions,
+                type=OperationTypeEnum.process_actions,
             )
 
         # Verify that the payment can go through this operation type
@@ -128,7 +128,7 @@ class PaymentFlow:
                 status=OperationStatusEnum.failed,
                 payment_method=None,
                 error_message="PaymentMethod cannot go through this operation",
-                payment_operation_type=OperationTypeEnum.process_actions,
+                type=OperationTypeEnum.process_actions,
             )
 
         # Create Started PaymentOperation
@@ -154,7 +154,7 @@ class PaymentFlow:
             return OperationResponse(
                 status=OperationStatusEnum.failed,
                 payment_method=payment_method,
-                payment_operation_type=OperationTypeEnum.process_actions,
+                type=OperationTypeEnum.process_actions,
                 error_message=f"Invalid status {block_response.status}",
             )
 
@@ -173,7 +173,7 @@ class PaymentFlow:
             status=block_response.status,
             actions=block_response.actions,
             payment_method=payment_method,
-            payment_operation_type=OperationTypeEnum.process_actions,
+            type=OperationTypeEnum.process_actions,
         )
 
     @payment_operation_type
@@ -186,7 +186,7 @@ class PaymentFlow:
                 status=OperationStatusEnum.failed,
                 payment_method=None,
                 error_message="PaymentMethod cannot go through this operation",
-                payment_operation_type=OperationTypeEnum.pay,
+                type=OperationTypeEnum.pay,
             )
 
         # Create Started PaymentOperation
@@ -222,7 +222,7 @@ class PaymentFlow:
         return OperationResponse(
             status=status,
             payment_method=payment_method,
-            payment_operation_type=OperationTypeEnum.pay,
+            type=OperationTypeEnum.pay,
             error_message=", ".join(
                 [response.error_message for response in responses if response.error_message is not None]
             ),
@@ -238,7 +238,7 @@ class PaymentFlow:
                 status=OperationStatusEnum.failed,
                 payment_method=None,
                 error_message="PaymentMethod not found",
-                payment_operation_type=OperationTypeEnum.after_pay,
+                type=OperationTypeEnum.after_pay,
             )
 
         # Verify that the payment can go through this operation type
@@ -247,7 +247,7 @@ class PaymentFlow:
                 status=OperationStatusEnum.failed,
                 payment_method=None,
                 error_message="PaymentMethod cannot go through this operation",
-                payment_operation_type=OperationTypeEnum.after_pay,
+                type=OperationTypeEnum.after_pay,
             )
 
         # Create Started PaymentOperation
@@ -271,7 +271,7 @@ class PaymentFlow:
             return OperationResponse(
                 status=OperationStatusEnum.failed,
                 payment_method=payment_method,
-                payment_operation_type=OperationTypeEnum.after_pay,
+                type=OperationTypeEnum.after_pay,
             )
 
         status = OperationStatusEnum.completed if has_completed else OperationStatusEnum.failed
@@ -287,5 +287,5 @@ class PaymentFlow:
         return OperationResponse(
             status=status,
             payment_method=payment_method,
-            payment_operation_type=OperationTypeEnum.after_pay,
+            type=OperationTypeEnum.after_pay,
         )

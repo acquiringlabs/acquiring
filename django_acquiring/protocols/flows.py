@@ -8,7 +8,7 @@ from django_acquiring.protocols.payments import AbstractPaymentMethod, Operation
 class AbstractOperationResponse(Protocol):
     status: OperationStatusEnum
     actions: List[Dict] = field(default_factory=list)
-    payment_operation_type: OperationTypeEnum
+    type: OperationTypeEnum
     error_message: str | None = None
 
 

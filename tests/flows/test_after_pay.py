@@ -96,7 +96,7 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
     assert db_payment_operations[5].type == OperationTypeEnum.after_pay
     assert db_payment_operations[5].status == result_status
 
-    assert result.payment_operation_type == OperationTypeEnum.after_pay
+    assert result.type == OperationTypeEnum.after_pay
     assert result.status == result_status
     assert result.actions == []
     assert result.payment_method.id == db_payment_method.id
@@ -131,7 +131,7 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowRe
     ).after_pay(db_payment_method.to_domain())
 
     # then the payment flow returns a failed status operation response
-    assert result.payment_operation_type == OperationTypeEnum.after_pay
+    assert result.type == OperationTypeEnum.after_pay
     assert result.status == OperationStatusEnum.failed
     result.error_message == "PaymentMethod cannot go through this operation"
 
@@ -163,6 +163,6 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
     ).after_pay(payment_method)
 
     # then the payment flow returns a failed status operation response
-    assert result.payment_operation_type == OperationTypeEnum.after_pay
+    assert result.type == OperationTypeEnum.after_pay
     assert result.status == OperationStatusEnum.failed
     result.error_message == "PaymentMethod not found"

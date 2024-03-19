@@ -70,7 +70,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
     assert db_payment_operations[3].type == OperationTypeEnum.pay
     assert db_payment_operations[3].status == result_status
 
-    assert result.payment_operation_type == OperationTypeEnum.pay
+    assert result.type == OperationTypeEnum.pay
     assert result.status == result_status
     assert result.actions == []
     assert result.payment_method.id == db_payment_method.id

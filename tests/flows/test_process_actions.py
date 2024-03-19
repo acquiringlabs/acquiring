@@ -44,7 +44,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
     ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # # then the payment flow returns a failed status Operation Response
-    assert result.payment_operation_type == OperationTypeEnum.process_actions
+    assert result.type == OperationTypeEnum.process_actions
     assert result.status == OperationStatusEnum.failed
 
     assert result.payment_method.id == db_payment_method.id
@@ -99,7 +99,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
     ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # # then the payment flow returns a failed status Operation Response
-    assert result.payment_operation_type == OperationTypeEnum.pay
+    assert result.type == OperationTypeEnum.pay
     assert result.status == OperationStatusEnum.completed
 
     assert result.payment_method.id == db_payment_method.id
@@ -155,7 +155,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
     ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # then the payment flow returns a failed status operation response
-    assert result.payment_operation_type == OperationTypeEnum.process_actions
+    assert result.type == OperationTypeEnum.process_actions
     assert result.status == OperationStatusEnum.failed
     result.error_message == "PaymentMethod cannot go through this operation"
 
@@ -187,6 +187,6 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
     ).process_actions(payment_method, action_data={})
 
     # then the payment flow returns a failed status operation response
-    assert result.payment_operation_type == OperationTypeEnum.process_actions
+    assert result.type == OperationTypeEnum.process_actions
     assert result.status == OperationStatusEnum.failed
     result.error_message == "PaymentMethod not found"

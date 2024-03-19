@@ -74,7 +74,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
 
     assert models.PaymentOperation.objects.count() == 2
 
-    assert result.payment_operation_type == OperationTypeEnum.initialize
+    assert result.type == OperationTypeEnum.initialize
     assert result.status == (
         payment_operations_status if payment_operations_status in VALID_RESPONSE_STATUS else OperationStatusEnum.failed
     )
@@ -124,7 +124,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
     assert db_payment_operations[3].type == OperationTypeEnum.pay
     assert db_payment_operations[3].status == OperationStatusEnum.completed
 
-    assert result.payment_operation_type == OperationTypeEnum.pay
+    assert result.type == OperationTypeEnum.pay
     assert result.status == OperationStatusEnum.completed
     assert result.actions == []
     assert result.payment_method.id == db_payment_method.id
@@ -159,7 +159,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
     ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns a failed status operation response
-    assert result.payment_operation_type == OperationTypeEnum.initialize
+    assert result.type == OperationTypeEnum.initialize
     assert result.status == OperationStatusEnum.failed
     result.error_message == "PaymentMethod cannot go through this operation"
 
@@ -191,6 +191,6 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
     ).initialize(payment_method)
 
     # then the payment flow returns a failed status operation response
-    assert result.payment_operation_type == OperationTypeEnum.initialize
+    assert result.type == OperationTypeEnum.initialize
     assert result.status == OperationStatusEnum.failed
     result.error_message == "PaymentMethod not found"
