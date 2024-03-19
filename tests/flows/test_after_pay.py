@@ -71,6 +71,7 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
         process_actions_block=fake_process_actions_block(),
         pay_blocks=[],
         after_pay_blocks=[fake_block(fake_response_status=payment_operation_status)],
+        confirm_blocks=[],
     )
 
     result = payment_flow.after_pay(db_payment_method.to_domain())
@@ -128,6 +129,7 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowRe
         process_actions_block=fake_process_actions_block(),
         pay_blocks=[],
         after_pay_blocks=[],
+        confirm_blocks=[],
     ).after_pay(db_payment_method.to_domain())
 
     # then the payment flow returns a failed status operation response
@@ -160,6 +162,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         process_actions_block=fake_process_actions_block(),
         pay_blocks=[],
         after_pay_blocks=[],
+        confirm_blocks=[],
     ).after_pay(payment_method)
 
     # then the payment flow returns a failed status operation response
