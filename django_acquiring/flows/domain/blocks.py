@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 from typing import Callable, Dict, List
 
 from django_acquiring.events import domain as events_domain
-from django_acquiring.events import repositories as events_repositories
 from django_acquiring.protocols.flows import AbstractBlockResponse
 from django_acquiring.protocols.payments import AbstractPaymentMethod, PaymentOperationStatusEnum
 
@@ -20,7 +19,9 @@ def wrapped_by_block_events(function: Callable[[], AbstractBlockResponse]) -> Ca
     """
     This decorator ensures that the starting and finishing block events get created.
     """
-    repository = events_repositories.BlockEventRepository()
+    from django_acquiring.events.repositories import BlockEventRepository
+
+    repository = BlockEventRepository()
 
     @functools.wraps(function)
     def wrapper(*args, **kwargs) -> AbstractBlockResponse:  # type: ignore[no-untyped-def]

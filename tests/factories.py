@@ -7,6 +7,9 @@ class PaymentAttemptFactory(factory.django.DjangoModelFactory):
 
 
 class PaymentMethodFactory(factory.django.DjangoModelFactory):
+
+    confirmable = False
+
     class Meta:
         model = "payments.PaymentMethod"
 

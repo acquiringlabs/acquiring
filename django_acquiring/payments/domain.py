@@ -24,6 +24,7 @@ class PaymentMethod:
     id: UUID
     created_at: datetime
     payment_attempt_id: UUID
+    confirmable: bool
     payment_operations: List[AbstractPaymentOperation] = field(default_factory=list, repr=True)
 
     def has_payment_operation(self, type: PaymentOperationTypeEnum, status: PaymentOperationStatusEnum) -> bool:

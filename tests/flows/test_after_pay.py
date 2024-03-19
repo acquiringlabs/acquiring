@@ -148,6 +148,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         id=uuid4(),
         created_at=datetime.now(),
         payment_attempt_id=uuid4(),
+        confirmable=False,
     )
 
     # When After Paying

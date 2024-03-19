@@ -172,6 +172,7 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
         id=uuid4(),
         created_at=datetime.now(),
         payment_attempt_id=uuid4(),
+        confirmable=False,
     )
 
     # When Processing Actions

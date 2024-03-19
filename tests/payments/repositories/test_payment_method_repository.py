@@ -8,12 +8,11 @@ from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, Payment
 
 
 @pytest.mark.django_db
-def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(django_assert_num_queries):
+@pytest.mark.parametrize("confirmable", [True, False])
+def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(django_assert_num_queries, confirmable):
     # Given Correct Data
     payment_attempt = PaymentAttemptFactory()
-    data = {
-        "payment_attempt_id": payment_attempt.id,
-    }
+    data = {"payment_attempt_id": payment_attempt.id, "confirmable": confirmable}
 
     # When calling PaymentMethodRepository.add
     with django_assert_num_queries(2):
@@ -56,6 +55,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
         id=uuid.uuid4(),
         payment_attempt_id=uuid.uuid4(),
         created_at=datetime.now(),
+        confirmable=False,
     )
 
     # When calling PaymentMethodRepository.get

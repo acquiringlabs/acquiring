@@ -35,6 +35,11 @@ class PaymentMethod(django.db.models.Model):
         related_name="payment_methods",
     )
 
+    confirmable = django.db.models.BooleanField(
+        editable=False,
+        help_text="Whether this PaymentMethod can at some point run inside PaymentFlow.confirm",
+    )
+
     def __str__(self) -> str:
         return f"PaymentMethod[id={self.id}]"
 
@@ -44,6 +49,7 @@ class PaymentMethod(django.db.models.Model):
             created_at=self.created_at,
             payment_attempt_id=self.payment_attempt_id,
             payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations.all()],
+            confirmable=self.confirmable,
         )
 
 

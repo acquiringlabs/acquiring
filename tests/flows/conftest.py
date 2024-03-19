@@ -24,7 +24,10 @@ def fake_payment_method_repository():
             self.db_payment_methods = db_payment_methods or []
 
         def add(self, data: dict) -> AbstractPaymentMethod:
-            db_payment_method = PaymentMethodFactory(payment_method_id=data.get("payment_method_id", uuid.uuid4()))
+            db_payment_method = PaymentMethodFactory(
+                payment_method_id=data.get("payment_method_id", uuid.uuid4()),
+                confirmable=data.get("confirmable"),
+            )
             self.db_payment_methods.append(db_payment_method)
             return db_payment_method.to_domain()
 

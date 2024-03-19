@@ -44,6 +44,7 @@ class AbstractPaymentMethod(Protocol):
     id: UUID
     created_at: datetime
     payment_attempt_id: UUID
+    confirmable: bool
     payment_operations: List[AbstractPaymentOperation]
 
     def has_payment_operation(
