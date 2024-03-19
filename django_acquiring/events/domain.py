@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from django_acquiring.protocols.payments import OperationStatusEnum
+from django_acquiring.protocols.enums import OperationStatusEnum
 
 
 @dataclass

@@ -3,8 +3,9 @@ from dataclasses import dataclass, field
 from typing import Callable, Dict, List
 
 from django_acquiring.events import domain as events_domain
+from django_acquiring.protocols.enums import OperationStatusEnum
 from django_acquiring.protocols.flows import AbstractBlockResponse
-from django_acquiring.protocols.payments import AbstractPaymentMethod, OperationStatusEnum
+from django_acquiring.protocols.payments import AbstractPaymentMethod
 
 
 @dataclass

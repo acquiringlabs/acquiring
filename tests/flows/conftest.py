@@ -5,8 +5,9 @@ import pytest
 
 from django_acquiring.flows import domain as flows_domain
 from django_acquiring.payments import domain as payments_domain
+from django_acquiring.protocols.enums import OperationStatusEnum
 from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockResponse
-from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation, OperationStatusEnum
+from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation
 from django_acquiring.protocols.repositories import AbstractRepository
 
 

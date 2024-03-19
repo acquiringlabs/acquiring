@@ -3,12 +3,8 @@ from datetime import datetime
 from typing import List
 from uuid import UUID
 
-from django_acquiring.protocols.payments import (
-    AbstractPaymentMethod,
-    AbstractPaymentOperation,
-    OperationStatusEnum,
-    OperationTypeEnum,
-)
+from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation
 
 
 # TODO frozen=True compatible with AbstractPaymentOperation (expected settable variable, got read-only attribute)

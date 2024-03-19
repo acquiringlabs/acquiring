@@ -1,13 +1,8 @@
 from uuid import UUID
 
 from django_acquiring.payments import domain, models
-from django_acquiring.protocols.payments import (
-    AbstractPaymentAttempt,
-    AbstractPaymentMethod,
-    AbstractPaymentOperation,
-    OperationStatusEnum,
-    OperationTypeEnum,
-)
+from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.protocols.payments import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
 
 
 class PaymentAttemptRepository:

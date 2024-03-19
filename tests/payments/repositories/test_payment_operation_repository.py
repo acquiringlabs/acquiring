@@ -3,7 +3,7 @@ import itertools
 import pytest
 
 from django_acquiring.payments import models, repositories
-from django_acquiring.protocols.payments import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 

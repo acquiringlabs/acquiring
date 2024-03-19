@@ -2,7 +2,7 @@ import pytest
 
 from django_acquiring.flows import PaymentFlow
 from django_acquiring.payments import models
-from django_acquiring.protocols.payments import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 COMPLETED_STATUS = [OperationStatusEnum.completed]

@@ -1,6 +1,6 @@
 from django_acquiring.events import models as events_models
 from django_acquiring.payments import models as payments_models
-from django_acquiring.protocols.payments import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 
 
 # TODO Figure out a way to ensure that these two enums match at compile time/initialization time
