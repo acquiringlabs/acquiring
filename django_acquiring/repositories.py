@@ -3,13 +3,18 @@ from uuid import UUID
 from django_acquiring import domain, models
 from django_acquiring.protocols import events
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
-from django_acquiring.protocols.payments import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
+from django_acquiring.protocols.payments import (
+    AbstractPaymentAttempt,
+    AbstractPaymentMethod,
+    AbstractPaymentOperation,
+    PaymentAttemptData,
+)
 
 
 class PaymentAttemptRepository:
-    def add(self, data: dict) -> AbstractPaymentAttempt:
+    def add(self, data: PaymentAttemptData) -> AbstractPaymentAttempt:
         payment_attempt = models.PaymentAttempt(
-            order_id=data["order_id"],
+            order_id=data.order_id,
         )
         payment_attempt.save()
         return payment_attempt.to_domain()

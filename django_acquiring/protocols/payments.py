@@ -35,4 +35,11 @@ class AbstractPaymentMethod(Protocol):
 # TODO Have this class the DoesNotExist internal class
 class AbstractPaymentAttempt(Protocol):
     id: UUID
+    order_id: UUID
     created_at: datetime
+
+
+class PaymentAttemptData(Protocol):
+    id: None
+    order_id: UUID
+    created_at: None

@@ -39,3 +39,10 @@ class PaymentAttempt:
 
     class DoesNotExist(Exception):
         pass
+
+
+@dataclass
+class PendingPaymentAttempt:
+    id = None
+    order_id: UUID
+    created_at = None

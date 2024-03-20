@@ -11,9 +11,10 @@ from tests.factories import OrderFactory, PaymentAttemptFactory, PaymentMethodFa
 def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated(django_assert_num_queries):
     # Given Correct Data
     db_order = OrderFactory()
-    data = {
-        "order_id": db_order.id,
-    }
+
+    data = domain.PendingPaymentAttempt(
+        order_id=db_order.id,
+    )
 
     # When calling PaymentAttemptRepository.add
     with django_assert_num_queries(3):
