@@ -8,6 +8,7 @@ from django_acquiring.protocols.payments import (
     AbstractPaymentMethod,
     AbstractPaymentOperation,
     PaymentAttemptData,
+    PaymentMethodData,
 )
 
 
@@ -32,10 +33,10 @@ class PaymentAttemptRepository:
 
 
 class PaymentMethodRepository:
-    def add(self, data: dict) -> AbstractPaymentMethod:
+    def add(self, data: PaymentMethodData) -> AbstractPaymentMethod:
         db_payment_method = models.PaymentMethod(
-            payment_attempt_id=data["payment_attempt_id"],
-            confirmable=data["confirmable"],
+            payment_attempt_id=data.payment_attempt_id,
+            confirmable=data.confirmable,
         )
         db_payment_method.save()
         return db_payment_method.to_domain()

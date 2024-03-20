@@ -31,6 +31,14 @@ class PaymentMethod:
 
 
 @dataclass
+class PendingPaymentMethod:
+    id = None
+    created_at = None
+    payment_attempt_id: UUID
+    confirmable: bool
+
+
+@dataclass
 class PaymentAttempt:
     id: UUID
     order_id: UUID

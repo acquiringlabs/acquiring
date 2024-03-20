@@ -12,7 +12,10 @@ from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, Payment
 def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(django_assert_num_queries, confirmable):
     # Given Correct Data
     payment_attempt = PaymentAttemptFactory()
-    data = {"payment_attempt_id": payment_attempt.id, "confirmable": confirmable}
+    data = domain.PendingPaymentMethod(
+        payment_attempt_id=payment_attempt.id,
+        confirmable=confirmable,
+    )
 
     # When calling PaymentMethodRepository.add
     with django_assert_num_queries(2):

@@ -32,6 +32,13 @@ class AbstractPaymentMethod(Protocol):
     ) -> bool: ...
 
 
+class PaymentMethodData(Protocol):
+    id: None
+    created_at: None
+    payment_attempt_id: UUID
+    confirmable: bool
+
+
 # TODO Have this class the DoesNotExist internal class
 class AbstractPaymentAttempt(Protocol):
     id: UUID

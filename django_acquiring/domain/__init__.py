@@ -2,7 +2,7 @@ from .blocks import BlockResponse, wrapped_by_block_events
 from .events import BlockEvent
 from .flow import PaymentFlow
 from .orders import Order
-from .payments import PaymentAttempt, PaymentMethod, PaymentOperation, PendingPaymentAttempt
+from .payments import PaymentAttempt, PaymentMethod, PaymentOperation, PendingPaymentAttempt, PendingPaymentMethod
 from .providers import Transaction
 
 __all__ = [
@@ -14,6 +14,7 @@ __all__ = [
     "PaymentMethod",
     "PaymentOperation",
     "PendingPaymentAttempt",
+    "PendingPaymentMethod",
     "Transaction",
     "wrapped_by_block_events",
 ]
