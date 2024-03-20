@@ -2,8 +2,10 @@ from uuid import uuid4
 
 import django.db.models
 
-from django_acquiring.payments import domain
+from django_acquiring import domain
+from django_acquiring.protocols.events import AbstractBlockEvent
 from django_acquiring.protocols.payments import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
+from django_acquiring.protocols.providers import AbstractTransaction
 
 
 class PaymentAttempt(django.db.models.Model):
@@ -73,8 +75,6 @@ class PaymentOperationStatusChoices(django.db.models.TextChoices):
 
 
 # TODO Add failure reason to Payment Operation as an optional string
-
-
 class PaymentOperation(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
 
@@ -94,4 +94,54 @@ class PaymentOperation(django.db.models.Model):
             type=self.type,
             status=self.status,
             payment_method_id=self.payment_method_id,
+        )
+
+
+class BlockEventStatusChoices(django.db.models.TextChoices):
+    started = "started"
+    failed = "failed"
+    completed = "completed"
+    requires_action = "requires_action"
+    pending = "pending"
+
+
+class BlockEvent(django.db.models.Model):
+    created_at = django.db.models.DateTimeField(auto_now_add=True)
+    status = django.db.models.CharField(max_length=15, choices=BlockEventStatusChoices)
+    payment_method = django.db.models.ForeignKey(PaymentMethod, on_delete=django.db.models.CASCADE)
+    block_name = django.db.models.CharField(max_length=20)
+
+    def __str__(self) -> str:
+        return f"PaymentAttempt[id={self.id}]"
+
+    def to_domain(self) -> AbstractBlockEvent:
+        return domain.BlockEvent(
+            status=self.status,
+            payment_method_id=self.payment_method.id,
+            block_name=self.block_name,
+        )
+
+
+class Transaction(django.db.models.Model):
+    created_at = django.db.models.DateTimeField(auto_now_add=True)
+
+    payment_method = django.db.models.ForeignKey(
+        PaymentMethod,
+        on_delete=django.db.models.CASCADE,
+        related_name="transaction",
+    )
+
+    provider_name = django.db.models.TextField()
+
+    raw_data = django.db.models.JSONField()
+
+    def __str__(self) -> str:
+        return f"Transaction[id={self.provider_name}]"
+
+    def to_domain(self) -> AbstractTransaction:
+        return domain.Transaction(
+            created_at=self.created_at,
+            provider_name=self.provider_name,
+            payment_method_id=self.payment_method_id,
+            raw_data=self.raw_data,
         )

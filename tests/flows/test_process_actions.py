@@ -3,9 +3,8 @@ from uuid import uuid4
 
 import pytest
 
-from django_acquiring.flows.domain import PaymentFlow
-from django_acquiring.flows.domain import decision_logic as dl
-from django_acquiring.payments import domain, models
+from django_acquiring import domain, models
+from django_acquiring.domain import decision_logic as dl
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
@@ -34,7 +33,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
 
     # when Processing Actions
     payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
-    result = PaymentFlow(
+    result = domain.PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_block(),
@@ -90,7 +89,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
 
     # when Processing Actions
     payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
-    result = PaymentFlow(
+    result = domain.PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_block(),
@@ -147,7 +146,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
 
     # when Processing Actions
     payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
-    result = PaymentFlow(
+    result = domain.PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_block(),
@@ -180,7 +179,7 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
 
     # When Processing Actions
     payment_method_repository = fake_payment_method_repository()
-    result = PaymentFlow(
+    result = domain.PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_block(),

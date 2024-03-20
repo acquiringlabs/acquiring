@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-import django_acquiring.flows.domain.decision_logic as dl
-from django_acquiring.payments import domain
+import django_acquiring.domain.decision_logic as dl
+from django_acquiring import domain
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 from django_acquiring.protocols.flows import AbstractBlock, AbstractOperationResponse, payment_operation_type
 from django_acquiring.protocols.payments import AbstractPaymentMethod

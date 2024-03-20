@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytest
 
-from django_acquiring.payments import domain, models, repositories
+from django_acquiring import domain, models, repositories
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 

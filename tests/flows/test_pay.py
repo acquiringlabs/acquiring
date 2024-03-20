@@ -1,7 +1,6 @@
 import pytest
 
-from django_acquiring.flows import PaymentFlow
-from django_acquiring.payments import models
+from django_acquiring import domain, models
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
@@ -41,7 +40,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
 
     # when Initializing
     payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
-    payment_flow = PaymentFlow(
+    result = domain.PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_block(
@@ -52,9 +51,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
         pay_blocks=[fake_block(fake_response_status=payment_operation_status)],
         after_pay_blocks=[],
         confirm_blocks=[],
-    )
-
-    result = payment_flow.initialize(db_payment_method.to_domain())
+    ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns the correct Operation Response
     assert models.PaymentOperation.objects.count() == 4

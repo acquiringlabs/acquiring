@@ -1,6 +1,6 @@
 import pytest
 
-from django_acquiring.events import domain, models, repositories
+from django_acquiring import domain, models, repositories
 from django_acquiring.protocols.enums import OperationStatusEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 

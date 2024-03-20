@@ -2,7 +2,7 @@ import functools
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List
 
-from django_acquiring.events import domain as events_domain
+from django_acquiring import domain
 from django_acquiring.protocols.enums import OperationStatusEnum
 from django_acquiring.protocols.flows import AbstractBlockResponse
 from django_acquiring.protocols.payments import AbstractPaymentMethod
@@ -20,7 +20,7 @@ def wrapped_by_block_events(function: Callable[[], AbstractBlockResponse]) -> Ca
     """
     This decorator ensures that the starting and finishing block events get created.
     """
-    from django_acquiring.events.repositories import BlockEventRepository
+    from django_acquiring.repositories import BlockEventRepository
 
     repository = BlockEventRepository()
 
@@ -30,7 +30,7 @@ def wrapped_by_block_events(function: Callable[[], AbstractBlockResponse]) -> Ca
         payment_method = kwargs["payment_method"]
 
         repository.add(
-            block_event=events_domain.BlockEvent(
+            block_event=domain.BlockEvent(
                 status=OperationStatusEnum.started,
                 payment_method_id=payment_method.id,
                 block_name=block_name,
@@ -40,7 +40,7 @@ def wrapped_by_block_events(function: Callable[[], AbstractBlockResponse]) -> Ca
         result = function(*args, **kwargs)
 
         repository.add(
-            block_event=events_domain.BlockEvent(
+            block_event=domain.BlockEvent(
                 status=result.status,
                 payment_method_id=payment_method.id,
                 block_name=block_name,

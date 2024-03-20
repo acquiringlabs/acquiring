@@ -1,6 +1,7 @@
 from uuid import UUID
 
-from django_acquiring.payments import domain, models
+from django_acquiring import domain, models
+from django_acquiring.protocols import events
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 from django_acquiring.protocols.payments import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
 
@@ -57,3 +58,16 @@ class PaymentOperationRepository:
         return payment_operation
 
     def get(self, id: UUID) -> AbstractPaymentOperation: ...  # type: ignore[empty-body]
+
+
+class BlockEventRepository:
+    def add(self, block_event: events.AbstractBlockEvent) -> events.AbstractBlockEvent:
+        block_event = models.BlockEvent(
+            status=block_event.status,
+            payment_method_id=block_event.payment_method_id,
+            block_name=block_event.block_name,
+        )
+        block_event.save()
+        return block_event.to_domain()
+
+    def get(self, id: UUID) -> events.AbstractBlockEvent: ...  # type: ignore[empty-body]

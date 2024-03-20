@@ -3,9 +3,8 @@ from uuid import uuid4
 
 import pytest
 
-from django_acquiring.flows import PaymentFlow
-from django_acquiring.flows.domain import decision_logic as dl
-from django_acquiring.payments import domain, models
+from django_acquiring import domain, models
+from django_acquiring.domain import decision_logic as dl
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
@@ -49,7 +48,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
 
     # when Initializing
     payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
-    result = PaymentFlow(
+    result = domain.PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_block(
@@ -96,7 +95,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
 
     # when Initializing
     payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
-    payment_flow = PaymentFlow(
+    result = domain.PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_block(
@@ -107,9 +106,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
-    )
-
-    result = payment_flow.initialize(db_payment_method.to_domain())
+    ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns the correct Operation Response
     assert models.PaymentOperation.objects.count() == 4
@@ -151,7 +148,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
 
     # When Initializing
     payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
-    result = PaymentFlow(
+    result = domain.PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_block(),
@@ -184,7 +181,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
 
     # When Initializing
     payment_method_repository = fake_payment_method_repository()
-    result = PaymentFlow(
+    result = domain.PaymentFlow(
         repository=payment_method_repository,
         operations_repository=fake_payment_operation_repository(),
         initialize_block=fake_block(),

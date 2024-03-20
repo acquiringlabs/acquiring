@@ -1,7 +1,6 @@
 import pytest
 
-from django_acquiring.events import models
-from django_acquiring.flows import domain
+from django_acquiring import domain, models
 from django_acquiring.protocols.enums import OperationStatusEnum
 from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockResponse
 from django_acquiring.protocols.payments import AbstractPaymentMethod

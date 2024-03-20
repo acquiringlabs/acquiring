@@ -3,7 +3,7 @@ import factory
 
 class PaymentAttemptFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "payments.PaymentAttempt"
+        model = "django_acquiring.PaymentAttempt"
 
 
 class PaymentMethodFactory(factory.django.DjangoModelFactory):
@@ -11,9 +11,9 @@ class PaymentMethodFactory(factory.django.DjangoModelFactory):
     confirmable = False
 
     class Meta:
-        model = "payments.PaymentMethod"
+        model = "django_acquiring.PaymentMethod"
 
 
 class PaymentOperationFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "payments.PaymentOperation"
+        model = "django_acquiring.PaymentOperation"

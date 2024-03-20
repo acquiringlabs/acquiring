@@ -7,7 +7,7 @@ def can_initialize(payment_method: AbstractPaymentMethod) -> bool:
     Return whether the payment_method can go through the initialize operation.
 
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentMethod
     >>> payment_method = PaymentMethod(
     ...     id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     payment_attempt_id="200d03a9-8ac1-489d-894a-54af6de20823",
@@ -18,7 +18,7 @@ def can_initialize(payment_method: AbstractPaymentMethod) -> bool:
     True
 
     A Payment Method that has already started initialized cannot go through initialize.
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentOperation
     >>> from django_acquiring.protocols.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
@@ -36,7 +36,7 @@ def can_initialize(payment_method: AbstractPaymentMethod) -> bool:
     False
 
     A Payment Method that has already completed initialized cannot go through initialize.
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentOperation
     >>> from django_acquiring.protocols.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
@@ -59,7 +59,7 @@ def can_initialize(payment_method: AbstractPaymentMethod) -> bool:
     False
 
     A Payment Method that has already failed initialized cannot go through initialize.
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentOperation
     >>> from django_acquiring.protocols.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
@@ -103,8 +103,8 @@ def can_process_actions(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has already started initialization and ended requiring actions can go through,
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -126,7 +126,7 @@ def can_process_actions(payment_method: AbstractPaymentMethod) -> bool:
     True
 
     A Payment Method that has already started process_actions cannot go through process_actions.
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentOperation
     >>> from django_acquiring.protocols.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_process_actions_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
@@ -145,7 +145,7 @@ def can_process_actions(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has started initialized but has not finished with require action
     cannot go through process_actions.
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentOperation
     >>> from django_acquiring.protocols.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
@@ -164,7 +164,7 @@ def can_process_actions(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that doesn't have an initialized that requires actions cannot go through process_actions.
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentMethod
     >>> payment_method = PaymentMethod(
     ...     id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     payment_attempt_id="200d03a9-8ac1-489d-894a-54af6de20823",
@@ -202,8 +202,8 @@ def can_pay(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has already started initialization and ended requiring actions can go through,
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -226,8 +226,8 @@ def can_pay(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has started initialization but hasn't completed it cannot go through
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -246,8 +246,8 @@ def can_pay(payment_method: AbstractPaymentMethod) -> bool:
     A Payment Method that has started initialization and has required actions but hasn't completed process_actions
     cannot go through.
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -271,8 +271,8 @@ def can_pay(payment_method: AbstractPaymentMethod) -> bool:
     A Payment Method that has started initialization and has required actions and has completed process_actions
     can go through.
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -311,8 +311,8 @@ def can_pay(payment_method: AbstractPaymentMethod) -> bool:
     A Payment Method that has started pay cannot go through.
 
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -391,8 +391,8 @@ def can_after_pay(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has already initialized and has already pay can go through.
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -430,8 +430,8 @@ def can_after_pay(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has not completed initialization cannot go through
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -451,8 +451,8 @@ def can_after_pay(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has not completed pay cannot go through
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -484,8 +484,8 @@ def can_after_pay(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has already started after pay cannot go through
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -563,8 +563,8 @@ def can_confirm(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that is confirmable and has completed pay can go through.
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -615,8 +615,8 @@ def can_confirm(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that is not confirmable cannot go through.
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
@@ -666,8 +666,8 @@ def can_confirm(payment_method: AbstractPaymentMethod) -> bool:
 
     A Payment Method that has not completed payment cannot go through.
     >>> from datetime import datetime
-    >>> from django_acquiring.payments.domain import PaymentMethod
-    >>> from django_acquiring.payments.domain import PaymentOperation
+    >>> from django_acquiring.domain import PaymentMethod
+    >>> from django_acquiring.domain import PaymentOperation
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.initialize,
