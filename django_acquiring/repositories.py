@@ -8,15 +8,19 @@ from django_acquiring.protocols.payments import AbstractPaymentAttempt, Abstract
 
 class PaymentAttemptRepository:
     def add(self, data: dict) -> AbstractPaymentAttempt:
-        payment_attempt = models.PaymentAttempt()
+        payment_attempt = models.PaymentAttempt(
+            order_id=data["order_id"],
+        )
         payment_attempt.save()
         return payment_attempt.to_domain()
 
     def get(self, id: UUID) -> AbstractPaymentAttempt:
         try:
-            payment_attempt = models.PaymentAttempt.objects.prefetch_related(
-                "payment_methods", "payment_methods__payment_operations"
-            ).get(id=id)
+            payment_attempt = (
+                models.PaymentAttempt.objects.prefetch_related("payment_methods", "payment_methods__payment_operations")
+                .select_related("order")
+                .get(id=id)
+            )
             return payment_attempt.to_domain()
         except models.PaymentAttempt.DoesNotExist:
             raise domain.PaymentAttempt.DoesNotExist
@@ -33,8 +37,8 @@ class PaymentMethodRepository:
 
     def get(self, id: UUID) -> AbstractPaymentMethod:
         try:
-            payment_attempt = models.PaymentMethod.objects.prefetch_related("payment_operations").get(id=id)
-            return payment_attempt.to_domain()
+            payment_method = models.PaymentMethod.objects.prefetch_related("payment_operations").get(id=id)
+            return payment_method.to_domain()
         except models.PaymentMethod.DoesNotExist:
             raise domain.PaymentMethod.DoesNotExist
 

@@ -4,8 +4,26 @@ import django.db.models
 
 from django_acquiring import domain
 from django_acquiring.protocols.events import AbstractBlockEvent
+from django_acquiring.protocols.orders import AbstractOrder
 from django_acquiring.protocols.payments import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
 from django_acquiring.protocols.providers import AbstractTransaction
+
+
+class Order(django.db.models.Model):
+    created_at = django.db.models.DateTimeField(auto_now_add=True)
+
+    # https://docs.djangoproject.com/en/5.0/ref/models/fields/#uuidfield
+    id = django.db.models.UUIDField(primary_key=True, default=uuid4, editable=False)
+
+    def __str__(self) -> str:
+        return f"Order[id={self.id}]"
+
+    def to_domain(self) -> AbstractOrder:
+        return domain.Order(
+            id=self.id,
+            created_at=self.created_at,
+            payment_attempts=self.payment_attempts,
+        )
 
 
 class PaymentAttempt(django.db.models.Model):
@@ -14,12 +32,19 @@ class PaymentAttempt(django.db.models.Model):
     # https://docs.djangoproject.com/en/5.0/ref/models/fields/#uuidfield
     id = django.db.models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
+    order = django.db.models.ForeignKey(
+        Order,
+        on_delete=django.db.models.CASCADE,
+        related_name="payment_attempts",
+    )
+
     def __str__(self) -> str:
         return f"PaymentAttempt[id={self.id}]"
 
     def to_domain(self) -> AbstractPaymentAttempt:
         return domain.PaymentAttempt(
             id=self.id,
+            order_id=self.order.id,
             created_at=self.created_at,
             payment_methods=[payment_method.to_domain() for payment_method in self.payment_methods.all()],
         )

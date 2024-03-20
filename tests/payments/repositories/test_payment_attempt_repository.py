@@ -4,16 +4,19 @@ from datetime import datetime
 import pytest
 
 from django_acquiring import domain, models, repositories
-from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+from tests.factories import OrderFactory, PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @pytest.mark.django_db
 def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated(django_assert_num_queries):
     # Given Correct Data
-    data = {}
+    db_order = OrderFactory()
+    data = {
+        "order_id": db_order.id,
+    }
 
     # When calling PaymentAttemptRepository.add
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(3):
         result = repositories.PaymentAttemptRepository().add(data)
 
     # Then PaymentAttempt gets created
@@ -51,6 +54,7 @@ def test_givenNonExistingPaymentAttemptRow_whenCallingRepositoryGet_thenDoesNotE
     # Given a non existing payment method
     payment_method = domain.PaymentAttempt(
         id=uuid.uuid4(),
+        order_id=uuid.uuid4(),
         created_at=datetime.now(),
     )
 

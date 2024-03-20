@@ -33,6 +33,7 @@ class PaymentMethod:
 @dataclass
 class PaymentAttempt:
     id: UUID
+    order_id: UUID
     created_at: datetime
     payment_methods: List[AbstractPaymentMethod] = field(default_factory=list, repr=True)
 
