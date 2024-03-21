@@ -12,7 +12,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
     # Given Correct Data
     db_order = OrderFactory()
 
-    data = domain.PendingPaymentAttempt(
+    data = domain.DraftPaymentAttempt(
         order_id=db_order.id,
     )
 

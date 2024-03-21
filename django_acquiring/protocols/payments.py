@@ -32,7 +32,7 @@ class AbstractPaymentMethod(Protocol):
     ) -> bool: ...
 
 
-class PaymentMethodData(Protocol):
+class AbstractDraftPaymentMethod(Protocol):
     id: None
     created_at: None
     payment_attempt_id: UUID
@@ -46,7 +46,7 @@ class AbstractPaymentAttempt(Protocol):
     created_at: datetime
 
 
-class PaymentAttemptData(Protocol):
+class AbstractDraftPaymentAttempt(Protocol):
     id: None
     order_id: UUID
     created_at: None

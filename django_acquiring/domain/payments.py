@@ -31,7 +31,7 @@ class PaymentMethod:
 
 
 @dataclass
-class PendingPaymentMethod:
+class DraftPaymentMethod:
     id = None
     created_at = None
     payment_attempt_id: UUID
@@ -50,7 +50,7 @@ class PaymentAttempt:
 
 
 @dataclass
-class PendingPaymentAttempt:
+class DraftPaymentAttempt:
     id = None
     order_id: UUID
     created_at = None

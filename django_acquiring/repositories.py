@@ -4,16 +4,16 @@ from django_acquiring import domain, models
 from django_acquiring.protocols import events
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 from django_acquiring.protocols.payments import (
+    AbstractDraftPaymentAttempt,
+    AbstractDraftPaymentMethod,
     AbstractPaymentAttempt,
     AbstractPaymentMethod,
     AbstractPaymentOperation,
-    PaymentAttemptData,
-    PaymentMethodData,
 )
 
 
 class PaymentAttemptRepository:
-    def add(self, data: PaymentAttemptData) -> AbstractPaymentAttempt:
+    def add(self, data: AbstractDraftPaymentAttempt) -> AbstractPaymentAttempt:
         payment_attempt = models.PaymentAttempt(
             order_id=data.order_id,
         )
@@ -33,7 +33,7 @@ class PaymentAttemptRepository:
 
 
 class PaymentMethodRepository:
-    def add(self, data: PaymentMethodData) -> AbstractPaymentMethod:
+    def add(self, data: AbstractDraftPaymentMethod) -> AbstractPaymentMethod:
         db_payment_method = models.PaymentMethod(
             payment_attempt_id=data.payment_attempt_id,
             confirmable=data.confirmable,
