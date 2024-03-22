@@ -51,7 +51,10 @@ class PaymentAttempt:
     created_at: datetime
     amount: int
     currency: str
-    payment_methods: List[AbstractPaymentMethod] = field(default_factory=list, repr=True)
+    payment_methods: List[AbstractPaymentMethod] = field(default_factory=list)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}:{self.id}|{self.amount}{self.currency}"
 
     class DoesNotExist(Exception):
         pass
