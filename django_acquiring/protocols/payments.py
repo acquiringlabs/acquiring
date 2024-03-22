@@ -6,8 +6,9 @@ https://typing.readthedocs.io/en/latest/spec/protocol.html#protocols
 """
 
 from datetime import datetime
-from typing import List, Protocol
+from typing import List, NewType, Protocol
 from uuid import UUID
+
 from .enums import OperationStatusEnum, OperationTypeEnum
 
 
@@ -39,14 +40,21 @@ class AbstractDraftPaymentMethod(Protocol):
     confirmable: bool
 
 
+AbstractCurrency = NewType("AbstractCurrency", str)
+
+
 # TODO Have this class the DoesNotExist internal class
 class AbstractPaymentAttempt(Protocol):
     id: UUID
     order_id: UUID
     created_at: datetime
+    amount: int
+    currency: AbstractCurrency
 
 
 class AbstractDraftPaymentAttempt(Protocol):
     id: None
     order_id: UUID
     created_at: None
+    amount: int
+    currency: AbstractCurrency

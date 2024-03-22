@@ -1,12 +1,15 @@
 from uuid import uuid4
 
 import django.db.models
+from django.core import validators as django_validators
 
 from django_acquiring import domain
 from django_acquiring.protocols.events import AbstractBlockEvent
 from django_acquiring.protocols.orders import AbstractOrder
 from django_acquiring.protocols.payments import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
 from django_acquiring.protocols.providers import AbstractTransaction
+
+CURRENCY_CODE_MAX_LENGTH = 3
 
 
 class Order(django.db.models.Model):
@@ -38,14 +41,32 @@ class PaymentAttempt(django.db.models.Model):
         related_name="payment_attempts",
     )
 
+    # https://stackoverflow.com/questions/224462/storing-money-in-a-decimal-column-what-precision-and-scale/224866#224866
+    # https://sqlblog.org/2008/04/27/performance-storage-comparisons-money-vs-decimal
+    amount = django.db.models.BigIntegerField(
+        help_text=(
+            "Amount intended to be collected. "
+            "A positive integer representing how much to charge in the currency unit "
+            "(e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency)."
+        )
+    )
+    currency = django.db.models.CharField(
+        max_length=CURRENCY_CODE_MAX_LENGTH,
+        validators=[
+            django_validators.MinLengthValidator(CURRENCY_CODE_MAX_LENGTH),
+        ],
+    )
+
     def __str__(self) -> str:
-        return f"PaymentAttempt[id={self.id}]"
+        return f"PaymentAttempt[id={self.id}, {self.currency}{self.amount}]"
 
     def to_domain(self) -> AbstractPaymentAttempt:
         return domain.PaymentAttempt(
             id=self.id,
             order_id=self.order.id,
             created_at=self.created_at,
+            amount=self.amount,
+            currency=self.currency,
             payment_methods=[payment_method.to_domain() for payment_method in self.payment_methods.all()],
         )
 

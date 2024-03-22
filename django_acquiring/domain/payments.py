@@ -4,7 +4,7 @@ from typing import List
 from uuid import UUID
 
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
-from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation
+from django_acquiring.protocols.payments import AbstractCurrency, AbstractPaymentMethod, AbstractPaymentOperation
 
 
 # TODO frozen=True compatible with AbstractPaymentOperation (expected settable variable, got read-only attribute)
@@ -43,6 +43,8 @@ class PaymentAttempt:
     id: UUID
     order_id: UUID
     created_at: datetime
+    amount: int
+    currency: AbstractCurrency
     payment_methods: List[AbstractPaymentMethod] = field(default_factory=list, repr=True)
 
     class DoesNotExist(Exception):
@@ -54,3 +56,5 @@ class DraftPaymentAttempt:
     id = None
     order_id: UUID
     created_at = None
+    amount: int
+    currency: AbstractCurrency

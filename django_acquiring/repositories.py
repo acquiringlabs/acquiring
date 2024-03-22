@@ -16,6 +16,8 @@ class PaymentAttemptRepository:
     def add(self, data: AbstractDraftPaymentAttempt) -> AbstractPaymentAttempt:
         payment_attempt = models.PaymentAttempt(
             order_id=data.order_id,
+            amount=data.amount,
+            currency=data.currency,
         )
         payment_attempt.save()
         return payment_attempt.to_domain()

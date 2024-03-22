@@ -3,8 +3,9 @@
 # Django specific testing libraries
 django-test-migrations
 
-# factory_boy to generate dummy data in the database
+# factory_boy and faker to generate dummy data in the database
 factory_boy
+faker
 
 # Flit to simplify package management
 flit
