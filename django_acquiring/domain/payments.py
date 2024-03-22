@@ -14,6 +14,10 @@ class PaymentOperation:
     status: OperationStatusEnum
     payment_method_id: UUID
 
+    # TODO Create REPR methods for all domain objects
+    # def __repr__(self) -> str:
+    #     return f"PO<{self.type}|{self.status}>"
+
 
 @dataclass
 class PaymentMethod:
