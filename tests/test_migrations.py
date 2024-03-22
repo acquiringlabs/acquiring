@@ -3,7 +3,7 @@ from django_test_migrations.plan import all_migrations, nodes_to_tuples
 
 
 @pytest.mark.django_db
-def test_migrationOrderingIsCorrect():
+def test_migrationOrderingIsCorrect() -> None:
     main_migrations = all_migrations(
         "default",
         [

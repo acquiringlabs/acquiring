@@ -1,21 +1,21 @@
 from datetime import datetime
+from typing import Type
 from uuid import uuid4
 
 import pytest
 
-from django_acquiring import domain, models
+from django_acquiring import domain, models, repositories
 from django_acquiring.domain import decision_logic as dl
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.protocols.flows import AbstractBlock
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @pytest.mark.django_db
 def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowReturnsTheCorrectOperationResponse(
-    fake_payment_method_repository,
-    fake_payment_operation_repository,
-    fake_block,
-    fake_process_actions_block,
-):
+    fake_block: Type[AbstractBlock],
+    fake_process_actions_block: Type[AbstractBlock],
+) -> None:
     # given a valid payment attempt
     db_payment_attempt = PaymentAttemptFactory.create()
     db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
@@ -32,12 +32,13 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
     ),
 
     # when Processing Actions
-    payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
     result = domain.PaymentFlow(
-        repository=payment_method_repository,
-        operations_repository=fake_payment_operation_repository(),
+        repository=repositories.PaymentMethodRepository(),
+        operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
-        process_actions_block=fake_process_actions_block(fake_response_status=OperationStatusEnum.failed),
+        process_actions_block=fake_process_actions_block(
+            fake_response_status=OperationStatusEnum.failed
+        ),  # type:ignore[call-arg]
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
@@ -67,11 +68,9 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
 
 @pytest.mark.django_db
 def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
-    fake_payment_method_repository,
-    fake_payment_operation_repository,
-    fake_block,
-    fake_process_actions_block,
-):
+    fake_block: Type[AbstractBlock],
+    fake_process_actions_block: Type[AbstractBlock],
+) -> None:
     # given a valid payment attempt
     db_payment_attempt = PaymentAttemptFactory.create()
     db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
@@ -88,13 +87,16 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
     ),
 
     # when Processing Actions
-    payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
     result = domain.PaymentFlow(
-        repository=payment_method_repository,
-        operations_repository=fake_payment_operation_repository(),
+        repository=repositories.PaymentMethodRepository(),
+        operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
-        process_actions_block=fake_process_actions_block(fake_response_status=OperationStatusEnum.completed),
-        pay_blocks=[fake_block(fake_response_status=OperationStatusEnum.completed)],
+        process_actions_block=fake_process_actions_block(
+            fake_response_status=OperationStatusEnum.completed
+        ),  # type:ignore[call-arg]
+        pay_blocks=[
+            fake_block(fake_response_status=OperationStatusEnum.completed)  # type:ignore[call-arg]
+        ],
         after_pay_blocks=[],
         confirm_blocks=[],
     ).process_actions(db_payment_method.to_domain(), action_data={})
@@ -129,11 +131,9 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
 
 @pytest.mark.django_db
 def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_payment_method_repository,
-    fake_payment_operation_repository,
-    fake_block,
-    fake_process_actions_block,
-):
+    fake_block: Type[AbstractBlock],
+    fake_process_actions_block: Type[AbstractBlock],
+) -> None:
     # Given a payment method that cannot initialize
     db_payment_attempt = PaymentAttemptFactory.create()
     db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
@@ -145,12 +145,13 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
     assert dl.can_process_actions(db_payment_method.to_domain()) is False
 
     # when Processing Actions
-    payment_method_repository = fake_payment_method_repository(db_payment_methods=[db_payment_method])
     result = domain.PaymentFlow(
-        repository=payment_method_repository,
-        operations_repository=fake_payment_operation_repository(),
+        repository=repositories.PaymentMethodRepository(),
+        operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
-        process_actions_block=fake_process_actions_block(fake_response_status=OperationStatusEnum.completed),
+        process_actions_block=fake_process_actions_block(
+            fake_response_status=OperationStatusEnum.completed
+        ),  # type:ignore[call-arg]
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
@@ -164,11 +165,9 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
 
 @pytest.mark.django_db
 def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_payment_method_repository,
-    fake_payment_operation_repository,
-    fake_block,
-    fake_process_actions_block,
-):
+    fake_block: Type[AbstractBlock],
+    fake_process_actions_block: Type[AbstractBlock],
+) -> None:
     # Given a non existing payment method
     payment_method = domain.PaymentMethod(
         id=uuid4(),
@@ -178,10 +177,9 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
     )
 
     # When Processing Actions
-    payment_method_repository = fake_payment_method_repository()
     result = domain.PaymentFlow(
-        repository=payment_method_repository,
-        operations_repository=fake_payment_operation_repository(),
+        repository=repositories.PaymentMethodRepository(),
+        operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_actions_block=fake_process_actions_block(),
         pay_blocks=[],

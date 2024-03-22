@@ -3,22 +3,28 @@ from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeE
 
 
 # TODO Figure out a way to ensure that these two enums match at compile time/initialization time
-def test_PaymentOperationTypeChoices_match_OperationTypeEnum():
-    choices = set(member.value for member in models.PaymentOperationTypeChoices)
+def test_PaymentOperationTypeChoices_match_OperationTypeEnum() -> None:
+    choices = set(
+        member.value for member in models.PaymentOperationTypeChoices  # type:ignore[attr-defined]
+    )
     enums = set(item.value for item in OperationTypeEnum)
 
     assert choices == enums
 
 
-def test_PaymentOperationStatusChoices_match_OperationStatusEnum():
-    choices = set(member.value for member in models.PaymentOperationStatusChoices)
+def test_PaymentOperationStatusChoices_match_OperationStatusEnum() -> None:
+    choices = set(
+        member.value for member in models.PaymentOperationStatusChoices  # type:ignore[attr-defined]
+    )
     enums = set(item.value for item in OperationStatusEnum)
 
     assert choices == enums
 
 
-def test_BlockEventStatusChoices_match_OperationStatusEnum():
-    choices = set(member.value for member in models.BlockEventStatusChoices)
+def test_BlockEventStatusChoices_match_OperationStatusEnum() -> None:
+    choices = set(
+        member.value for member in models.BlockEventStatusChoices  # type:ignore[attr-defined]
+    )
     enums = set(item.value for item in OperationStatusEnum)
 
     assert choices == enums

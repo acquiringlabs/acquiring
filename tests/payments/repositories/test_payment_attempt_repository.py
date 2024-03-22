@@ -1,3 +1,5 @@
+from typing import Callable
+
 import pytest
 
 from django_acquiring import domain, models, repositories
@@ -5,7 +7,9 @@ from tests.factories import OrderFactory
 
 
 @pytest.mark.django_db
-def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated(django_assert_num_queries):
+def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated(
+    django_assert_num_queries: Callable,
+) -> None:
     # Given Correct Data
     db_order = OrderFactory()
 
@@ -27,7 +31,9 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
 
 
 @pytest.mark.django_db
-def test_givenInCorrectCurrencyData_whenCallingRepositoryAdd_thenPaymentAttemptRaisesError(django_assert_num_queries):
+def test_givenInCorrectCurrencyData_whenCallingRepositoryAdd_thenPaymentAttemptRaisesError(
+    django_assert_num_queries: Callable,
+) -> None:
     # Given Incorrect Currency Data
     db_order = OrderFactory()
 

@@ -1,3 +1,5 @@
+from typing import Callable, Sequence
+
 import pytest
 
 from django_acquiring import domain, models
@@ -10,12 +12,13 @@ from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 @pytest.mark.django_db
 @pytest.mark.parametrize("status", OperationStatusEnum)
 def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStartedAndCompletedBlockEventsGetsCreated(
-    status, django_assert_num_queries
-):
+    status: OperationStatusEnum, django_assert_num_queries: Callable
+) -> None:
 
     class FooBlock:
-        @domain.wrapped_by_block_events
-        def run(self, payment_method: AbstractPaymentMethod, *args, **kwargs) -> AbstractBlockResponse:
+
+        @domain.wrapped_by_block_events  # type:ignore[arg-type]
+        def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: dict) -> AbstractBlockResponse:
             return domain.BlockResponse(status=status, payment_method=payment_method)
 
     assert issubclass(FooBlock, AbstractBlock)

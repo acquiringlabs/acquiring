@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Callable
 
 import pytest
 
@@ -9,7 +10,9 @@ from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, Payment
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("confirmable", [True, False])
-def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(django_assert_num_queries, confirmable):
+def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
+    django_assert_num_queries: Callable, confirmable: bool
+) -> None:
     # Given Correct Data
     payment_attempt = PaymentAttemptFactory()
     data = domain.DraftPaymentMethod(
@@ -34,8 +37,8 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
 
 @pytest.mark.django_db
 def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
-    django_assert_num_queries,
-):
+    django_assert_num_queries: Callable,
+) -> None:
     # Given existing payment method row in payment methods table
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
@@ -51,8 +54,8 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
 
 @pytest.mark.django_db
 def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotExistGetsRaise(
-    django_assert_num_queries,
-):
+    django_assert_num_queries: Callable,
+) -> None:
     # Given a non existing payment method
     payment_method = domain.PaymentMethod(
         id=uuid.uuid4(),

@@ -1,4 +1,5 @@
 import itertools
+from typing import Callable
 
 import pytest
 
@@ -13,10 +14,10 @@ from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
     itertools.product(OperationTypeEnum, OperationStatusEnum),
 )
 def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
-    django_assert_num_queries,
-    payment_operation_type,
-    payment_operation_status,
-):
+    django_assert_num_queries: Callable,
+    payment_operation_type: OperationTypeEnum,
+    payment_operation_status: OperationStatusEnum,
+) -> None:
     # Given existing payment method row in payment methods table
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)

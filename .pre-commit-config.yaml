@@ -54,7 +54,7 @@ repos:
     hooks:
     -   id: mypy
         args: [--ignore-missing-imports, --disallow-any-explicit, --disallow-untyped-defs, --warn-redundant-casts, --warn-unused-ignores, --warn-unreachable, --strict-equality]
-        exclude: "(tests|manage.py)"
+        exclude: "(manage.py)"
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
     hooks:

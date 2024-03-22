@@ -1,3 +1,5 @@
+from typing import Callable
+
 import pytest
 
 from django_acquiring import domain, models, repositories
@@ -7,7 +9,9 @@ from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("status", OperationStatusEnum)
-def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(django_assert_num_queries, status):
+def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
+    django_assert_num_queries: Callable, status: OperationStatusEnum
+) -> None:
     # Given Correct Data
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
     block_event = domain.BlockEvent(
