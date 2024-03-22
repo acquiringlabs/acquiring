@@ -40,6 +40,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
+        after_confirm_blocks=[],
     ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # # then the payment flow returns a failed status Operation Response
@@ -93,6 +94,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
         pay_blocks=[fake_block(fake_response_status=OperationStatusEnum.completed)],
         after_pay_blocks=[],
         confirm_blocks=[],
+        after_confirm_blocks=[],
     ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # # then the payment flow returns a failed status Operation Response
@@ -147,6 +149,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
+        after_confirm_blocks=[],
     ).process_actions(db_payment_method.to_domain(), action_data={})
 
     # then the payment flow returns a failed status operation response
@@ -177,6 +180,7 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
+        after_confirm_blocks=[],
     ).process_actions(payment_method, action_data={})
 
     # then the payment flow returns a failed status operation response

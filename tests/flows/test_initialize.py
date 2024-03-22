@@ -58,6 +58,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
+        after_confirm_blocks=[],
     ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns the correct Operation Response
@@ -102,6 +103,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
+        after_confirm_blocks=[],
     ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns the correct Operation Response
@@ -149,6 +151,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
+        after_confirm_blocks=[],
     ).initialize(db_payment_method.to_domain())
 
     # then the payment flow returns a failed status operation response
@@ -179,6 +182,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
+        after_confirm_blocks=[],
     ).initialize(payment_method)
 
     # then the payment flow returns a failed status operation response
