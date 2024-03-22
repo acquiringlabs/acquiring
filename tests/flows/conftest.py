@@ -1,4 +1,4 @@
-from typing import Dict, List, Sequence, Type
+from typing import Dict, Sequence, Type
 
 import pytest
 
@@ -8,16 +8,21 @@ from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockRespons
 from django_acquiring.protocols.payments import AbstractPaymentMethod
 
 
-# TODO Remove all  # type:ignore[call-arg] from arguments in tests
 @pytest.fixture(scope="module")
 def fake_block() -> Type[AbstractBlock]:
     class FakeBlock:
 
         def __init__(
             self,
-            fake_response_status: OperationStatusEnum = OperationStatusEnum.completed,
-            fake_response_actions: List[Dict] | None = None,
+            *args: Sequence,
+            **kwargs: dict,
         ):
+            fake_response_status: OperationStatusEnum = kwargs.get(
+                "fake_response_status", OperationStatusEnum.completed
+            )  # type:ignore[assignment]
+
+            fake_response_actions: list[dict] = kwargs.get("fake_response_actions", [])  # type:ignore[assignment]
+
             self.response_status = fake_response_status
             self.response_actions = fake_response_actions or []
 

@@ -53,7 +53,7 @@ repos:
     rev: v1.9.0
     hooks:
     -   id: mypy
-        args: [--ignore-missing-imports, --disallow-any-explicit, --disallow-untyped-defs, --warn-redundant-casts, --warn-unused-ignores, --warn-unreachable, --strict-equality]
+        args: [--ignore-missing-imports, --disallow-any-explicit, --disallow-untyped-defs, --warn-redundant-casts, --warn-unused-ignores, --warn-unreachable, --strict-equality, --check-untyped-defs]
         exclude: "(manage.py)"
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.2.6

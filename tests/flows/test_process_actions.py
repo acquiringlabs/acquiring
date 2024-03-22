@@ -36,9 +36,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
         repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
-        process_actions_block=fake_process_actions_block(
-            fake_response_status=OperationStatusEnum.failed
-        ),  # type:ignore[call-arg]
+        process_actions_block=fake_process_actions_block(fake_response_status=OperationStatusEnum.failed),
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],
@@ -91,12 +89,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
         repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
-        process_actions_block=fake_process_actions_block(
-            fake_response_status=OperationStatusEnum.completed
-        ),  # type:ignore[call-arg]
-        pay_blocks=[
-            fake_block(fake_response_status=OperationStatusEnum.completed)  # type:ignore[call-arg]
-        ],
+        process_actions_block=fake_process_actions_block(fake_response_status=OperationStatusEnum.completed),
+        pay_blocks=[fake_block(fake_response_status=OperationStatusEnum.completed)],
         after_pay_blocks=[],
         confirm_blocks=[],
     ).process_actions(db_payment_method.to_domain(), action_data={})
@@ -149,9 +143,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
-        process_actions_block=fake_process_actions_block(
-            fake_response_status=OperationStatusEnum.completed
-        ),  # type:ignore[call-arg]
+        process_actions_block=fake_process_actions_block(fake_response_status=OperationStatusEnum.completed),
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_blocks=[],

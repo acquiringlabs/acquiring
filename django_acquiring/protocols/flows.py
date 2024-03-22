@@ -62,4 +62,6 @@ class AbstractBlockResponse(Protocol):
 @runtime_checkable
 class AbstractBlock(Protocol):
 
-    def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: Dict) -> AbstractBlockResponse: ...
+    def __init__(self, *args, **kwargs) -> None: ...  # type:ignore[no-untyped-def]
+
+    def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: dict) -> AbstractBlockResponse: ...

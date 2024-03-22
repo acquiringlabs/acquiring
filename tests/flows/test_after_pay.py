@@ -68,9 +68,7 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
         initialize_block=fake_block(),
         process_actions_block=fake_process_actions_block(),
         pay_blocks=[],
-        after_pay_blocks=[
-            fake_block(fake_response_status=payment_operation_status)  # type:ignore[call-arg]
-        ],
+        after_pay_blocks=[fake_block(fake_response_status=payment_operation_status)],
         confirm_blocks=[],
     ).after_pay(db_payment_method.to_domain())
 

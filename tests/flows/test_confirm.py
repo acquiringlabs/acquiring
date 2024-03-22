@@ -81,7 +81,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
         repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(
-            fake_response_status=OperationStatusEnum.completed,  # type:ignore[call-arg]
+            fake_response_status=OperationStatusEnum.completed,
             fake_response_actions=[],
         ),
         process_actions_block=fake_process_actions_block(),
@@ -89,7 +89,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
         after_pay_blocks=[],
         confirm_blocks=[
             fake_block(
-                fake_response_status=payment_operation_status,  # type:ignore[call-arg]
+                fake_response_status=payment_operation_status,
             ),
         ],
     ).confirm(db_payment_method.to_domain())

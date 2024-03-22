@@ -51,7 +51,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
         repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(
-            fake_response_status=payment_operations_status,  # type:ignore[call-arg]
+            fake_response_status=payment_operations_status,
             fake_response_actions=block_response_actions,
         ),
         process_actions_block=fake_process_actions_block(),
@@ -95,7 +95,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
         repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(
-            fake_response_status=OperationStatusEnum.completed,  # type:ignore[call-arg]
+            fake_response_status=OperationStatusEnum.completed,
             fake_response_actions=[],
         ),
         process_actions_block=fake_process_actions_block(),
