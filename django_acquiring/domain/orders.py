@@ -11,3 +11,6 @@ class Order:
     id: UUID
     created_at: datetime
     payment_attempts: List[AbstractPaymentAttempt]
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}:{self.id}"

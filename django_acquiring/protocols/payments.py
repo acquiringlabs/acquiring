@@ -17,6 +17,8 @@ class AbstractPaymentOperation(Protocol):
     type: OperationTypeEnum
     status: OperationStatusEnum
 
+    def __repr__(self) -> str: ...
+
 
 # TODO Have this class the DoesNotExist internal class
 class AbstractPaymentMethod(Protocol):
@@ -25,6 +27,8 @@ class AbstractPaymentMethod(Protocol):
     payment_attempt_id: UUID
     confirmable: bool
     payment_operations: List[AbstractPaymentOperation]
+
+    def __repr__(self) -> str: ...
 
     def has_payment_operation(
         self: "AbstractPaymentMethod",
@@ -47,6 +51,8 @@ class AbstractPaymentAttempt(Protocol):
     created_at: datetime
     amount: int
     currency: str
+
+    def __repr__(self) -> str: ...
 
 
 class AbstractDraftPaymentAttempt(Protocol):

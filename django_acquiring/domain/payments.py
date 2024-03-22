@@ -14,9 +14,8 @@ class PaymentOperation:
     status: OperationStatusEnum
     payment_method_id: UUID
 
-    # TODO Create REPR methods for all domain objects
-    # def __repr__(self) -> str:
-    #     return f"PO<{self.type}|{self.status}>"
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}:{self.type}|{self.status}"
 
 
 @dataclass
@@ -26,6 +25,9 @@ class PaymentMethod:
     payment_attempt_id: UUID
     confirmable: bool
     payment_operations: List[AbstractPaymentOperation] = field(default_factory=list, repr=True)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}:{self.id}"
 
     def has_payment_operation(self, type: OperationTypeEnum, status: OperationStatusEnum) -> bool:
         return any(operation.type == type and operation.status == status for operation in self.payment_operations)

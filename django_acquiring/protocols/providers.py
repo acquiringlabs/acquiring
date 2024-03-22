@@ -23,3 +23,5 @@ class AbstractTransaction(Protocol):
     provider_name: str
     payment_method_id: UUID
     raw_data: dict
+
+    def __repr__(self) -> str: ...
