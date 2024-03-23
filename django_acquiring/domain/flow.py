@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, Optional
 
 import django_acquiring.domain.decision_logic as dl
 from django_acquiring import domain
@@ -17,8 +17,8 @@ class OperationResponse:
     status: OperationStatusEnum
     payment_method: Optional["AbstractPaymentMethod"]
     type: OperationTypeEnum
-    error_message: str | None = None
-    actions: List[Dict] = field(default_factory=list)
+    error_message: Optional[str] = None
+    actions: list[dict] = field(default_factory=list)
 
 
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
@@ -30,11 +30,11 @@ class PaymentFlow:
     initialize_block: "AbstractBlock"
     process_actions_block: "AbstractBlock"
 
-    pay_blocks: List["AbstractBlock"]
-    after_pay_blocks: List["AbstractBlock"]
+    pay_blocks: list["AbstractBlock"]
+    after_pay_blocks: list["AbstractBlock"]
 
-    confirm_blocks: List["AbstractBlock"]
-    after_confirm_blocks: List["AbstractBlock"]
+    confirm_blocks: list["AbstractBlock"]
+    after_confirm_blocks: list["AbstractBlock"]
 
     @payment_operation_type
     def initialize(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse":
@@ -118,7 +118,7 @@ class PaymentFlow:
 
     @payment_operation_type
     def process_actions(
-        self, payment_method: "AbstractPaymentMethod", action_data: Dict
+        self, payment_method: "AbstractPaymentMethod", action_data: dict
     ) -> "AbstractOperationResponse":
         # Refresh the payment from the database
         try:

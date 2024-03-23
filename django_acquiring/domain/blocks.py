@@ -1,6 +1,6 @@
 import functools
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable, Dict, List
+from typing import TYPE_CHECKING, Callable, Optional
 
 from django_acquiring import domain
 from django_acquiring.protocols.enums import OperationStatusEnum
@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 class BlockResponse:
     status: OperationStatusEnum
     payment_method: "AbstractPaymentMethod"
-    actions: List[Dict] = field(default_factory=list)
-    error_message: str | None = None
+    actions: list[dict] = field(default_factory=list)
+    error_message: Optional[str] = None
 
 
 def wrapped_by_block_events(function: Callable[[], "AbstractBlockResponse"]) -> Callable:

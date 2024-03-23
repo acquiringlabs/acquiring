@@ -1,6 +1,6 @@
 import functools
 from dataclasses import field
-from typing import Callable, Dict, List, Protocol, Sequence, runtime_checkable
+from typing import Callable, Optional, Protocol, Sequence, runtime_checkable
 
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 from django_acquiring.protocols.payments import AbstractPaymentMethod
@@ -8,9 +8,9 @@ from django_acquiring.protocols.payments import AbstractPaymentMethod
 
 class AbstractOperationResponse(Protocol):
     status: OperationStatusEnum
-    actions: List[Dict] = field(default_factory=list)
+    actions: list[dict] = field(default_factory=list)
     type: OperationTypeEnum
-    error_message: str | None = None
+    error_message: Optional[str] = None
 
 
 def payment_operation_type(function: Callable) -> Callable:
@@ -55,8 +55,8 @@ def payment_operation_type(function: Callable) -> Callable:
 class AbstractBlockResponse(Protocol):
     status: OperationStatusEnum
     payment_method: AbstractPaymentMethod
-    actions: List[Dict] = field(default_factory=list)
-    error_message: str | None = None
+    actions: list[dict] = field(default_factory=list)
+    error_message: Optional[str] = None
 
 
 @runtime_checkable

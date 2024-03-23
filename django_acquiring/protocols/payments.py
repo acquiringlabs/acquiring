@@ -6,7 +6,7 @@ https://typing.readthedocs.io/en/latest/spec/protocol.html#protocols
 """
 
 from datetime import datetime
-from typing import List, Protocol
+from typing import Optional, Protocol
 from uuid import UUID
 
 from .enums import OperationStatusEnum, OperationTypeEnum
@@ -24,7 +24,7 @@ class AbstractToken(Protocol):
     created_at: datetime
     expires_at: datetime | None
     token: str
-    fingerprint: str | None
+    fingerprint: Optional[str]
     metadata: dict[str, str | int] | None
 
     def __repr__(self) -> str: ...
@@ -37,7 +37,7 @@ class AbstractPaymentMethod(Protocol):
     token: AbstractToken | None
     payment_attempt_id: UUID
     confirmable: bool
-    payment_operations: List[AbstractPaymentOperation]
+    payment_operations: list[AbstractPaymentOperation]
 
     def __repr__(self) -> str: ...
 

@@ -1,4 +1,4 @@
-from typing import Dict, Sequence, Type
+from typing import Sequence, Type
 
 import pytest
 
@@ -48,7 +48,7 @@ def fake_process_actions_block() -> Type[AbstractBlock]:
         ):
             self.response_status = fake_response_status
 
-        def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: Dict) -> AbstractBlockResponse:
+        def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: dict) -> AbstractBlockResponse:
             return domain.BlockResponse(status=self.response_status, payment_method=payment_method)
 
     assert issubclass(FakeProcessActionsBlock, AbstractBlock)

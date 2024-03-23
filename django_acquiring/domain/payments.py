@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ class PaymentMethod:
     payment_attempt_id: UUID
     confirmable: bool
     token: Optional["AbstractToken"] = None
-    payment_operations: List["AbstractPaymentOperation"] = field(default_factory=list, repr=True)
+    payment_operations: list["AbstractPaymentOperation"] = field(default_factory=list, repr=True)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}"
@@ -52,7 +52,7 @@ class PaymentAttempt:
     created_at: datetime
     amount: int
     currency: str
-    payment_methods: List["AbstractPaymentMethod"] = field(default_factory=list)
+    payment_methods: list["AbstractPaymentMethod"] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}|{self.amount}{self.currency}"
@@ -73,7 +73,7 @@ class Token:
     created_at: datetime
     token: str
     expires_at: datetime | None = None
-    fingerprint: str | None = None
+    fingerprint: Optional[str] = None
     metadata: dict[str, str | int] | None = None
 
     def __repr__(self) -> str:

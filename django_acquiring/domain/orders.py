@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 if TYPE_CHECKING:
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class Order:
     id: UUID
     created_at: datetime
-    payment_attempts: List["AbstractPaymentAttempt"]
+    payment_attempts: list["AbstractPaymentAttempt"]
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}"
