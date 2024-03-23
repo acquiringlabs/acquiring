@@ -6,7 +6,12 @@ from django.core import validators as django_validators
 from django_acquiring import domain
 from django_acquiring.protocols.events import AbstractBlockEvent
 from django_acquiring.protocols.orders import AbstractOrder
-from django_acquiring.protocols.payments import AbstractPaymentAttempt, AbstractPaymentMethod, AbstractPaymentOperation
+from django_acquiring.protocols.payments import (
+    AbstractPaymentAttempt,
+    AbstractPaymentMethod,
+    AbstractPaymentOperation,
+    AbstractToken,
+)
 from django_acquiring.protocols.providers import AbstractTransaction
 
 CURRENCY_CODE_MAX_LENGTH = 3
@@ -83,6 +88,13 @@ class PaymentMethod(django.db.models.Model):
         related_name="payment_methods",
     )
 
+    token = django.db.models.OneToOneField(
+        "Token",
+        on_delete=django.db.models.PROTECT,
+        null=True,
+        blank=True,
+    )
+
     confirmable = django.db.models.BooleanField(
         editable=False,
         help_text="Whether this PaymentMethod can at some point run inside PaymentFlow.confirm",
@@ -95,9 +107,40 @@ class PaymentMethod(django.db.models.Model):
         return domain.PaymentMethod(
             id=self.id,
             created_at=self.created_at,
+            token=self.token.to_domain() if self.token else None,
             payment_attempt_id=self.payment_attempt_id,
             payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations.all()],
             confirmable=self.confirmable,
+        )
+
+
+class Token(django.db.models.Model):
+    created_at = django.db.models.DateTimeField()  # when a token gets created is passed by the Tokenization provider
+    expires_at = django.db.models.DateTimeField(null=True, blank=True)
+    token = django.db.models.TextField()  # No arbitrary limitations are imposed
+
+    fingerprint = django.db.models.TextField(
+        null=True,
+        blank=True,
+        help_text="Fingerprinting provides a way to correlate multiple tokens together that contain the same data without needing access to the underlying data.",
+    )
+
+    metadata = django.db.models.JSONField(
+        null=True,
+        blank=True,
+        help_text="tag your tokens with custom key-value attributes (i.e., to reference a record in your own database, tag records that fall into certain compliance requirements like GDPR, etc)",
+    )
+
+    def __str__(self) -> str:
+        return f"Token[{self.token}]"
+
+    def to_domain(self) -> AbstractToken:
+        return domain.Token(
+            created_at=self.created_at,
+            expires_at=self.expires_at,
+            token=self.token,
+            fingerprint=self.fingerprint,
+            metadata=self.metadata,
         )
 
 

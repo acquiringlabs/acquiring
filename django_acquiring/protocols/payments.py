@@ -20,10 +20,21 @@ class AbstractPaymentOperation(Protocol):
     def __repr__(self) -> str: ...
 
 
+class AbstractToken(Protocol):
+    created_at: datetime
+    expires_at: datetime | None
+    token: str
+    fingerprint: str | None
+    metadata: dict[str, str | int] | None
+
+    def __repr__(self) -> str: ...
+
+
 # TODO Have this class the DoesNotExist internal class
 class AbstractPaymentMethod(Protocol):
     id: UUID
     created_at: datetime
+    token: AbstractToken | None
     payment_attempt_id: UUID
     confirmable: bool
     payment_operations: List[AbstractPaymentOperation]

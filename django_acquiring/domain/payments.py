@@ -4,7 +4,7 @@ from typing import List
 from uuid import UUID
 
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
-from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation
+from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation, AbstractToken
 
 
 # TODO frozen=True compatible with AbstractPaymentOperation (expected settable variable, got read-only attribute)
@@ -24,6 +24,7 @@ class PaymentMethod:
     created_at: datetime
     payment_attempt_id: UUID
     confirmable: bool
+    token: AbstractToken | None = None
     payment_operations: List[AbstractPaymentOperation] = field(default_factory=list, repr=True)
 
     def __repr__(self) -> str:
@@ -42,6 +43,7 @@ class DraftPaymentMethod:
     created_at = None
     payment_attempt_id: UUID
     confirmable: bool
+    token: AbstractToken | None = None
 
 
 @dataclass
@@ -67,3 +69,15 @@ class DraftPaymentAttempt:
     created_at = None
     amount: int
     currency: str
+
+
+@dataclass
+class Token:
+    created_at: datetime
+    expires_at: datetime | None
+    token: str
+    fingerprint: str | None
+    metadata: dict[str, str | int] | None
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}:{self.token}"
