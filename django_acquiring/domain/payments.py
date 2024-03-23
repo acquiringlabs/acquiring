@@ -39,8 +39,6 @@ class PaymentMethod:
 
 @dataclass
 class DraftPaymentMethod:
-    id = None
-    created_at = None
     payment_attempt_id: UUID
     confirmable: bool
     token: AbstractToken | None = None
@@ -64,9 +62,7 @@ class PaymentAttempt:
 
 @dataclass
 class DraftPaymentAttempt:
-    id = None
     order_id: UUID
-    created_at = None
     amount: int
     currency: str
 
