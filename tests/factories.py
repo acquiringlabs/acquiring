@@ -31,3 +31,8 @@ class PaymentMethodFactory(factory.django.DjangoModelFactory):
 class PaymentOperationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "django_acquiring.PaymentOperation"
+
+
+class TokenFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "django_acquiring.Token"

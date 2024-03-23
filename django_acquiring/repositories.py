@@ -1,5 +1,5 @@
 from uuid import UUID
-
+import django.db.transaction
 from django_acquiring import domain, models
 from django_acquiring.protocols import events
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
@@ -36,16 +36,32 @@ class PaymentAttemptRepository:
 
 class PaymentMethodRepository:
     def add(self, data: AbstractDraftPaymentMethod) -> AbstractPaymentMethod:
-        db_payment_method = models.PaymentMethod(
-            payment_attempt_id=data.payment_attempt_id,
-            confirmable=data.confirmable,
-        )
-        db_payment_method.save()
+        with django.db.transaction.atomic():
+
+            db_payment_method = models.PaymentMethod(
+                payment_attempt_id=data.payment_attempt_id,
+                confirmable=data.confirmable,
+            )
+
+            if data.token:
+                db_token = models.Token(
+                    payment_method=db_payment_method,
+                    created_at=data.token.created_at,  # TODO Ensure via type that datetime is timezone aware
+                    token=data.token.token,
+                    expires_at=data.token.expires_at,  # TODO Ensure via type that datetime is timezone aware
+                    fingerprint=data.token.fingerprint,
+                    metadata=data.token.metadata,
+                )
+                db_token.save()
+                db_payment_method.token = db_token
+            db_payment_method.save()
         return db_payment_method.to_domain()
 
     def get(self, id: UUID) -> AbstractPaymentMethod:
         try:
-            payment_method = models.PaymentMethod.objects.prefetch_related("payment_operations").get(id=id)
+            payment_method = (
+                models.PaymentMethod.objects.prefetch_related("payment_operations").select_related("token").get(id=id)
+            )
             return payment_method.to_domain()
         except models.PaymentMethod.DoesNotExist:
             raise domain.PaymentMethod.DoesNotExist

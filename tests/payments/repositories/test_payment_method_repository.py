@@ -1,27 +1,30 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable
 
 import pytest
+from django.utils import timezone
+from faker import Faker
 
 from django_acquiring import domain, models, repositories
-from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory, TokenFactory
+
+fake = Faker()
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("confirmable", [True, False])
 def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
-    django_assert_num_queries: Callable, confirmable: bool
+    django_assert_num_queries: Callable,
 ) -> None:
     # Given Correct Data
     payment_attempt = PaymentAttemptFactory()
     data = domain.DraftPaymentMethod(
         payment_attempt_id=payment_attempt.id,
-        confirmable=confirmable,
+        confirmable=True,
     )
 
     # When calling PaymentMethodRepository.add
-    with django_assert_num_queries(2):
+    with django_assert_num_queries(4):
         result = repositories.PaymentMethodRepository().add(data)
 
     # Then PaymentMethod gets created
@@ -36,12 +39,56 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("confirmable", [True, False])
+def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(
+    django_assert_num_queries: Callable, confirmable: bool
+) -> None:
+    # Given Correct Data
+    payment_attempt = PaymentAttemptFactory()
+    data = domain.DraftPaymentMethod(
+        payment_attempt_id=payment_attempt.id,
+        confirmable=confirmable,
+        token=domain.Token(
+            created_at=timezone.now(),
+            token=fake.sha256(raw_output=False),
+            expires_at=timezone.now() + timedelta(days=365),
+            fingerprint=fake.sha256(),
+            metadata={"customer_id": str(uuid.uuid4())},
+        ),
+    )
+
+    # When calling PaymentMethodRepository.add
+    with django_assert_num_queries(5):
+        result = repositories.PaymentMethodRepository().add(data)
+
+    # Then Token gets created
+
+    db_tokens = models.Token.objects.all()
+    assert len(db_tokens) == 1
+    db_token = db_tokens[0]
+
+    db_payment_methods = models.PaymentMethod.objects.all()
+    assert len(db_payment_methods) == 1
+    db_payment_method = db_payment_methods[0]
+
+    assert db_token.payment_method == db_payment_method
+
+    assert result.token == db_token.to_domain()
+
+
+@pytest.mark.django_db
 def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
     django_assert_num_queries: Callable,
 ) -> None:
     # Given existing payment method row in payment methods table
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
+    db_token = TokenFactory(
+        token=fake.sha256(),
+        created_at=timezone.now(),
+    )
+    db_payment_method.token = db_token
+    db_payment_method.save()
     PaymentOperationFactory.create_batch(3, payment_method_id=db_payment_method.id)
 
     # When calling PaymentMethodRepository.get

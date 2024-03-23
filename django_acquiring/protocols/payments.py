@@ -53,6 +53,7 @@ class AbstractDraftPaymentMethod(Protocol):
     created_at: None
     payment_attempt_id: UUID
     confirmable: bool
+    token: AbstractToken | None = None
 
 
 # TODO Have this class the DoesNotExist internal class

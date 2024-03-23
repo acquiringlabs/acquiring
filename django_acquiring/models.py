@@ -24,7 +24,7 @@ class Order(django.db.models.Model):
     id = django.db.models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
     def __str__(self) -> str:
-        return f"Order[id={self.id}]"
+        return f"[id={self.id}]"
 
     def to_domain(self) -> AbstractOrder:
         return domain.Order(
@@ -63,7 +63,7 @@ class PaymentAttempt(django.db.models.Model):
     )
 
     def __str__(self) -> str:
-        return f"PaymentAttempt[id={self.id}, {self.currency}{self.amount}]"
+        return f"[id={self.id}, {self.currency}{self.amount}]"
 
     def to_domain(self) -> AbstractPaymentAttempt:
         return domain.PaymentAttempt(
@@ -93,6 +93,7 @@ class PaymentMethod(django.db.models.Model):
         on_delete=django.db.models.PROTECT,
         null=True,
         blank=True,
+        related_name="payment_method",
     )
 
     confirmable = django.db.models.BooleanField(
@@ -101,7 +102,7 @@ class PaymentMethod(django.db.models.Model):
     )
 
     def __str__(self) -> str:
-        return f"PaymentMethod[id={self.id}]"
+        return f"[id={self.id}]"
 
     def to_domain(self) -> AbstractPaymentMethod:
         return domain.PaymentMethod(
@@ -132,7 +133,7 @@ class Token(django.db.models.Model):
     )
 
     def __str__(self) -> str:
-        return f"Token[{self.token}]"
+        return f"[{self.token}]"
 
     def to_domain(self) -> AbstractToken:
         return domain.Token(
@@ -176,7 +177,7 @@ class PaymentOperation(django.db.models.Model):
     )
 
     def __str__(self) -> str:
-        return f"PaymentOperation[type={self.type}, status={self.status}]"
+        return f"[type={self.type}, status={self.status}]"
 
     def to_domain(self) -> AbstractPaymentOperation:
         return domain.PaymentOperation(
@@ -201,7 +202,7 @@ class BlockEvent(django.db.models.Model):
     block_name = django.db.models.CharField(max_length=20)
 
     def __str__(self) -> str:
-        return f"PaymentAttempt[id={self.id}]"
+        return f"[{self.block_name}|status={self.status}]"
 
     def to_domain(self) -> AbstractBlockEvent:
         return domain.BlockEvent(
@@ -225,7 +226,7 @@ class Transaction(django.db.models.Model):
     raw_data = django.db.models.JSONField()
 
     def __str__(self) -> str:
-        return f"Transaction[id={self.provider_name}]"
+        return f"[id={self.provider_name}]"
 
     def to_domain(self) -> AbstractTransaction:
         return domain.Transaction(

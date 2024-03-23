@@ -74,10 +74,10 @@ class DraftPaymentAttempt:
 @dataclass
 class Token:
     created_at: datetime
-    expires_at: datetime | None
     token: str
-    fingerprint: str | None
-    metadata: dict[str, str | int] | None
+    expires_at: datetime | None = None
+    fingerprint: str | None = None
+    metadata: dict[str, str | int] | None = None
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.token}"
