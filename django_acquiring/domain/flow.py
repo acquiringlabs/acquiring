@@ -227,14 +227,7 @@ class PaymentFlow:
     def __pay(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
         # No need to refresh from DB
 
-        # Verify that the payment can go through this operation type
-        if not dl.can_pay(payment_method):
-            return OperationResponse(
-                status=OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod cannot go through this operation",
-                type=OperationTypeEnum.PAY,
-            )
+        # No need to verify if payment can go through a private method
 
         # Create Started PaymentOperation
         self.operations_repository.add(
