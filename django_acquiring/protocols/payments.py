@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Optional, Protocol
 from uuid import UUID
 
-from .enums import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 
 class AbstractPaymentOperation(Protocol):

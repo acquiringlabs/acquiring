@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
+    from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
     from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation, AbstractToken
 
 

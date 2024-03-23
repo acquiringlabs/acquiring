@@ -1,5 +1,5 @@
 from django_acquiring import models
-from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 
 # TODO Figure out a way to ensure that these two enums match at compile time/initialization time

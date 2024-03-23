@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable, Optional
 
 from django_acquiring import domain
-from django_acquiring.protocols.enums import OperationStatusEnum
+from django_acquiring.enums import OperationStatusEnum
 
 if TYPE_CHECKING:
     from django_acquiring.protocols.flows import AbstractBlockResponse

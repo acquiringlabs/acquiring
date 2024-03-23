@@ -3,7 +3,7 @@ from typing import Sequence, Type
 import pytest
 
 from django_acquiring import domain
-from django_acquiring.protocols.enums import OperationStatusEnum
+from django_acquiring.enums import OperationStatusEnum
 from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockResponse
 from django_acquiring.protocols.payments import AbstractPaymentMethod
 

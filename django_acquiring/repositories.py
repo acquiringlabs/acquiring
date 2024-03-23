@@ -4,8 +4,8 @@ from uuid import UUID
 import django.db.transaction
 
 from django_acquiring import domain, models
+from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
 from django_acquiring.protocols import events
-from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
 
 if TYPE_CHECKING:
     from django_acquiring.protocols.payments import (

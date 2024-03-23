@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional
 
 import django_acquiring.domain.decision_logic as dl
 from django_acquiring import domain
-from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
 from django_acquiring.protocols.flows import payment_operation_type
 
 if TYPE_CHECKING:

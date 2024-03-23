@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Protocol
 from uuid import UUID
-
-from .enums import OperationStatusEnum
+from django_acquiring.enums import OperationStatusEnum
 
 
 @dataclass

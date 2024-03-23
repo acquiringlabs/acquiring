@@ -6,7 +6,7 @@ import pytest
 
 from django_acquiring import domain, models, repositories
 from django_acquiring.domain import decision_logic as dl
-from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
 from django_acquiring.protocols.flows import AbstractBlock
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
