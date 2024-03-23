@@ -2,22 +2,22 @@ from enum import StrEnum
 
 
 class OperationTypeEnum(StrEnum):
-    initialize = "initialize"
-    process_actions = "process_actions"
+    INITIALIZE = "initialize"
+    PROCESS_ACTION = "process_action"
 
-    pay = "pay"
-    confirm = "confirm"
+    PAY = "pay"
+    CONFIRM = "confirm"
 
-    refund = "refund"
+    REFUND = "refund"
 
-    after_pay = "after_pay"
-    after_confirm = "after_confirm"
-    after_refund = "after_refund"
+    AFTER_PAY = "after_pay"
+    AFTER_CONFIRM = "after_confirm"
+    AFTER_REFUND = "after_refund"
 
 
 class OperationStatusEnum(StrEnum):
-    started = "started"
-    failed = "failed"
-    completed = "completed"
-    requires_action = "requires_action"
-    pending = "pending"
+    STARTED = "started"
+    FAILED = "failed"
+    COMPLETED = "completed"
+    REQUIRES_ACTION = "requires_action"
+    PENDING = "pending"

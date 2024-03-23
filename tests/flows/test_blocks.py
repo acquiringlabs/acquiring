@@ -32,7 +32,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
 
     block_events = models.BlockEvent.objects.order_by("created_at")
 
-    assert block_events[0].status == OperationStatusEnum.started
+    assert block_events[0].status == OperationStatusEnum.STARTED
     assert block_events[0].payment_method_id == payment_method.id
     assert block_events[0].block_name == FooBlock.__name__
 

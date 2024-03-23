@@ -18,7 +18,7 @@ def fake_block() -> Type[AbstractBlock]:
             **kwargs: dict,
         ):
             fake_response_status: OperationStatusEnum = kwargs.get(
-                "fake_response_status", OperationStatusEnum.completed
+                "fake_response_status", OperationStatusEnum.COMPLETED
             )  # type:ignore[assignment]
 
             fake_response_actions: list[dict] = kwargs.get("fake_response_actions", [])  # type:ignore[assignment]
@@ -38,13 +38,13 @@ def fake_block() -> Type[AbstractBlock]:
 
 
 @pytest.fixture(scope="module")
-def fake_process_actions_block() -> Type[AbstractBlock]:
+def fake_process_action_block() -> Type[AbstractBlock]:
 
     class FakeProcessActionsBlock:
 
         def __init__(
             self,
-            fake_response_status: OperationStatusEnum = OperationStatusEnum.completed,
+            fake_response_status: OperationStatusEnum = OperationStatusEnum.COMPLETED,
         ):
             self.response_status = fake_response_status
 

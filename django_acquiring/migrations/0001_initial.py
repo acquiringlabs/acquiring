@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('type', models.CharField(choices=[('initialize', 'Initialize'), ('process_actions', 'Process Actions'), ('pay', 'Pay'), ('confirm', 'Confirm'), ('refund', 'Refund'), ('after_pay', 'After Pay'), ('after_confirm', 'After Confirm'), ('after_refund', 'After Refund')], max_length=16)),
+                ('type', models.CharField(choices=[('initialize', 'Initialize'), ('process_action', 'Process Actions'), ('pay', 'Pay'), ('confirm', 'Confirm'), ('refund', 'Refund'), ('after_pay', 'After Pay'), ('after_confirm', 'After Confirm'), ('after_refund', 'After Refund')], max_length=16)),
                 ('status', models.CharField(choices=[('started', 'Started'), ('failed', 'Failed'), ('completed', 'Completed'), ('requires_action', 'Requires Action'), ('pending', 'Pending')], max_length=15)),
                 ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_operations', to='django_acquiring.paymentmethod')),
             ],

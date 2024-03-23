@@ -150,22 +150,22 @@ class Token(django.db.models.Model):
 
 
 class PaymentOperationTypeChoices(django.db.models.TextChoices):
-    initialize = "initialize"
-    process_actions = "process_actions"
-    pay = "pay"
-    confirm = "confirm"
-    refund = "refund"
-    after_pay = "after_pay"
-    after_confirm = "after_confirm"
-    after_refund = "after_refund"
+    INITIALIZE = "initialize"
+    PROCESS_ACTION = "process_action"
+    PAY = "pay"
+    CONFIRM = "confirm"
+    REFUND = "refund"
+    AFTER_PAY = "after_pay"
+    AFTER_CONFIRM = "after_confirm"
+    AFTER_REFUND = "after_refund"
 
 
 class PaymentOperationStatusChoices(django.db.models.TextChoices):
-    started = "started"
-    failed = "failed"
-    completed = "completed"
-    requires_action = "requires_action"
-    pending = "pending"
+    STARTED = "started"
+    FAILED = "failed"
+    COMPLETED = "completed"
+    REQUIRES_ACTION = "requires_action"
+    PENDING = "pending"
 
 
 # TODO Add failure reason to Payment Operation as an optional string

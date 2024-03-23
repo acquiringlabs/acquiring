@@ -33,7 +33,7 @@ def wrapped_by_block_events(function: Callable[[], "AbstractBlockResponse"]) -> 
 
         repository.add(
             block_event=domain.BlockEvent(
-                status=OperationStatusEnum.started,
+                status=OperationStatusEnum.STARTED,
                 payment_method_id=payment_method.id,
                 block_name=block_name,
             )
