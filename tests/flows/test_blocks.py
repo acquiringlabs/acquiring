@@ -2,10 +2,8 @@ from typing import Callable, Sequence
 
 import pytest
 
-from django_acquiring import domain, models
+from django_acquiring import domain, models, protocols
 from django_acquiring.enums import OperationStatusEnum
-from django_acquiring.protocols.flows import AbstractBlock, AbstractBlockResponse
-from django_acquiring.protocols.payments import AbstractPaymentMethod
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 
@@ -18,10 +16,12 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
     class FooBlock:
 
         @domain.wrapped_by_block_events  # type:ignore[arg-type]
-        def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: dict) -> AbstractBlockResponse:
-            return domain.BlockResponse(status=status, payment_method=payment_method)
+        def run(
+            self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
+        ) -> protocols.AbstractBlockResponse:
+            return domain.BlockResponse(status=status)
 
-    assert issubclass(FooBlock, AbstractBlock)
+    assert issubclass(FooBlock, protocols.AbstractBlock)
 
     payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
 

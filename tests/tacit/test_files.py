@@ -3,7 +3,7 @@ import importlib.util
 import inspect
 import os
 from typing import Protocol
-from django_acquiring.protocols.repositories import AbstractRepository
+from django_acquiring import protocols
 
 
 def test_allProtocolFilesContainSubclassesOfDecoratorProtocolOrEnum() -> None:
@@ -41,4 +41,4 @@ def test_allRepositoryFilesContainSubclassesOfAbstractRepository() -> None:
                 spec.loader.exec_module(module)  # type:ignore[union-attr]
                 for name, obj in inspect.getmembers(module):
                     if inspect.isclass(obj) and obj.__module__ == module_name:  # A non-imported class
-                        assert issubclass(obj, AbstractRepository), f"class {name} is not a repository"
+                        assert issubclass(obj, protocols.AbstractRepository), f"class {name} is not a repository"

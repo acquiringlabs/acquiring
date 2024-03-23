@@ -4,10 +4,9 @@ from uuid import uuid4
 
 import pytest
 
-from django_acquiring import domain, models, repositories
+from django_acquiring import domain, models, protocols, repositories
 from django_acquiring.domain import decision_logic as dl
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from django_acquiring.protocols.flows import AbstractBlock
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 COMPLETED_STATUS = [OperationStatusEnum.COMPLETED]
@@ -33,8 +32,8 @@ def test_statusListsAreComplete() -> None:
     + [(OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
 def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponse(
-    fake_block: Type[AbstractBlock],
-    fake_process_action_block: Type[AbstractBlock],
+    fake_block: Type[protocols.AbstractBlock],
+    fake_process_action_block: Type[protocols.AbstractBlock],
     result_status: OperationStatusEnum,
     payment_operation_status: OperationStatusEnum,
 ) -> None:
@@ -130,8 +129,8 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
 
 @pytest.mark.django_db
 def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[AbstractBlock],
-    fake_process_action_block: Type[AbstractBlock],
+    fake_block: Type[protocols.AbstractBlock],
+    fake_process_action_block: Type[protocols.AbstractBlock],
 ) -> None:
     # Given a payment method that cannot initialize
     db_payment_attempt = PaymentAttemptFactory.create()
@@ -161,7 +160,7 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentFlowRetu
 
 @pytest.mark.django_db
 def test_givenANonExistingPaymentMethod_whenConfirming_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[AbstractBlock], fake_process_action_block: Type[AbstractBlock]
+    fake_block: Type[protocols.AbstractBlock], fake_process_action_block: Type[protocols.AbstractBlock]
 ) -> None:
     # Given a non existing payment method
     payment_method = domain.PaymentMethod(

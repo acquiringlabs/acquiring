@@ -4,10 +4,9 @@ from uuid import uuid4
 
 import pytest
 
-from django_acquiring import domain, models, repositories
+from django_acquiring import domain, models, protocols, repositories
 from django_acquiring.domain import decision_logic as dl
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from django_acquiring.protocols.flows import AbstractBlock
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 VALID_RESPONSE_STATUS = [
@@ -37,8 +36,8 @@ VALID_RESPONSE_STATUS = [
     ],
 )
 def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorrectOperationResponse(
-    fake_block: Type[AbstractBlock],
-    fake_process_action_block: Type[AbstractBlock],
+    fake_block: Type[protocols.AbstractBlock],
+    fake_process_action_block: Type[protocols.AbstractBlock],
     block_response_actions: list[dict],
     payment_operations_status: OperationStatusEnum,
 ) -> None:
@@ -84,8 +83,8 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
 
 @pytest.mark.django_db
 def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
-    fake_block: Type[AbstractBlock],
-    fake_process_action_block: Type[AbstractBlock],
+    fake_block: Type[protocols.AbstractBlock],
+    fake_process_action_block: Type[protocols.AbstractBlock],
 ) -> None:
     # given a valid payment attempt
     db_payment_attempt = PaymentAttemptFactory.create()
@@ -129,8 +128,8 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
 
 @pytest.mark.django_db
 def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[AbstractBlock],
-    fake_process_action_block: Type[AbstractBlock],
+    fake_block: Type[protocols.AbstractBlock],
+    fake_process_action_block: Type[protocols.AbstractBlock],
 ) -> None:
     # Given a payment method that cannot initialize
     db_payment_attempt = PaymentAttemptFactory.create()
@@ -162,8 +161,8 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
 
 @pytest.mark.django_db
 def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[AbstractBlock],
-    fake_process_action_block: Type[AbstractBlock],
+    fake_block: Type[protocols.AbstractBlock],
+    fake_process_action_block: Type[protocols.AbstractBlock],
 ) -> None:
     # Given a non existing payment method
     payment_method = domain.PaymentMethod(

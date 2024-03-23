@@ -2,9 +2,8 @@ from typing import Type
 
 import pytest
 
-from django_acquiring import domain, models, repositories
+from django_acquiring import domain, models, protocols, repositories
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from django_acquiring.protocols.flows import AbstractBlock
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 COMPLETED_STATUS = [OperationStatusEnum.COMPLETED]
@@ -30,8 +29,8 @@ def test_statusListsAreComplete() -> None:
     + [(OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
 def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPayAndReturnsTheCorrectOperationResponse(
-    fake_block: Type[AbstractBlock],
-    fake_process_action_block: Type[AbstractBlock],
+    fake_block: Type[protocols.AbstractBlock],
+    fake_process_action_block: Type[protocols.AbstractBlock],
     result_status: OperationStatusEnum,
     payment_operation_status: OperationStatusEnum,
 ) -> None:

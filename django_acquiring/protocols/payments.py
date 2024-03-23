@@ -5,8 +5,9 @@ Check this link for more info.
 https://typing.readthedocs.io/en/latest/spec/protocol.html#protocols
 """
 
+from dataclasses import field
 from datetime import datetime
-from typing import Optional, Protocol
+from typing import Optional, Protocol, Sequence, runtime_checkable
 from uuid import UUID
 
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
@@ -69,3 +70,32 @@ class AbstractDraftPaymentAttempt(Protocol):
     order_id: UUID
     amount: int
     currency: str
+
+
+class AbstractOrder(Protocol):
+    id: UUID
+    created_at: datetime
+    payment_attempts: list[AbstractPaymentAttempt]
+
+    def __repr__(self) -> str: ...
+
+
+class AbstractOperationResponse(Protocol):
+    status: OperationStatusEnum
+    actions: list[dict] = field(default_factory=list)
+    type: OperationTypeEnum
+    error_message: Optional[str] = None
+
+
+class AbstractBlockResponse(Protocol):
+    status: OperationStatusEnum
+    actions: list[dict] = field(default_factory=list)
+    error_message: Optional[str] = None
+
+
+@runtime_checkable
+class AbstractBlock(Protocol):
+
+    def __init__(self, *args, **kwargs) -> None: ...  # type:ignore[no-untyped-def]
+
+    def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: dict) -> AbstractBlockResponse: ...

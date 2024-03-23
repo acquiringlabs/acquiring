@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 if TYPE_CHECKING:
+    from django_acquiring import protocols
     from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-    from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation, AbstractToken
 
 
-# TODO frozen=True compatible with AbstractPaymentOperation (expected settable variable, got read-only attribute)
+# TODO frozen=True compatible with protocols.AbstractPaymentOperation (expected settable variable, got read-only attribute)
 @dataclass
 class PaymentOperation:
     type: "OperationTypeEnum"
@@ -25,8 +25,8 @@ class PaymentMethod:
     created_at: datetime
     payment_attempt_id: UUID
     confirmable: bool
-    token: Optional["AbstractToken"] = None
-    payment_operations: list["AbstractPaymentOperation"] = field(default_factory=list, repr=True)
+    token: Optional["protocols.AbstractToken"] = None
+    payment_operations: list["protocols.AbstractPaymentOperation"] = field(default_factory=list, repr=True)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}"
@@ -42,7 +42,7 @@ class PaymentMethod:
 class DraftPaymentMethod:
     payment_attempt_id: UUID
     confirmable: bool
-    token: Optional["AbstractToken"] = None
+    token: Optional["protocols.AbstractToken"] = None
 
 
 @dataclass
@@ -52,7 +52,7 @@ class PaymentAttempt:
     created_at: datetime
     amount: int
     currency: str
-    payment_methods: list["AbstractPaymentMethod"] = field(default_factory=list)
+    payment_methods: list["protocols.AbstractPaymentMethod"] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}|{self.amount}{self.currency}"

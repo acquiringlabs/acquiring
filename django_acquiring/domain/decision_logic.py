@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 if TYPE_CHECKING:
-    from django_acquiring.protocols.payments import AbstractPaymentMethod
+    from django_acquiring import protocols
 
 
-def can_initialize(payment_method: "AbstractPaymentMethod") -> bool:
+def can_initialize(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the initialize operation.
 
@@ -112,7 +112,7 @@ def can_initialize(payment_method: "AbstractPaymentMethod") -> bool:
     return True
 
 
-def can_process_action(payment_method: "AbstractPaymentMethod") -> bool:
+def can_process_action(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the process_action operation.
 
@@ -210,7 +210,7 @@ def can_process_action(payment_method: "AbstractPaymentMethod") -> bool:
     return True
 
 
-def can_pay(payment_method: "AbstractPaymentMethod") -> bool:
+def can_pay(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the pay operation.
 
@@ -356,7 +356,7 @@ def can_pay(payment_method: "AbstractPaymentMethod") -> bool:
     return True
 
 
-def can_after_pay(payment_method: "AbstractPaymentMethod") -> bool:
+def can_after_pay(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the after pay operation.
 
@@ -520,7 +520,7 @@ def can_after_pay(payment_method: "AbstractPaymentMethod") -> bool:
     return True
 
 
-def can_confirm(payment_method: "AbstractPaymentMethod") -> bool:
+def can_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the confirm operation.
 
@@ -681,7 +681,7 @@ def can_confirm(payment_method: "AbstractPaymentMethod") -> bool:
     return True
 
 
-def can_after_confirm(payment_method: "AbstractPaymentMethod") -> bool:
+def can_after_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the after confirm operation.
 
