@@ -1,17 +1,18 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID
 
-from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
-from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation, AbstractToken
+if TYPE_CHECKING:
+    from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
+    from django_acquiring.protocols.payments import AbstractPaymentMethod, AbstractPaymentOperation, AbstractToken
 
 
 # TODO frozen=True compatible with AbstractPaymentOperation (expected settable variable, got read-only attribute)
 @dataclass
 class PaymentOperation:
-    type: OperationTypeEnum
-    status: OperationStatusEnum
+    type: "OperationTypeEnum"
+    status: "OperationStatusEnum"
     payment_method_id: UUID
 
     def __repr__(self) -> str:
@@ -24,13 +25,13 @@ class PaymentMethod:
     created_at: datetime
     payment_attempt_id: UUID
     confirmable: bool
-    token: AbstractToken | None = None
-    payment_operations: List[AbstractPaymentOperation] = field(default_factory=list, repr=True)
+    token: Optional["AbstractToken"] = None
+    payment_operations: List["AbstractPaymentOperation"] = field(default_factory=list, repr=True)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}"
 
-    def has_payment_operation(self, type: OperationTypeEnum, status: OperationStatusEnum) -> bool:
+    def has_payment_operation(self, type: "OperationTypeEnum", status: "OperationStatusEnum") -> bool:
         return any(operation.type == type and operation.status == status for operation in self.payment_operations)
 
     class DoesNotExist(Exception):
@@ -41,7 +42,7 @@ class PaymentMethod:
 class DraftPaymentMethod:
     payment_attempt_id: UUID
     confirmable: bool
-    token: AbstractToken | None = None
+    token: Optional["AbstractToken"] = None
 
 
 @dataclass
@@ -51,7 +52,7 @@ class PaymentAttempt:
     created_at: datetime
     amount: int
     currency: str
-    payment_methods: List[AbstractPaymentMethod] = field(default_factory=list)
+    payment_methods: List["AbstractPaymentMethod"] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}|{self.amount}{self.currency}"

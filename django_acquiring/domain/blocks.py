@@ -1,22 +1,24 @@
 import functools
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List
+from typing import TYPE_CHECKING, Callable, Dict, List
 
 from django_acquiring import domain
 from django_acquiring.protocols.enums import OperationStatusEnum
-from django_acquiring.protocols.flows import AbstractBlockResponse
-from django_acquiring.protocols.payments import AbstractPaymentMethod
+
+if TYPE_CHECKING:
+    from django_acquiring.protocols.flows import AbstractBlockResponse
+    from django_acquiring.protocols.payments import AbstractPaymentMethod
 
 
 @dataclass
 class BlockResponse:
     status: OperationStatusEnum
-    payment_method: AbstractPaymentMethod
+    payment_method: "AbstractPaymentMethod"
     actions: List[Dict] = field(default_factory=list)
     error_message: str | None = None
 
 
-def wrapped_by_block_events(function: Callable[[], AbstractBlockResponse]) -> Callable:
+def wrapped_by_block_events(function: Callable[[], "AbstractBlockResponse"]) -> Callable:
     """
     This decorator ensures that the starting and finishing block events get created.
     """
@@ -25,7 +27,7 @@ def wrapped_by_block_events(function: Callable[[], AbstractBlockResponse]) -> Ca
     repository = BlockEventRepository()
 
     @functools.wraps(function)
-    def wrapper(*args, **kwargs) -> AbstractBlockResponse:  # type: ignore[no-untyped-def]
+    def wrapper(*args, **kwargs) -> "AbstractBlockResponse":  # type: ignore[no-untyped-def]
         block_name = args[0].__class__.__name__
         payment_method = kwargs["payment_method"]
 

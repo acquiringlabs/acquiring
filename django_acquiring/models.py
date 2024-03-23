@@ -1,18 +1,22 @@
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import django.db.models
 from django.core import validators as django_validators
 
 from django_acquiring import domain
-from django_acquiring.protocols.events import AbstractBlockEvent
-from django_acquiring.protocols.orders import AbstractOrder
-from django_acquiring.protocols.payments import (
-    AbstractPaymentAttempt,
-    AbstractPaymentMethod,
-    AbstractPaymentOperation,
-    AbstractToken,
-)
-from django_acquiring.protocols.providers import AbstractTransaction
+
+if TYPE_CHECKING:
+    from django_acquiring.protocols.events import AbstractBlockEvent
+    from django_acquiring.protocols.orders import AbstractOrder
+    from django_acquiring.protocols.payments import (
+        AbstractPaymentAttempt,
+        AbstractPaymentMethod,
+        AbstractPaymentOperation,
+        AbstractToken,
+    )
+    from django_acquiring.protocols.providers import AbstractTransaction
+
 
 CURRENCY_CODE_MAX_LENGTH = 3
 
@@ -26,7 +30,7 @@ class Order(django.db.models.Model):
     def __str__(self) -> str:
         return f"[id={self.id}]"
 
-    def to_domain(self) -> AbstractOrder:
+    def to_domain(self) -> "AbstractOrder":
         return domain.Order(
             id=self.id,
             created_at=self.created_at,
@@ -65,7 +69,7 @@ class PaymentAttempt(django.db.models.Model):
     def __str__(self) -> str:
         return f"[id={self.id}, {self.currency}{self.amount}]"
 
-    def to_domain(self) -> AbstractPaymentAttempt:
+    def to_domain(self) -> "AbstractPaymentAttempt":
         return domain.PaymentAttempt(
             id=self.id,
             order_id=self.order.id,
@@ -104,7 +108,7 @@ class PaymentMethod(django.db.models.Model):
     def __str__(self) -> str:
         return f"[id={self.id}]"
 
-    def to_domain(self) -> AbstractPaymentMethod:
+    def to_domain(self) -> "AbstractPaymentMethod":
         return domain.PaymentMethod(
             id=self.id,
             created_at=self.created_at,
@@ -135,7 +139,7 @@ class Token(django.db.models.Model):
     def __str__(self) -> str:
         return f"[{self.token}]"
 
-    def to_domain(self) -> AbstractToken:
+    def to_domain(self) -> "AbstractToken":
         return domain.Token(
             created_at=self.created_at,
             expires_at=self.expires_at,
@@ -179,7 +183,7 @@ class PaymentOperation(django.db.models.Model):
     def __str__(self) -> str:
         return f"[type={self.type}, status={self.status}]"
 
-    def to_domain(self) -> AbstractPaymentOperation:
+    def to_domain(self) -> "AbstractPaymentOperation":
         return domain.PaymentOperation(
             type=self.type,
             status=self.status,
@@ -204,7 +208,7 @@ class BlockEvent(django.db.models.Model):
     def __str__(self) -> str:
         return f"[{self.block_name}|status={self.status}]"
 
-    def to_domain(self) -> AbstractBlockEvent:
+    def to_domain(self) -> "AbstractBlockEvent":
         return domain.BlockEvent(
             status=self.status,
             payment_method_id=self.payment_method.id,
@@ -228,7 +232,7 @@ class Transaction(django.db.models.Model):
     def __str__(self) -> str:
         return f"[id={self.provider_name}]"
 
-    def to_domain(self) -> AbstractTransaction:
+    def to_domain(self) -> "AbstractTransaction":
         return domain.Transaction(
             created_at=self.created_at,
             provider_name=self.provider_name,

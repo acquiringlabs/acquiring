@@ -1,18 +1,21 @@
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 import django_acquiring.domain.decision_logic as dl
 from django_acquiring import domain
 from django_acquiring.protocols.enums import OperationStatusEnum, OperationTypeEnum
-from django_acquiring.protocols.flows import AbstractBlock, AbstractOperationResponse, payment_operation_type
-from django_acquiring.protocols.payments import AbstractPaymentMethod
-from django_acquiring.protocols.repositories import AbstractRepository
+from django_acquiring.protocols.flows import payment_operation_type
+
+if TYPE_CHECKING:
+    from django_acquiring.protocols.flows import AbstractBlock, AbstractOperationResponse
+    from django_acquiring.protocols.payments import AbstractPaymentMethod
+    from django_acquiring.protocols.repositories import AbstractRepository
 
 
 @dataclass
 class OperationResponse:
     status: OperationStatusEnum
-    payment_method: AbstractPaymentMethod | None
+    payment_method: Optional["AbstractPaymentMethod"]
     type: OperationTypeEnum
     error_message: str | None = None
     actions: List[Dict] = field(default_factory=list)
@@ -21,20 +24,20 @@ class OperationResponse:
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
 @dataclass(frozen=True)
 class PaymentFlow:
-    repository: AbstractRepository
-    operations_repository: AbstractRepository
+    repository: "AbstractRepository"
+    operations_repository: "AbstractRepository"
 
-    initialize_block: AbstractBlock
-    process_actions_block: AbstractBlock
+    initialize_block: "AbstractBlock"
+    process_actions_block: "AbstractBlock"
 
-    pay_blocks: List[AbstractBlock]
-    after_pay_blocks: List[AbstractBlock]
+    pay_blocks: List["AbstractBlock"]
+    after_pay_blocks: List["AbstractBlock"]
 
-    confirm_blocks: List[AbstractBlock]
-    after_confirm_blocks: List[AbstractBlock]
+    confirm_blocks: List["AbstractBlock"]
+    after_confirm_blocks: List["AbstractBlock"]
 
     @payment_operation_type
-    def initialize(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
+    def initialize(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse":
         # Refresh the payment from the database
         try:
             payment_method = self.repository.get(id=payment_method.id)
@@ -114,7 +117,9 @@ class PaymentFlow:
         )
 
     @payment_operation_type
-    def process_actions(self, payment_method: AbstractPaymentMethod, action_data: Dict) -> AbstractOperationResponse:
+    def process_actions(
+        self, payment_method: "AbstractPaymentMethod", action_data: Dict
+    ) -> "AbstractOperationResponse":
         # Refresh the payment from the database
         try:
             payment_method = self.repository.get(id=payment_method.id)
@@ -181,7 +186,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
-    def __pay(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
+    def __pay(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse":
         # No need to refresh from DB
 
         # Verify that the payment can go through this operation type
@@ -233,7 +238,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
-    def after_pay(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
+    def after_pay(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse":
         # Refresh the payment from the database
         try:
             payment_method = self.repository.get(id=payment_method.id)
@@ -295,7 +300,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
-    def confirm(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
+    def confirm(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse":
         # Refresh the payment from the database
         try:
             payment_method = self.repository.get(id=payment_method.id)
@@ -356,7 +361,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
-    def after_confirm(self, payment_method: AbstractPaymentMethod) -> AbstractOperationResponse:
+    def after_confirm(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse":
         # Refresh the payment from the database
         try:
             payment_method = self.repository.get(id=payment_method.id)

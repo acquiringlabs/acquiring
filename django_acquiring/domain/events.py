@@ -1,12 +1,14 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 from uuid import UUID
 
-from django_acquiring.protocols.enums import OperationStatusEnum
+if TYPE_CHECKING:
+    from django_acquiring.protocols.enums import OperationStatusEnum
 
 
 @dataclass
 class BlockEvent:
-    status: OperationStatusEnum
+    status: "OperationStatusEnum"
     payment_method_id: UUID
     block_name: str
 
