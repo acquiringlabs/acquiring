@@ -49,6 +49,27 @@ def payment_operation_type(function: Callable) -> Callable:
     return wrapper
 
 
+def refresh_payment_method(function: Callable) -> Callable:
+    """
+    Refresh the payment from the database, or force an early failed OperationResponse otherwise.
+    """
+
+    @functools.wraps(function)
+    def wrapper(self, payment_method: "protocols.AbstractPaymentMethod", **kwargs) -> OperationResponse:  # type: ignore[no-untyped-def]
+        try:
+            payment_method = self.repository.get(id=payment_method.id)
+        except domain.PaymentMethod.DoesNotExist:
+            return OperationResponse(
+                status=OperationStatusEnum.FAILED,
+                payment_method=None,
+                error_message="PaymentMethod not found",
+                type=OperationTypeEnum(function.__name__),  # already valid thanks to @payment_operation_type
+            )
+        return function(self, payment_method, **kwargs)
+
+    return wrapper
+
+
 @dataclass
 class OperationResponse:
     status: OperationStatusEnum
@@ -73,19 +94,9 @@ class PaymentFlow:
     confirm_blocks: list["protocols.AbstractBlock"]
     after_confirm_blocks: list["protocols.AbstractBlock"]
 
+    @refresh_payment_method
     @payment_operation_type
     def initialize(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
-        # Refresh the payment from the database
-        try:
-            payment_method = self.repository.get(id=payment_method.id)
-        except domain.PaymentMethod.DoesNotExist:
-            return OperationResponse(
-                status=OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod not found",
-                type=OperationTypeEnum.INITIALIZE,
-            )
-
         # Verify that the payment can go through this operation type
         if not dl.can_initialize(payment_method):
             return OperationResponse(
@@ -153,21 +164,11 @@ class PaymentFlow:
             type=OperationTypeEnum.INITIALIZE,
         )
 
+    @refresh_payment_method
     @payment_operation_type
     def process_action(
         self, payment_method: "protocols.AbstractPaymentMethod", action_data: dict
     ) -> "protocols.AbstractOperationResponse":
-        # Refresh the payment from the database
-        try:
-            payment_method = self.repository.get(id=payment_method.id)
-        except domain.PaymentMethod.DoesNotExist:
-            return OperationResponse(
-                status=OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod not found",
-                type=OperationTypeEnum.PROCESS_ACTION,
-            )
-
         # Verify that the payment can go through this operation type
         if not dl.can_process_action(payment_method):
             return OperationResponse(
@@ -274,19 +275,9 @@ class PaymentFlow:
             ),
         )
 
+    @refresh_payment_method
     @payment_operation_type
     def after_pay(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
-        # Refresh the payment from the database
-        try:
-            payment_method = self.repository.get(id=payment_method.id)
-        except domain.PaymentMethod.DoesNotExist:
-            return OperationResponse(
-                status=OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod not found",
-                type=OperationTypeEnum.AFTER_PAY,
-            )
-
         # Verify that the payment can go through this operation type
         if not dl.can_after_pay(payment_method):
             return OperationResponse(
@@ -336,19 +327,9 @@ class PaymentFlow:
             type=OperationTypeEnum.AFTER_PAY,
         )
 
+    @refresh_payment_method
     @payment_operation_type
     def confirm(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
-        # Refresh the payment from the database
-        try:
-            payment_method = self.repository.get(id=payment_method.id)
-        except domain.PaymentMethod.DoesNotExist:
-            return OperationResponse(
-                status=OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod not found",
-                type=OperationTypeEnum.CONFIRM,
-            )
-
         # Verify that the payment can go through this operation type
         if not dl.can_confirm(payment_method):
             return OperationResponse(
@@ -397,19 +378,9 @@ class PaymentFlow:
             ),
         )
 
+    @refresh_payment_method
     @payment_operation_type
     def after_confirm(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
-        # Refresh the payment from the database
-        try:
-            payment_method = self.repository.get(id=payment_method.id)
-        except domain.PaymentMethod.DoesNotExist:
-            return OperationResponse(
-                status=OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod not found",
-                type=OperationTypeEnum.AFTER_CONFIRM,
-            )
-
         # Verify that the payment can go through this operation type
         if not dl.can_after_confirm(payment_method):
             return OperationResponse(
