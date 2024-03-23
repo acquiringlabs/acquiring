@@ -9,6 +9,7 @@ from django_acquiring.protocols.payments import (
     AbstractPaymentAttempt,
     AbstractPaymentMethod,
     AbstractPaymentOperation,
+    AbstractToken,
 )
 
 
@@ -65,6 +66,28 @@ class PaymentMethodRepository:
             return payment_method.to_domain()
         except models.PaymentMethod.DoesNotExist:
             raise domain.PaymentMethod.DoesNotExist
+
+    def add_token(self, payment_method: AbstractPaymentMethod, token: AbstractToken) -> AbstractPaymentMethod:
+        try:
+            db_payment_method = models.PaymentMethod.objects.get(id=payment_method.id)
+        except models.PaymentMethod.DoesNotExist:
+            raise domain.PaymentMethod.DoesNotExist
+
+        with django.db.transaction.atomic():
+            db_token = models.Token(
+                payment_method=db_payment_method,
+                created_at=token.created_at,  # TODO Ensure via type that datetime is timezone aware
+                token=token.token,
+                expires_at=token.expires_at,  # TODO Ensure via type that datetime is timezone aware
+                fingerprint=token.fingerprint,
+                metadata=token.metadata,
+            )
+            db_token.save()
+            db_payment_method.token = db_token
+            db_payment_method.save()
+
+            payment_method.token = db_token.to_domain()
+            return payment_method
 
 
 class PaymentOperationRepository:
