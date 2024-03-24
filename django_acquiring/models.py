@@ -211,7 +211,7 @@ class BlockEvent(django.db.models.Model):
 class Transaction(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
 
-    transaction_id = django.db.models.UUIDField(default=uuid4)
+    transaction_id = django.db.models.TextField()  # No arbitrary limitations are imposed
 
     payment_method = django.db.models.ForeignKey(
         PaymentMethod,

@@ -20,5 +20,8 @@ mypy
 pytest
 pytest-django
 
+# Responses to mock requests
+responses
+
 # Tox to automate and standardize testing in Python
 tox

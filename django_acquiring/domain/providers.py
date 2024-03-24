@@ -5,7 +5,7 @@ from uuid import UUID
 
 @dataclass
 class Transaction:
-    transaction_id: UUID
+    transaction_id: str
     created_at: datetime
     provider_name: str
     payment_method_id: UUID

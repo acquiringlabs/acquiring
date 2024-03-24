@@ -18,7 +18,7 @@ class AbstractProviderInterface(Protocol):
 
 @dataclass
 class AbstractTransaction(Protocol):
-    transaction_id: UUID
+    transaction_id: str
     created_at: datetime
     provider_name: str
     payment_method_id: UUID
