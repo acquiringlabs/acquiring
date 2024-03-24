@@ -20,6 +20,9 @@ mypy
 pytest
 pytest-django
 
+# python-dotenv to manage environment variables
+python-dotenv
+
 # Responses to mock requests
 responses
 

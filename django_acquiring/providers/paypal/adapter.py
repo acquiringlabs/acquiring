@@ -1,18 +1,32 @@
 import base64
+import enum
 from dataclasses import dataclass, field
 from urllib.parse import urljoin
+from uuid import UUID
 
 import requests
+
+from .domain import Order
+
+
+class PayPalStatusEnum(enum.StrEnum):
+    CREATED = "CREATED"
+    SAVED = "SAVED"
+    APPROVED = "APPROVED"
+    VOIDED = "VOIDED"
+    COMPLETED = "COMPLETED"
+    PAYER_ACTION_REQUIRED = "PAYER_ACTION_REQUIRED"
 
 
 @dataclass
 class PayPalResponse:
-    status: str
+    status: PayPalStatusEnum
     transaction_id: str
     unparsed_data: dict
 
 
 GET_ACCESS_TOKEN = "v1/oauth2/token"
+CREATE_ORDER = "/v2/checkout/orders"
 
 
 @dataclass
@@ -38,7 +52,7 @@ class PayPalAdapter:
     ...     )
     Traceback (most recent call last):
         ...
-    django_acquiring.providers.paypal.adapter.UnauthorizedError: ('401 Client Error: Unauthorized for url: https://api-m.sandbox.paypal.com/v1/oauth2/token',)
+    django_acquiring.providers.paypal.adapter.UnauthorizedError: 401 Client Error: Unauthorized for url: https://api-m.sandbox.paypal.com/v1/oauth2/token
 
     When accessing the adapter with valid credentials, an access token is retrieved from PayPal
     >>> import responses
@@ -109,21 +123,71 @@ class PayPalAdapter:
 
         headers = {"Authorization": f"Basic {credentials_b64}", "Content-Type": "application/x-www-form-urlencoded"}
 
-        data = {"grant_type": "client_credentials"}
-
         try:
-            response = requests.post(url, headers=headers, data=data)
+            response = requests.post(url, headers=headers, data={"grant_type": "client_credentials"})
             response.raise_for_status()
         except requests.exceptions.HTTPError as exception:
-            raise UnauthorizedError(exception.args)
+            raise UnauthorizedError(*exception.args)
 
-        parsed_response = response.json()
-        self.scope = parsed_response["scope"].split(" ")
-        self.access_token = parsed_response["access_token"]
-        self.expires_in = parsed_response["expires_in"]
+        serialized_response = response.json()
+        self.scope = serialized_response["scope"].split(" ")
+        self.access_token = serialized_response["access_token"]
+        self.expires_in = serialized_response["expires_in"]
+
+    def create_order(self, request_id: UUID, order: Order) -> PayPalResponse:
+        url = urljoin(self.base_url, CREATE_ORDER)
+
+        headers = {
+            "Content-Type": "application/json",
+            "PayPal-Request-Id": str(request_id),
+            "Authorization": f"Bearer {self.access_token}",
+        }
+        data = {
+            "intent": order.intent,
+            "purchase_units": [
+                {
+                    "reference_id": str(purchase_unit.reference_id),
+                    "amount": {
+                        "currency_code": purchase_unit.amount.currency_code,
+                        "value": purchase_unit.amount.value,
+                    },
+                }
+                for purchase_unit in order.purchase_units
+            ],
+            "payment_source": {
+                "paypal": {
+                    "experience_context": {
+                        "payment_method_preference": order.experience_context.payment_method_preference,
+                        "brand_name": order.experience_context.brand_name,
+                        "locale": order.experience_context.locale,
+                        "landing_page": order.experience_context.landing_page,
+                        "shipping_preference": order.experience_context.shipping_preference,
+                        "user_action": order.experience_context.user_action,
+                        "return_url": order.experience_context.return_url,
+                        "cancel_url": order.experience_context.cancel_url,
+                    },
+                },
+            },
+        }
+        try:
+            response = requests.post(url, json=data, headers=headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise BadRequestError(f"{response.status_code}|{response.text}")
+
+        serialized_response = response.json()
+        return PayPalResponse(
+            status=PayPalStatusEnum(serialized_response["status"]),
+            transaction_id=serialized_response["id"],
+            unparsed_data=serialized_response,
+        )
 
 
 class UnauthorizedError(Exception):
+    pass
+
+
+class BadRequestError(Exception):
     pass
 
 
