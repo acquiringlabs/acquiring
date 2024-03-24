@@ -20,9 +20,9 @@ def wrapped_by_block_events(function: Callable[[], "protocols.AbstractBlockRespo
     """
     This decorator ensures that the starting and finishing block events get created.
     """
-    from django_acquiring.repositories import BlockEventRepository
+    from django_acquiring import repositories
 
-    repository = BlockEventRepository()
+    repository = repositories.BlockEventRepository()
 
     @functools.wraps(function)
     def wrapper(*args, **kwargs) -> "protocols.AbstractBlockResponse":  # type: ignore[no-untyped-def]
