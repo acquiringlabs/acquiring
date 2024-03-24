@@ -211,6 +211,8 @@ class BlockEvent(django.db.models.Model):
 class Transaction(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
 
+    transaction_id = django.db.models.UUIDField(default=uuid4)
+
     payment_method = django.db.models.ForeignKey(
         PaymentMethod,
         on_delete=django.db.models.CASCADE,
@@ -227,6 +229,7 @@ class Transaction(django.db.models.Model):
     def to_domain(self) -> "protocols.AbstractTransaction":
         return domain.Transaction(
             created_at=self.created_at,
+            transaction_id=self.transaction_id,
             provider_name=self.provider_name,
             payment_method_id=self.payment_method_id,
             raw_data=self.raw_data,
