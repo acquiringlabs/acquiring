@@ -19,7 +19,7 @@ repos:
     hooks:
     -   id: clean-dotenv
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.3
+    rev: v0.3.4
     hooks:
     -   id: ruff
         args: [ --fix ]
@@ -78,6 +78,6 @@ repos:
     hooks:
     -   id: add-pre-commit-config-trailer
 -   repo: https://github.com/Mateusz-Grzelinski/actionlint-py
-    rev: v1.6.26.11
+    rev: v1.6.27.12
     hooks:
     -   id: actionlint
