@@ -141,6 +141,7 @@ class PayPalAdapter:
             "Content-Type": "application/json",
             "PayPal-Request-Id": str(request_id),
             "Authorization": f"Bearer {self.access_token}",
+            "Prefer": "return=representation",
         }
         data = {
             "intent": order.intent,
@@ -168,6 +169,9 @@ class PayPalAdapter:
                     },
                 },
             },
+            "payer": {
+                "email_address": "sb-bq8sv29977331@business.example.com",
+            },
         }
         try:
             response = requests.post(url, json=data, headers=headers)
@@ -181,6 +185,9 @@ class PayPalAdapter:
             transaction_id=serialized_response["id"],
             unparsed_data=serialized_response,
         )
+
+    # def authorize_payment(self, request_id: UUID, order_id: UUID) -> PayPalResponse:
+    #     pass
 
 
 class UnauthorizedError(Exception):
