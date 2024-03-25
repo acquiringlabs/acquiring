@@ -15,7 +15,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
 
     class FooBlock:
 
-        @domain.wrapped_by_block_events  # type:ignore[arg-type]
+        @domain.wrapped_by_block_events
         def run(
             self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
         ) -> protocols.AbstractBlockResponse:

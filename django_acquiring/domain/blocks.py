@@ -1,6 +1,6 @@
 import functools
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Callable, Optional, Sequence, Type
 
 from django_acquiring import domain
 from django_acquiring.enums import OperationStatusEnum
@@ -16,7 +16,9 @@ class BlockResponse:
     error_message: Optional[str] = None
 
 
-def wrapped_by_block_events(function: Callable[[], "protocols.AbstractBlockResponse"]) -> Callable:
+def wrapped_by_block_events(  # type:ignore[misc]
+    function: Callable[..., "protocols.AbstractBlockResponse"]
+) -> Callable:
     """
     This decorator ensures that the starting and finishing block events get created.
     """
@@ -25,9 +27,10 @@ def wrapped_by_block_events(function: Callable[[], "protocols.AbstractBlockRespo
     repository = repositories.BlockEventRepository()
 
     @functools.wraps(function)
-    def wrapper(*args, **kwargs) -> "protocols.AbstractBlockResponse":  # type: ignore[no-untyped-def]
-        block_name = args[0].__class__.__name__
-        payment_method = kwargs["payment_method"]
+    def wrapper(
+        self: Type, payment_method: "protocols.AbstractPaymentMethod", *args: Sequence, **kwargs: dict
+    ) -> "protocols.AbstractBlockResponse":
+        block_name = self.__class__.__name__
 
         repository.add(
             block_event=domain.BlockEvent(
@@ -37,7 +40,7 @@ def wrapped_by_block_events(function: Callable[[], "protocols.AbstractBlockRespo
             )
         )
 
-        result = function(*args, **kwargs)
+        result = function(payment_method, *args, **kwargs)
 
         repository.add(
             block_event=domain.BlockEvent(
