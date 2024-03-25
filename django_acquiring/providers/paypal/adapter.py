@@ -1,21 +1,11 @@
 import base64
-import enum
 from dataclasses import dataclass, field
 from urllib.parse import urljoin
 from uuid import UUID
 
 import requests
 
-from .domain import Order
-
-
-class PayPalStatusEnum(enum.StrEnum):
-    CREATED = "CREATED"
-    SAVED = "SAVED"
-    APPROVED = "APPROVED"
-    VOIDED = "VOIDED"
-    COMPLETED = "COMPLETED"
-    PAYER_ACTION_REQUIRED = "PAYER_ACTION_REQUIRED"
+from .domain import Order, PayPalStatusEnum
 
 
 @dataclass
