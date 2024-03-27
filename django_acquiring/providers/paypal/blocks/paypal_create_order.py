@@ -8,15 +8,7 @@ from django_acquiring.enums import OperationStatusEnum
 from django_acquiring.protocols import AbstractBlock, AbstractBlockResponse, AbstractPaymentMethod
 
 from ..adapter import PayPalAdapter
-from ..domain import (
-    LandingPageEnum,
-    Order,
-    OrderIntentEnum,
-    PaymentMethodPreferenceEnum,
-    PayPalExperienceContext,
-    ShippingPreferenceEnum,
-    UserActionEnum,
-)
+from ..domain import Order, OrderIntentEnum
 
 
 @dataclass
@@ -33,23 +25,21 @@ class PayPalCreateOrderBlock:
         order = Order(
             intent=OrderIntentEnum.CAPTURE,
             purchase_units=[],
-            experience_context=PayPalExperienceContext(
-                payment_method_preference=PaymentMethodPreferenceEnum.IMMEDIATE_PAYMENT_REQUIRED,
-                brand_name="ACME, Inc",
-                locale="en-US",
-                landing_page=LandingPageEnum.LOGIN,
-                user_action=UserActionEnum.CONTINUE,
-                return_url="https://example.com/returnUrl",
-                cancel_url="https://example.com/cancelUrl",
-                shipping_preference=ShippingPreferenceEnum.NO_SHIPPING,
-            ),
         )
-        self.adapter.create_order(
+        response = self.adapter.create_order(
             request_id=transaction_id,
             order=order,
         )
 
-        return BlockResponse(status=OperationStatusEnum.COMPLETED, actions=[])
+        parsed_data = self._parse_response_data(response.unparsed_data)
+
+        return BlockResponse(
+            status=OperationStatusEnum.COMPLETED,
+            actions=[{"redirect_url": parsed_data["redirect_url"]}],  # TODO Convert to dataclass
+        )
+
+    def _parse_response_data(self, data: dict) -> dict:
+        return {"redirect_url": next((link["href"] for link in data["links"] if link["rel"] == "approve"))}
 
 
 assert issubclass(PayPalCreateOrderBlock, AbstractBlock)

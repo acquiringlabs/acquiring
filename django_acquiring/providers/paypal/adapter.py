@@ -145,23 +145,6 @@ class PayPalAdapter:
                 }
                 for purchase_unit in order.purchase_units
             ],
-            "payment_source": {
-                "paypal": {
-                    "experience_context": {
-                        "payment_method_preference": order.experience_context.payment_method_preference,
-                        "brand_name": order.experience_context.brand_name,
-                        "locale": order.experience_context.locale,
-                        "landing_page": order.experience_context.landing_page,
-                        "shipping_preference": order.experience_context.shipping_preference,
-                        "user_action": order.experience_context.user_action,
-                        "return_url": order.experience_context.return_url,
-                        "cancel_url": order.experience_context.cancel_url,
-                    },
-                },
-            },
-            "payer": {
-                "email_address": "sb-bq8sv29977331@business.example.com",
-            },
         }
         try:
             response = requests.post(url, json=data, headers=headers)
@@ -175,9 +158,6 @@ class PayPalAdapter:
             transaction_id=serialized_response["id"],
             unparsed_data=serialized_response,
         )
-
-    # def authorize_payment(self, request_id: UUID, order_id: UUID) -> PayPalResponse:
-    #     pass
 
 
 class UnauthorizedError(Exception):
