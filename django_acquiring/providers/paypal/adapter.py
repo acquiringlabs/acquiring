@@ -1,17 +1,22 @@
 import base64
 from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Optional
 from urllib.parse import urljoin
 from uuid import UUID
 
 import requests
 
-from .domain import Order, PayPalStatusEnum
+from .domain import Order, OrderIntentEnum, PayPalStatusEnum
 
 
+# TODO Create AbstractAdapterResponse, wrapped_by_transactions
 @dataclass
 class PayPalResponse:
     status: PayPalStatusEnum
-    transaction_id: str
+    intent: OrderIntentEnum
+    create_time: Optional[datetime]
+    transaction_id: Optional[str]
     unparsed_data: dict
 
 
@@ -150,11 +155,19 @@ class PayPalAdapter:
             response = requests.post(url, json=data, headers=headers)
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            raise BadRequestError(f"{response.status_code}|{response.text}")
+            return PayPalResponse(
+                status=PayPalStatusEnum.FAILED,
+                intent=order.intent,
+                create_time=None,
+                transaction_id=None,
+                unparsed_data=response.json(),
+            )
 
         serialized_response = response.json()
         return PayPalResponse(
             status=PayPalStatusEnum(serialized_response["status"]),
+            intent=OrderIntentEnum(serialized_response["intent"]),
+            create_time=datetime.fromisoformat(serialized_response["create_time"]),
             transaction_id=serialized_response["id"],
             unparsed_data=serialized_response,
         )

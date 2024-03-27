@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Callable
 
 import pytest
-from django.utils import timezone
+from django.utils import timezone  # TODO replace with native aware Python datetime object
 from faker import Faker
 
 from django_acquiring import domain, models, repositories

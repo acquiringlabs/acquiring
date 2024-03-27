@@ -1,6 +1,9 @@
-from typing import Callable
+import os
+from typing import Callable, Generator
+from unittest import mock
 
 import django
+import pytest
 
 
 # https://docs.pytest.org/en/7.1.x/reference/reference.html?highlight=pytest_config#pytest.hookspec.pytest_configure
@@ -29,3 +32,16 @@ def pytest_configure(config: Callable) -> None:
     )
 
     django.setup()
+
+
+@pytest.fixture()
+def fake_os_environ() -> Generator:
+    with mock.patch.dict(
+        os.environ,
+        {
+            "PAYPAL_CLIENT_ID": "long-client-id",
+            "PAYPAL_CLIENT_SECRET": "long-client-secret",
+            "PAYPAL_BASE_URL": "https://api-m.sandbox.paypal.com/",
+        },
+    ):
+        yield

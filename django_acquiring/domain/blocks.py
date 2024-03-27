@@ -40,7 +40,7 @@ def wrapped_by_block_events(  # type:ignore[misc]
             )
         )
 
-        result = function(payment_method, *args, **kwargs)
+        result = function(self, payment_method, *args, **kwargs)
 
         repository.add(
             block_event=domain.BlockEvent(

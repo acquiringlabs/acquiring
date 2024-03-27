@@ -1,4 +1,5 @@
 from .adapter import PayPalAdapter, PayPalResponse, PayPalStatusEnum
+from .blocks import PayPalCreateOrder
 from .domain import Amount, Order, OrderIntentEnum, PurchaseUnit
 
 __all__ = [
@@ -6,6 +7,7 @@ __all__ = [
     "Order",
     "OrderIntentEnum",
     "PayPalAdapter",
+    "PayPalCreateOrder",
     "PayPalResponse",
     "PayPalStatusEnum",
     "PurchaseUnit",

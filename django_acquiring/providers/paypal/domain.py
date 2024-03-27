@@ -32,3 +32,4 @@ class PayPalStatusEnum(enum.StrEnum):
     VOIDED = "VOIDED"
     COMPLETED = "COMPLETED"
     PAYER_ACTION_REQUIRED = "PAYER_ACTION_REQUIRED"
+    FAILED = "FAILED"  # Not documented, used for non-2XX responses
