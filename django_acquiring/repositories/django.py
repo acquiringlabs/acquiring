@@ -110,14 +110,36 @@ class PaymentOperationRepository:
     def get(self, id: UUID) -> "protocols.AbstractPaymentOperation": ...  # type: ignore[empty-body]
 
 
+# TODO Append block event to payment_method.block_events?
+# TODO Test when payment method id does not correspond to any existing payment method
 class BlockEventRepository:
     def add(self, block_event: "protocols.AbstractBlockEvent") -> "protocols.AbstractBlockEvent":
-        block_event = models.BlockEvent(
+        db_block_event = models.BlockEvent(
             status=block_event.status,
             payment_method_id=block_event.payment_method_id,
             block_name=block_event.block_name,
         )
-        block_event.save()
-        return block_event.to_domain()
+        db_block_event.save()
+        return db_block_event.to_domain()
 
     def get(self, id: UUID) -> "protocols.AbstractBlockEvent": ...  # type: ignore[empty-body]
+
+
+# TODO Append transaction to payment_method.transactions?
+# TODO Test when payment method id does not correspond to any existing payment method
+class TransactionRepository:
+    def add(
+        self,
+        transaction: "protocols.AbstractTransaction",
+    ) -> "protocols.AbstractTransaction":
+        db_transaction = models.Transaction(
+            created_at=transaction.created_at,
+            transaction_id=transaction.transaction_id,
+            payment_method_id=transaction.payment_method_id,
+            provider_name=transaction.provider_name,
+            raw_data=transaction.raw_data,
+        )
+        db_transaction.save()
+        return db_transaction.to_domain()
+
+    def get(self, id: UUID) -> "protocols.AbstractTransaction": ...  # type: ignore[empty-body]

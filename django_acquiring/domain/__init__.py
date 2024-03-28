@@ -3,7 +3,7 @@ from .events import BlockEvent
 from .flow import PaymentFlow
 from .orders import Order
 from .payments import DraftPaymentAttempt, DraftPaymentMethod, PaymentAttempt, PaymentMethod, PaymentOperation, Token
-from .providers import Transaction
+from .providers import Transaction, wrapped_by_transaction
 
 __all__ = [
     "BlockEvent",
@@ -18,6 +18,7 @@ __all__ = [
     "Token",
     "Transaction",
     "wrapped_by_block_events",
+    "wrapped_by_transaction",
 ]
 
 

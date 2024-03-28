@@ -7,17 +7,20 @@ from uuid import UUID
 
 import requests
 
+from django_acquiring import domain, protocols
+
 from .domain import Order, OrderIntentEnum, PayPalStatusEnum
 
 
 # TODO Create AbstractAdapterResponse, wrapped_by_transactions
-@dataclass
+@dataclass(match_args=False)
 class PayPalResponse:
+    success: bool
+    external_id: Optional[str]
     status: PayPalStatusEnum
     intent: OrderIntentEnum
     create_time: Optional[datetime]
-    transaction_id: Optional[str]
-    unparsed_data: dict
+    raw_data: dict
 
 
 GET_ACCESS_TOKEN = "v1/oauth2/token"
@@ -92,6 +95,7 @@ class PayPalAdapter:
     access_token: str = field(init=False, repr=False)
     scope: list[str] = field(init=False, repr=False)
     expires_in: int = field(init=False, repr=False)
+    provider_name: str = "paypal"
 
     def __repr__(self) -> str:
         return f"PayPalAdapter:base_url={self.base_url}|access_token={self.access_token}|expires in {self.expires_in} seconds"
@@ -129,7 +133,8 @@ class PayPalAdapter:
         self.access_token = serialized_response["access_token"]
         self.expires_in = serialized_response["expires_in"]
 
-    def create_order(self, request_id: UUID, order: Order) -> PayPalResponse:
+    @domain.wrapped_by_transaction
+    def create_order(self, request_id: UUID, order: Order) -> "protocols.AbstractAdapterResponse":
         url = urljoin(self.base_url, CREATE_ORDER)
 
         headers = {
@@ -156,21 +161,26 @@ class PayPalAdapter:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             return PayPalResponse(
+                success=False,
+                external_id=None,
+                raw_data=response.json(),
                 status=PayPalStatusEnum.FAILED,
                 intent=order.intent,
                 create_time=None,
-                transaction_id=None,
-                unparsed_data=response.json(),
             )
 
         serialized_response = response.json()
-        return PayPalResponse(
+
+        result = PayPalResponse(
+            success=True,
             status=PayPalStatusEnum(serialized_response["status"]),
             intent=OrderIntentEnum(serialized_response["intent"]),
             create_time=datetime.fromisoformat(serialized_response["create_time"]),
-            transaction_id=serialized_response["id"],
-            unparsed_data=serialized_response,
+            external_id=serialized_response["id"],
+            raw_data=serialized_response,
         )
+        isinstance(result, protocols.AbstractAdapterResponse)
+        return result
 
 
 class UnauthorizedError(Exception):

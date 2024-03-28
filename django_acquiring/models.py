@@ -209,7 +209,9 @@ class BlockEvent(django.db.models.Model):
 
 
 class Transaction(django.db.models.Model):
-    created_at = django.db.models.DateTimeField(auto_now_add=True)
+
+    # Filled with Provided data on request, not auto added
+    created_at = django.db.models.DateTimeField(auto_now_add=False)
 
     transaction_id = django.db.models.TextField()  # No arbitrary limitations are imposed
 

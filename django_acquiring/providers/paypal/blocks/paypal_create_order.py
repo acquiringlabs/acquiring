@@ -30,10 +30,10 @@ class PayPalCreateOrder:
             return BlockResponse(
                 status=OperationStatusEnum.FAILED,
                 actions=[],
-                error_message=str(response.unparsed_data),
+                error_message=str(response.raw_data),
             )
 
-        parsed_data = self._parse_response_data(response.unparsed_data)
+        parsed_data = self._parse_response_data(response.raw_data)
 
         return BlockResponse(
             status=OperationStatusEnum.COMPLETED,

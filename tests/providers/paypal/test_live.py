@@ -56,15 +56,15 @@ class TestLiveSandbox:
         print("***")
         print(response.create_time)
 
-        unparsed_data = response.unparsed_data
-        assert unparsed_data.get("links") is not None
-        assert len(unparsed_data["links"]) == 4
-        assert set(link["rel"] for link in unparsed_data["links"]) == set(["approve", "capture", "self", "update"])
-        links = sorted(unparsed_data["links"], key=operator.itemgetter("rel"))  # ordered by rel
+        raw_data = response.raw_data
+        assert raw_data.get("links") is not None
+        assert len(raw_data["links"]) == 4
+        assert set(link["rel"] for link in raw_data["links"]) == set(["approve", "capture", "self", "update"])
+        links = sorted(raw_data["links"], key=operator.itemgetter("rel"))  # ordered by rel
         approve_link = links[0]
         assert approve_link["href"] == f"https://www.sandbox.paypal.com/checkoutnow?token={response.transaction_id}"
 
         print("***")
-        pprint.pprint(response.unparsed_data)
+        pprint.pprint(response.raw_data)
 
         print("***")

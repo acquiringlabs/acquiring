@@ -26,6 +26,7 @@ def wrapped_by_block_events(  # type:ignore[misc]
 
     repository = repositories.BlockEventRepository()
 
+    # TODO Type must be an AbstractBlock
     @functools.wraps(function)
     def wrapper(
         self: Type, payment_method: "protocols.AbstractPaymentMethod", *args: Sequence, **kwargs: dict

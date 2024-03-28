@@ -1,18 +1,19 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Protocol
+from typing import Optional, Protocol, runtime_checkable
 from uuid import UUID
-from django_acquiring.enums import OperationStatusEnum
+
+
+@runtime_checkable
+@dataclass(match_args=False)
+class AbstractAdapterResponse(Protocol):
+    success: bool
+    external_id: Optional[str]  # UUID cannot be imposed across all adapters
+    raw_data: dict
 
 
 @dataclass
-class AbstractProviderResponse(Protocol):
-    status: OperationStatusEnum
-    external_id: UUID
-
-
-@dataclass
-class AbstractProviderInterface(Protocol):
+class AbstractAdapter(Protocol):
     base_url: str
 
 

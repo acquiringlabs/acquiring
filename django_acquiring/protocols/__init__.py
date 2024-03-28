@@ -11,10 +11,12 @@ from .payments import (
     AbstractPaymentOperation,
     AbstractToken,
 )
-from .providers import AbstractProviderInterface, AbstractProviderResponse, AbstractTransaction
+from .providers import AbstractAdapter, AbstractAdapterResponse, AbstractTransaction
 from .repositories import AbstractRepository
 
 __all__ = [
+    "AbstractAdapter",
+    "AbstractAdapterResponse",
     "AbstractBlock",
     "AbstractBlockEvent",
     "AbstractBlockResponse",
@@ -25,8 +27,6 @@ __all__ = [
     "AbstractPaymentAttempt",
     "AbstractPaymentMethod",
     "AbstractPaymentOperation",
-    "AbstractProviderInterface",
-    "AbstractProviderResponse",
     "AbstractRepository",
     "AbstractToken",
     "AbstractTransaction",
