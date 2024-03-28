@@ -17,7 +17,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreat
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
     transaction = domain.Transaction(
-        transaction_id=fake.uuid4(),
+        external_id=fake.uuid4(),
         created_at=timezone.now(),
         provider_name=fake.company(),
         payment_method_id=db_payment_method.id,

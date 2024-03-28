@@ -134,7 +134,7 @@ class TransactionRepository:
     ) -> "protocols.AbstractTransaction":
         db_transaction = models.Transaction(
             created_at=transaction.created_at,
-            transaction_id=transaction.transaction_id,
+            external_id=transaction.external_id,
             payment_method_id=transaction.payment_method_id,
             provider_name=transaction.provider_name,
             raw_data=transaction.raw_data,

@@ -1,6 +1,6 @@
 import functools
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable, Optional, Sequence, Type
+from typing import TYPE_CHECKING, Callable, Optional, Sequence
 
 from django_acquiring import domain
 from django_acquiring.enums import OperationStatusEnum
@@ -26,10 +26,12 @@ def wrapped_by_block_events(  # type:ignore[misc]
 
     repository = repositories.BlockEventRepository()
 
-    # TODO Type must be an AbstractBlock
     @functools.wraps(function)
     def wrapper(
-        self: Type, payment_method: "protocols.AbstractPaymentMethod", *args: Sequence, **kwargs: dict
+        self: "protocols.AbstractBlock",
+        payment_method: "protocols.AbstractPaymentMethod",
+        *args: Sequence,
+        **kwargs: dict,
     ) -> "protocols.AbstractBlockResponse":
         block_name = self.__class__.__name__
 

@@ -213,7 +213,7 @@ class Transaction(django.db.models.Model):
     # Filled with Provided data on request, not auto added
     created_at = django.db.models.DateTimeField(auto_now_add=False)
 
-    transaction_id = django.db.models.TextField()  # No arbitrary limitations are imposed
+    external_id = django.db.models.TextField()  # No arbitrary limitations are imposed
 
     payment_method = django.db.models.ForeignKey(
         PaymentMethod,
@@ -231,7 +231,7 @@ class Transaction(django.db.models.Model):
     def to_domain(self) -> "protocols.AbstractTransaction":
         return domain.Transaction(
             created_at=self.created_at,
-            transaction_id=self.transaction_id,
+            external_id=self.external_id,
             provider_name=self.provider_name,
             payment_method_id=self.payment_method_id,
             raw_data=self.raw_data,

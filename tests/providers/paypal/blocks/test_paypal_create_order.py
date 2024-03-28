@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from typing import Generator
 
 import pytest
@@ -46,32 +47,35 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
     fake_create_time = timezone.now().isoformat()
     fake_id = fake.password(length=10, special_chars=False, upper_case=False).upper()
     approve_url = f"{fake.url()}?token={fake_id}"
+
+    raw_response = {
+        "create_time": fake_create_time,
+        "id": fake_id,
+        "intent": paypal.domain.OrderIntentEnum.CAPTURE,
+        "links": [
+            {"href": fake.url(), "method": "GET", "rel": "self"},
+            {"href": approve_url, "method": "GET", "rel": "approve"},
+            {"href": fake.url(), "method": "PATCH", "rel": "update"},
+            {"href": fake.url(), "method": "POST", "rel": "capture"},
+        ],
+        "purchase_units": [
+            {
+                "amount": {"currency_code": "USD", "value": "10.00"},
+                "payee": {
+                    "email_address": fake.email(),
+                    "merchant_id": fake.password(length=10, special_chars=False, upper_case=False).upper(),
+                },
+                "reference_id": fake.uuid4(),
+            }
+        ],
+        "status": paypal.domain.PayPalStatusEnum.CREATED,
+    }
+
     responses.add(
         responses.Response(
             responses.POST,
             f"{os.environ['PAYPAL_BASE_URL']}v2/checkout/orders",
-            json={
-                "create_time": fake_create_time,
-                "id": fake_id,
-                "intent": paypal.domain.OrderIntentEnum.CAPTURE,
-                "links": [
-                    {"href": fake.url(), "method": "GET", "rel": "self"},
-                    {"href": approve_url, "method": "GET", "rel": "approve"},
-                    {"href": fake.url(), "method": "PATCH", "rel": "update"},
-                    {"href": fake.url(), "method": "POST", "rel": "capture"},
-                ],
-                "purchase_units": [
-                    {
-                        "amount": {"currency_code": "USD", "value": "10.00"},
-                        "payee": {
-                            "email_address": fake.email(),
-                            "merchant_id": fake.password(length=10, special_chars=False, upper_case=False).upper(),
-                        },
-                        "reference_id": fake.uuid4(),
-                    }
-                ],
-                "status": paypal.domain.PayPalStatusEnum.CREATED,
-            },
+            json=raw_response,
         )
     )
 
@@ -89,3 +93,13 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         enums.OperationStatusEnum.STARTED,
         enums.OperationStatusEnum.COMPLETED,
     ]
+
+    assert models.Transaction.objects.count() == 1
+    transaction = models.Transaction.objects.first()
+    assert transaction.to_domain() == domain.Transaction(
+        external_id=fake_id,
+        created_at=datetime.fromisoformat(fake_create_time),
+        provider_name="paypal",
+        payment_method_id=payment_method.id,
+        raw_data=raw_response,
+    )

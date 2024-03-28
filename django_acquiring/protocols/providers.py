@@ -8,6 +8,7 @@ from uuid import UUID
 @dataclass(match_args=False)
 class AbstractAdapterResponse(Protocol):
     success: bool
+    timestamp: datetime
     external_id: Optional[str]  # UUID cannot be imposed across all adapters
     raw_data: dict
 
@@ -15,11 +16,12 @@ class AbstractAdapterResponse(Protocol):
 @dataclass
 class AbstractAdapter(Protocol):
     base_url: str
+    provider_name: str
 
 
 @dataclass
 class AbstractTransaction(Protocol):
-    transaction_id: str
+    external_id: str
     created_at: datetime
     provider_name: str
     payment_method_id: UUID

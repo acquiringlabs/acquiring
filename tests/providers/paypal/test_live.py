@@ -7,6 +7,7 @@ import pytest
 from dotenv import load_dotenv
 
 from django_acquiring.providers import paypal
+from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 load_dotenv()  # take environment variables from .env.
 
@@ -24,6 +25,7 @@ class TestLiveSandbox:
 
     BASE_URL = "https://api-m.sandbox.paypal.com/"
 
+    @pytest.mark.django_db
     def test_givenCorrectCredentials_weCanCreateAnOrder(self) -> None:
         adapter = paypal.PayPalAdapter(
             self.BASE_URL,
@@ -32,7 +34,10 @@ class TestLiveSandbox:
         )
         assert adapter.access_token is not None
 
+        payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory()).to_domain()
+
         response = adapter.create_order(
+            payment_method=payment_method,
             request_id=uuid.uuid4(),
             order=paypal.Order(
                 intent=paypal.OrderIntentEnum.CAPTURE,
@@ -48,7 +53,7 @@ class TestLiveSandbox:
             ),
         )
 
-        assert response.transaction_id is not None
+        assert response.external_id is not None
         assert response.status == paypal.PayPalStatusEnum.CREATED
         assert response.intent == paypal.OrderIntentEnum.CAPTURE
         assert response.create_time is not None
@@ -62,7 +67,7 @@ class TestLiveSandbox:
         assert set(link["rel"] for link in raw_data["links"]) == set(["approve", "capture", "self", "update"])
         links = sorted(raw_data["links"], key=operator.itemgetter("rel"))  # ordered by rel
         approve_link = links[0]
-        assert approve_link["href"] == f"https://www.sandbox.paypal.com/checkoutnow?token={response.transaction_id}"
+        assert approve_link["href"] == f"https://www.sandbox.paypal.com/checkoutnow?token={response.external_id}"
 
         print("***")
         pprint.pprint(response.raw_data)

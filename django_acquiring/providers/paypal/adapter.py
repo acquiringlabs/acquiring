@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Optional
 from urllib.parse import urljoin
 from uuid import UUID
-
 import requests
 
 from django_acquiring import domain, protocols
@@ -17,6 +16,7 @@ from .domain import Order, OrderIntentEnum, PayPalStatusEnum
 class PayPalResponse:
     success: bool
     external_id: Optional[str]
+    timestamp: datetime
     status: PayPalStatusEnum
     intent: OrderIntentEnum
     create_time: Optional[datetime]
@@ -134,7 +134,12 @@ class PayPalAdapter:
         self.expires_in = serialized_response["expires_in"]
 
     @domain.wrapped_by_transaction
-    def create_order(self, request_id: UUID, order: Order) -> "protocols.AbstractAdapterResponse":
+    def create_order(
+        self,
+        payment_method: "protocols.AbstractPaymentMethod",
+        request_id: UUID,
+        order: Order,
+    ) -> "protocols.AbstractAdapterResponse":
         url = urljoin(self.base_url, CREATE_ORDER)
 
         headers = {
@@ -162,6 +167,7 @@ class PayPalAdapter:
         except requests.exceptions.HTTPError:
             return PayPalResponse(
                 success=False,
+                timestamp=datetime.now(),
                 external_id=None,
                 raw_data=response.json(),
                 status=PayPalStatusEnum.FAILED,
@@ -174,12 +180,12 @@ class PayPalAdapter:
         result = PayPalResponse(
             success=True,
             status=PayPalStatusEnum(serialized_response["status"]),
+            timestamp=serialized_response["create_time"],
             intent=OrderIntentEnum(serialized_response["intent"]),
             create_time=datetime.fromisoformat(serialized_response["create_time"]),
             external_id=serialized_response["id"],
             raw_data=serialized_response,
         )
-        isinstance(result, protocols.AbstractAdapterResponse)
         return result
 
 
