@@ -32,11 +32,23 @@ class AbstractToken(Protocol):
 
 
 # TODO Have this class the DoesNotExist internal class
+class AbstractPaymentAttempt(Protocol):
+    id: UUID
+    order_id: UUID
+    created_at: datetime
+    amount: int
+    currency: str
+    payment_method_ids: list[UUID]
+
+    def __repr__(self) -> str: ...
+
+
+# TODO Have this class the DoesNotExist internal class
 class AbstractPaymentMethod(Protocol):
     id: UUID
     created_at: datetime
     token: AbstractToken | None
-    payment_attempt_id: UUID
+    payment_attempt: AbstractPaymentAttempt
     confirmable: bool
     payment_operations: list[AbstractPaymentOperation]
 
@@ -50,20 +62,9 @@ class AbstractPaymentMethod(Protocol):
 
 
 class AbstractDraftPaymentMethod(Protocol):
-    payment_attempt_id: UUID
+    payment_attempt: AbstractPaymentAttempt
     confirmable: bool
     token: AbstractToken | None = None
-
-
-# TODO Have this class the DoesNotExist internal class
-class AbstractPaymentAttempt(Protocol):
-    id: UUID
-    order_id: UUID
-    created_at: datetime
-    amount: int
-    currency: str
-
-    def __repr__(self) -> str: ...
 
 
 class AbstractDraftPaymentAttempt(Protocol):

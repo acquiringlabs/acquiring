@@ -23,7 +23,7 @@ class PaymentOperation:
 class PaymentMethod:
     id: UUID
     created_at: datetime
-    payment_attempt_id: UUID
+    payment_attempt: "protocols.AbstractPaymentAttempt"
     confirmable: bool
     token: Optional["protocols.AbstractToken"] = None
     payment_operations: list["protocols.AbstractPaymentOperation"] = field(default_factory=list, repr=True)
@@ -40,7 +40,7 @@ class PaymentMethod:
 
 @dataclass
 class DraftPaymentMethod:
-    payment_attempt_id: UUID
+    payment_attempt: "protocols.AbstractPaymentAttempt"
     confirmable: bool
     token: Optional["protocols.AbstractToken"] = None
 
@@ -52,7 +52,7 @@ class PaymentAttempt:
     created_at: datetime
     amount: int
     currency: str
-    payment_methods: list["protocols.AbstractPaymentMethod"] = field(default_factory=list)
+    payment_method_ids: list[UUID] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}|{self.amount}{self.currency}"

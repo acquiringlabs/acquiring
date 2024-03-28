@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Generator
+from typing import Callable, Generator
 
 import pytest
 import responses
@@ -18,6 +18,7 @@ fake = Faker()
 @pytest.mark.django_db
 def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRedirectAction(
     fake_os_environ: Generator,
+    django_assert_num_queries: Callable,
 ) -> None:
     payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory()).to_domain()
 
@@ -79,7 +80,8 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         )
     )
 
-    response = block.run(payment_method)
+    with django_assert_num_queries(5):
+        response = block.run(payment_method)
 
     assert response == domain.BlockResponse(
         status=enums.OperationStatusEnum.COMPLETED,

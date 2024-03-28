@@ -12,7 +12,7 @@ from tests.factories import OrderFactory, PaymentAttemptFactory, PaymentMethodFa
 def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated(
     django_assert_num_queries: Callable,
 ) -> None:
-    # Given Correct Data
+
     db_order = OrderFactory()
 
     data = domain.DraftPaymentAttempt(order_id=db_order.id, amount=999, currency="NZD")
@@ -77,7 +77,7 @@ def test_givenExistingPaymentAttemptRowInPaymentAttemptsTable_whenCallingReposit
 def test_givenNonExistingPaymentAttemptRow_whenCallingRepositoryGet_thenDoesNotExistGetsRaise(
     django_assert_num_queries: Callable,
 ) -> None:
-    # Given a non existing payment method
+
     payment_method = domain.PaymentAttempt(
         id=uuid.uuid4(),
         order_id=uuid.uuid4(),
@@ -86,6 +86,5 @@ def test_givenNonExistingPaymentAttemptRow_whenCallingRepositoryGet_thenDoesNotE
         currency="NZD",
     )
 
-    # When calling PaymentMethodRepository.get
     with django_assert_num_queries(1), pytest.raises(domain.PaymentAttempt.DoesNotExist):
         repositories.PaymentAttemptRepository().get(id=payment_method.id)

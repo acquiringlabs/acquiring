@@ -1,6 +1,6 @@
+import uuid
 from datetime import datetime
 from typing import Type
-from uuid import uuid4
 
 import pytest
 
@@ -178,11 +178,20 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
 def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowReturnsAFailedStatusOperationResponse(
     fake_block: Type[protocols.AbstractBlock], fake_process_action_block: Type[protocols.AbstractBlock]
 ) -> None:
-    # Given a non existing payment method
-    payment_method = domain.PaymentMethod(
-        id=uuid4(),
+
+    payment_attempt = domain.PaymentAttempt(
+        id=uuid.uuid4(),
+        order_id=uuid.uuid4(),
         created_at=datetime.now(),
-        payment_attempt_id=uuid4(),
+        amount=10,
+        currency="USD",
+        payment_method_ids=[],
+    )
+
+    payment_method = domain.PaymentMethod(
+        id=uuid.uuid4(),
+        payment_attempt=payment_attempt,
+        created_at=datetime.now(),
         confirmable=False,
     )
 

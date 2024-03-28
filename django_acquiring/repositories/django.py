@@ -37,7 +37,7 @@ class PaymentMethodRepository:
         with django.db.transaction.atomic():
 
             db_payment_method = models.PaymentMethod(
-                payment_attempt_id=data.payment_attempt_id,
+                payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
             )
 
@@ -58,7 +58,9 @@ class PaymentMethodRepository:
     def get(self, id: UUID) -> "protocols.AbstractPaymentMethod":
         try:
             payment_method = (
-                models.PaymentMethod.objects.prefetch_related("payment_operations").select_related("token").get(id=id)
+                models.PaymentMethod.objects.prefetch_related("payment_operations")
+                .select_related("token", "payment_attempt")
+                .get(id=id)
             )
             return payment_method.to_domain()
         except models.PaymentMethod.DoesNotExist:

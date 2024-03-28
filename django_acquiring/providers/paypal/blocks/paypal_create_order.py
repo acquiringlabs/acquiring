@@ -17,6 +17,8 @@ class PayPalCreateOrder:
     @wrapped_by_block_events
     def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: dict) -> AbstractBlockResponse:
         external_id = uuid.uuid4()
+
+        # TODO Implement Order from payment_method.payment_attempt
         order = Order(
             intent=OrderIntentEnum.CAPTURE,
             purchase_units=[],

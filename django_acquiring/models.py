@@ -68,7 +68,7 @@ class PaymentAttempt(django.db.models.Model):
             created_at=self.created_at,
             amount=self.amount,
             currency=self.currency,
-            payment_methods=[payment_method.to_domain() for payment_method in self.payment_methods.all()],
+            payment_method_ids=[payment_method.id for payment_method in self.payment_methods.all()],
         )
 
 
@@ -105,7 +105,7 @@ class PaymentMethod(django.db.models.Model):
             id=self.id,
             created_at=self.created_at,
             token=self.token.to_domain() if self.token else None,
-            payment_attempt_id=self.payment_attempt_id,
+            payment_attempt=self.payment_attempt.to_domain(),
             payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations.all()],
             confirmable=self.confirmable,
         )

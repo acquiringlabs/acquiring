@@ -12,7 +12,7 @@ from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
     django_assert_num_queries: Callable, status: OperationStatusEnum
 ) -> None:
-    # Given Correct Data
+
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
     block_event = domain.BlockEvent(
         status=status,
