@@ -56,10 +56,7 @@ class TestLiveSandbox:
         assert response.external_id is not None
         assert response.status == paypal.PayPalStatusEnum.CREATED
         assert response.intent == paypal.OrderIntentEnum.CAPTURE
-        assert response.create_time is not None
-
-        print("***")
-        print(response.create_time)
+        assert response.timestamp is not None
 
         raw_data = response.raw_data
         assert raw_data.get("links") is not None
@@ -71,5 +68,4 @@ class TestLiveSandbox:
 
         print("***")
         pprint.pprint(response.raw_data)
-
         print("***")
