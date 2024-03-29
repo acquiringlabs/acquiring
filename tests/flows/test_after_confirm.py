@@ -181,7 +181,6 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
 
     payment_attempt = domain.PaymentAttempt(
         id=uuid.uuid4(),
-        order_id=uuid.uuid4(),
         created_at=datetime.now(),
         amount=10,
         currency="USD",

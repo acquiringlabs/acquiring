@@ -5,7 +5,7 @@ import pytest
 from django.utils import timezone
 
 from django_acquiring import domain, models, repositories
-from tests.factories import OrderFactory, PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+from tests.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @pytest.mark.django_db
@@ -13,12 +13,10 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
     django_assert_num_queries: Callable,
 ) -> None:
 
-    db_order = OrderFactory()
-
-    data = domain.DraftPaymentAttempt(order_id=db_order.id, amount=999, currency="NZD")
+    data = domain.DraftPaymentAttempt(amount=999, currency="NZD")
 
     # When calling PaymentAttemptRepository.add
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(2):
         result = repositories.PaymentAttemptRepository().add(data)
 
     # Then PaymentAttempt gets created
@@ -37,12 +35,11 @@ def test_givenInCorrectCurrencyData_whenCallingRepositoryAdd_thenPaymentAttemptR
     django_assert_num_queries: Callable,
 ) -> None:
     # Given Incorrect Currency Data
-    db_order = OrderFactory()
 
-    data = domain.DraftPaymentAttempt(order_id=db_order.id, amount=999, currency="fake")
+    data = domain.DraftPaymentAttempt(amount=999, currency="fake")
 
     # When calling PaymentAttemptRepository.add
-    with django_assert_num_queries(3):  # , pytest.raises(domain.CurrencyField.DoesNotExist):
+    with django_assert_num_queries(2):  # , pytest.raises(domain.CurrencyField.DoesNotExist):
         result = repositories.PaymentAttemptRepository().add(data)
 
     # Then PaymentAttempt raises an error
@@ -80,7 +77,6 @@ def test_givenNonExistingPaymentAttemptRow_whenCallingRepositoryGet_thenDoesNotE
 
     payment_method = domain.PaymentAttempt(
         id=uuid.uuid4(),
-        order_id=uuid.uuid4(),
         created_at=timezone.now(),
         amount=999,
         currency="NZD",

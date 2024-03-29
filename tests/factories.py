@@ -6,13 +6,7 @@ from faker import Faker
 fake = Faker()
 
 
-class OrderFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = "django_acquiring.Order"
-
-
 class PaymentAttemptFactory(factory.django.DjangoModelFactory):
-    order = factory.SubFactory(OrderFactory)
     currency = factory.LazyAttribute(lambda _: fake.currency_code())
     amount = factory.LazyAttribute(lambda _: random.randint(0, 999999))
 

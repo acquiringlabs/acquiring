@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 class PaymentAttemptRepository:
     def add(self, data: "protocols.AbstractDraftPaymentAttempt") -> "protocols.AbstractPaymentAttempt":
         payment_attempt = models.PaymentAttempt(
-            order_id=data.order_id,
             amount=data.amount,
             currency=data.currency,
         )
@@ -22,11 +21,9 @@ class PaymentAttemptRepository:
 
     def get(self, id: UUID) -> "protocols.AbstractPaymentAttempt":
         try:
-            payment_attempt = (
-                models.PaymentAttempt.objects.prefetch_related("payment_methods", "payment_methods__payment_operations")
-                .select_related("order")
-                .get(id=id)
-            )
+            payment_attempt = models.PaymentAttempt.objects.prefetch_related(
+                "payment_methods", "payment_methods__payment_operations"
+            ).get(id=id)
             return payment_attempt.to_domain()
         except models.PaymentAttempt.DoesNotExist:
             raise domain.PaymentAttempt.DoesNotExist

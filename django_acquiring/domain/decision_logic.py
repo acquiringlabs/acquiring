@@ -38,7 +38,6 @@ def can_initialize(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     ... )
     >>> payment_attempt = PaymentAttempt(
     ...     id="612a66aa-a133-4585-8866-977b08ecc05f",
-    ...     order_id="dfe2f3a7-a501-4b78-bea1-9012e0f04f0d",
     ...     created_at=datetime.now(),
     ...     amount=10,
     ...     currency="USD",
@@ -158,7 +157,6 @@ def can_process_action(payment_method: "protocols.AbstractPaymentMethod") -> boo
     ... )
     >>> payment_attempt = PaymentAttempt(
     ...     id="612a66aa-a133-4585-8866-977b08ecc05f",
-    ...     order_id="dfe2f3a7-a501-4b78-bea1-9012e0f04f0d",
     ...     created_at=datetime.now(),
     ...     amount=10,
     ...     currency="USD",
@@ -285,7 +283,6 @@ def can_after_pay(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     ... )
     >>> payment_attempt = PaymentAttempt(
     ...     id="612a66aa-a133-4585-8866-977b08ecc05f",
-    ...     order_id="dfe2f3a7-a501-4b78-bea1-9012e0f04f0d",
     ...     created_at=datetime.now(),
     ...     amount=10,
     ...     currency="USD",
@@ -469,7 +466,6 @@ def can_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     ... )
     >>> payment_attempt = PaymentAttempt(
     ...     id="612a66aa-a133-4585-8866-977b08ecc05f",
-    ...     order_id="dfe2f3a7-a501-4b78-bea1-9012e0f04f0d",
     ...     created_at=datetime.now(),
     ...     amount=10,
     ...     currency="USD",
@@ -647,7 +643,6 @@ def can_after_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool
     ... )
     >>> payment_attempt = PaymentAttempt(
     ...     id="612a66aa-a133-4585-8866-977b08ecc05f",
-    ...     order_id="dfe2f3a7-a501-4b78-bea1-9012e0f04f0d",
     ...     created_at=datetime.now(),
     ...     amount=10,
     ...     currency="USD",

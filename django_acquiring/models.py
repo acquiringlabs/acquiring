@@ -13,35 +13,13 @@ if TYPE_CHECKING:
 CURRENCY_CODE_MAX_LENGTH = 3
 
 
-class Order(django.db.models.Model):
-    created_at = django.db.models.DateTimeField(auto_now_add=True)
-
-    # https://docs.djangoproject.com/en/5.0/ref/models/fields/#uuidfield
-    id = django.db.models.UUIDField(primary_key=True, default=uuid4, editable=False)
-
-    def __str__(self) -> str:
-        return f"[id={self.id}]"
-
-    def to_domain(self) -> "protocols.AbstractOrder":
-        return domain.Order(
-            id=self.id,
-            created_at=self.created_at,
-            payment_attempts=self.payment_attempts,
-        )
-
-
 class PaymentAttempt(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
 
     # https://docs.djangoproject.com/en/5.0/ref/models/fields/#uuidfield
     id = django.db.models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
-    order = django.db.models.ForeignKey(
-        Order,
-        on_delete=django.db.models.CASCADE,
-        related_name="payment_attempts",
-    )
-
+    # https://en.wikipedia.org/wiki/ISO_4217
     # https://stackoverflow.com/questions/224462/storing-money-in-a-decimal-column-what-precision-and-scale/224866#224866
     # https://sqlblog.org/2008/04/27/performance-storage-comparisons-money-vs-decimal
     amount = django.db.models.BigIntegerField(
@@ -64,7 +42,6 @@ class PaymentAttempt(django.db.models.Model):
     def to_domain(self) -> "protocols.AbstractPaymentAttempt":
         return domain.PaymentAttempt(
             id=self.id,
-            order_id=self.order.id,
             created_at=self.created_at,
             amount=self.amount,
             currency=self.currency,

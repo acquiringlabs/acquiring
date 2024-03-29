@@ -34,7 +34,6 @@ class AbstractToken(Protocol):
 # TODO Have this class the DoesNotExist internal class
 class AbstractPaymentAttempt(Protocol):
     id: UUID
-    order_id: UUID
     created_at: datetime
     amount: int
     currency: str
@@ -68,17 +67,8 @@ class AbstractDraftPaymentMethod(Protocol):
 
 
 class AbstractDraftPaymentAttempt(Protocol):
-    order_id: UUID
     amount: int
     currency: str
-
-
-class AbstractOrder(Protocol):
-    id: UUID
-    created_at: datetime
-    payment_attempts: list[AbstractPaymentAttempt]
-
-    def __repr__(self) -> str: ...
 
 
 class AbstractOperationResponse(Protocol):

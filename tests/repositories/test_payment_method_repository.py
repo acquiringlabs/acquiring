@@ -23,7 +23,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
         confirmable=True,
     )
 
-    with django_assert_num_queries(7):
+    with django_assert_num_queries(6):
         result = repositories.PaymentMethodRepository().add(data)
 
     # Then PaymentMethod gets created
@@ -56,7 +56,7 @@ def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(
         ),
     )
 
-    with django_assert_num_queries(8):
+    with django_assert_num_queries(7):
         result = repositories.PaymentMethodRepository().add(data)
 
     db_tokens = models.Token.objects.all()
@@ -87,7 +87,7 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
     db_payment_method.save()
     PaymentOperationFactory.create_batch(3, payment_method_id=db_payment_method.id)
 
-    with django_assert_num_queries(4):
+    with django_assert_num_queries(3):
         result = repositories.PaymentMethodRepository().get(id=db_payment_method.id)
 
     # Then PaymentMethod gets retrieved
@@ -100,7 +100,6 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
 ) -> None:
     payment_attempt = domain.PaymentAttempt(
         id=uuid.uuid4(),
-        order_id=uuid.uuid4(),
         created_at=datetime.now(),
         amount=10,
         currency="USD",
@@ -152,7 +151,6 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAddToken_thenDoes
 
     payment_attempt = domain.PaymentAttempt(
         id=uuid.uuid4(),
-        order_id=uuid.uuid4(),
         created_at=datetime.now(),
         amount=10,
         currency="USD",

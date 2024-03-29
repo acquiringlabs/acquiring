@@ -15,72 +15,218 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Order',
+            name="Token",
             fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField()),
+                ("expires_at", models.DateTimeField(blank=True, null=True)),
+                ("token", models.TextField()),
+                (
+                    "fingerprint",
+                    models.TextField(
+                        blank=True,
+                        help_text="Fingerprinting provides a way to correlate multiple tokens together that contain the same data without needing access to the underlying data.",
+                        null=True,
+                    ),
+                ),
+                (
+                    "metadata",
+                    models.JSONField(
+                        blank=True,
+                        help_text="tag your tokens with custom key-value attributes (i.e., to reference a record in your own database, tag records that fall into certain compliance requirements like GDPR, etc)",
+                        null=True,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Token',
+            name="PaymentAttempt",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField()),
-                ('expires_at', models.DateTimeField(blank=True, null=True)),
-                ('token', models.TextField()),
-                ('fingerprint', models.TextField(blank=True, help_text='Fingerprinting provides a way to correlate multiple tokens together that contain the same data without needing access to the underlying data.', null=True)),
-                ('metadata', models.JSONField(blank=True, help_text='tag your tokens with custom key-value attributes (i.e., to reference a record in your own database, tag records that fall into certain compliance requirements like GDPR, etc)', null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "amount",
+                    models.BigIntegerField(
+                        help_text="Amount intended to be collected. A positive integer representing how much to charge in the currency unit (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency)."
+                    ),
+                ),
+                (
+                    "currency",
+                    models.CharField(
+                        max_length=3,
+                        validators=[django.core.validators.MinLengthValidator(3)],
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PaymentAttempt',
+            name="PaymentMethod",
             fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('amount', models.BigIntegerField(help_text='Amount intended to be collected. A positive integer representing how much to charge in the currency unit (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency).')),
-                ('currency', models.CharField(max_length=3, validators=[django.core.validators.MinLengthValidator(3)])),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_attempts', to='django_acquiring.order')),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "confirmable",
+                    models.BooleanField(
+                        editable=False,
+                        help_text="Whether this PaymentMethod can at some point run inside PaymentFlow.confirm",
+                    ),
+                ),
+                (
+                    "payment_attempt",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="payment_methods",
+                        to="django_acquiring.paymentattempt",
+                    ),
+                ),
+                (
+                    "token",
+                    models.OneToOneField(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="payment_method",
+                        to="django_acquiring.token",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PaymentMethod',
+            name="BlockEvent",
             fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('confirmable', models.BooleanField(editable=False, help_text='Whether this PaymentMethod can at some point run inside PaymentFlow.confirm')),
-                ('payment_attempt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_methods', to='django_acquiring.paymentattempt')),
-                ('token', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='payment_method', to='django_acquiring.token')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("started", "Started"),
+                            ("failed", "Failed"),
+                            ("completed", "Completed"),
+                            ("requires_action", "Requires Action"),
+                            ("pending", "Pending"),
+                        ],
+                        max_length=15,
+                    ),
+                ),
+                ("block_name", models.CharField(max_length=20)),
+                (
+                    "payment_method",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="django_acquiring.paymentmethod",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='BlockEvent',
+            name="PaymentOperation",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('status', models.CharField(choices=[('started', 'Started'), ('failed', 'Failed'), ('completed', 'Completed'), ('requires_action', 'Requires Action'), ('pending', 'Pending')], max_length=15)),
-                ('block_name', models.CharField(max_length=20)),
-                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='django_acquiring.paymentmethod')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("initialize", "Initialize"),
+                            ("process_action", "Process Action"),
+                            ("pay", "Pay"),
+                            ("confirm", "Confirm"),
+                            ("refund", "Refund"),
+                            ("after_pay", "After Pay"),
+                            ("after_confirm", "After Confirm"),
+                            ("after_refund", "After Refund"),
+                        ],
+                        max_length=16,
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("started", "Started"),
+                            ("failed", "Failed"),
+                            ("completed", "Completed"),
+                            ("requires_action", "Requires Action"),
+                            ("pending", "Pending"),
+                        ],
+                        max_length=15,
+                    ),
+                ),
+                (
+                    "payment_method",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="payment_operations",
+                        to="django_acquiring.paymentmethod",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PaymentOperation',
+            name="Transaction",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('type', models.CharField(choices=[('initialize', 'Initialize'), ('process_action', 'Process Action'), ('pay', 'Pay'), ('confirm', 'Confirm'), ('refund', 'Refund'), ('after_pay', 'After Pay'), ('after_confirm', 'After Confirm'), ('after_refund', 'After Refund')], max_length=16)),
-                ('status', models.CharField(choices=[('started', 'Started'), ('failed', 'Failed'), ('completed', 'Completed'), ('requires_action', 'Requires Action'), ('pending', 'Pending')], max_length=15)),
-                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_operations', to='django_acquiring.paymentmethod')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Transaction',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('external_id', models.TextField()),
-                ('timestamp', models.DateTimeField()),
-                ('raw_data', models.JSONField()),
-                ('provider_name', models.TextField()),
-                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='transaction', to='django_acquiring.paymentmethod')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("external_id", models.TextField()),
+                ("timestamp", models.DateTimeField()),
+                ("raw_data", models.JSONField()),
+                ("provider_name", models.TextField()),
+                (
+                    "payment_method",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="transaction",
+                        to="django_acquiring.paymentmethod",
+                    ),
+                ),
             ],
         ),
     ]

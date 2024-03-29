@@ -48,7 +48,6 @@ class DraftPaymentMethod:
 @dataclass
 class PaymentAttempt:
     id: UUID
-    order_id: UUID
     created_at: datetime
     amount: int
     currency: str
@@ -63,7 +62,6 @@ class PaymentAttempt:
 
 @dataclass
 class DraftPaymentAttempt:
-    order_id: UUID
     amount: int
     currency: str
 
