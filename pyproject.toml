@@ -1,16 +1,5 @@
-[build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
 
-[project]
-name = "django-acquiring"
-authors = [{name = "Alvaro Duran"}]
-readme = "README.md"
-license = {file = "LICENSE"}
-classifiers = ["License :: OSI Approved :: MIT License"]
-dynamic = ["version", "description"]
-description-file = "README.md"
-requires-python = ">=3.7"
-
-[project.urls]
-Home = "https://github.com/acquiringlabs/django-acquiring"
+[tool.bandit]
+exclude_dirs = ["tests"]
+tests = ["B201", "B301"]
+skips = ["B101", "B601"]
