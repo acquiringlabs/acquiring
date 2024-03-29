@@ -100,7 +100,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
     transaction = models.Transaction.objects.first()
     assert transaction.to_domain() == domain.Transaction(
         external_id=fake_id,
-        created_at=datetime.fromisoformat(fake_create_time),
+        timestamp=datetime.fromisoformat(fake_create_time),
         provider_name="paypal",
         payment_method_id=payment_method.id,
         raw_data=raw_response,

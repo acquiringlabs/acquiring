@@ -135,11 +135,11 @@ class TransactionRepository:
         transaction: "protocols.AbstractTransaction",
     ) -> "protocols.AbstractTransaction":
         db_transaction = models.Transaction(
-            created_at=transaction.created_at,
             external_id=transaction.external_id,
-            payment_method_id=transaction.payment_method_id,
-            provider_name=transaction.provider_name,
+            timestamp=transaction.timestamp,
             raw_data=transaction.raw_data,
+            provider_name=transaction.provider_name,
+            payment_method_id=transaction.payment_method_id,
         )
         db_transaction.save()
         return db_transaction.to_domain()

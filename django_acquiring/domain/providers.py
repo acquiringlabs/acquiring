@@ -12,10 +12,13 @@ if TYPE_CHECKING:
 @dataclass
 class Transaction:
     external_id: str
-    created_at: datetime
+    timestamp: datetime
+    raw_data: dict
     provider_name: str
     payment_method_id: UUID
-    raw_data: dict
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}:{self.provider_name}|{self.external_id}"
 
 
 def wrapped_by_transaction(  # type:ignore[misc]
@@ -35,13 +38,14 @@ def wrapped_by_transaction(  # type:ignore[misc]
     ) -> "protocols.AbstractAdapterResponse":
         result = function(self, payment_method, *args, **kwargs)
 
-        if result.success is True and result.external_id is not None:
+        # A transaction is created only when the Adapter Response is successful
+        if result.timestamp is not None and result.external_id is not None:
             transaction = domain.Transaction(
                 external_id=result.external_id,
-                created_at=result.timestamp,
+                timestamp=result.timestamp,
+                raw_data=result.raw_data,
                 provider_name=self.provider_name,
                 payment_method_id=payment_method.id,
-                raw_data=result.raw_data,
             )
             repository.add(transaction)
 

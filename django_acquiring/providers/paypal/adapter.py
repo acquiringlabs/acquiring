@@ -14,13 +14,11 @@ from .domain import Order, OrderIntentEnum, PayPalStatusEnum
 # TODO Create AbstractAdapterResponse, wrapped_by_transactions
 @dataclass(match_args=False)
 class PayPalResponse:
-    success: bool
     external_id: Optional[str]
-    timestamp: datetime
+    timestamp: Optional[datetime]
+    raw_data: dict
     status: PayPalStatusEnum
     intent: OrderIntentEnum
-    create_time: Optional[datetime]
-    raw_data: dict
 
 
 GET_ACCESS_TOKEN = "v1/oauth2/token"
@@ -166,27 +164,21 @@ class PayPalAdapter:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             return PayPalResponse(
-                success=False,
-                timestamp=datetime.now(),
                 external_id=None,
+                timestamp=None,
                 raw_data=response.json(),
                 status=PayPalStatusEnum.FAILED,
                 intent=order.intent,
-                create_time=None,
             )
 
         serialized_response = response.json()
-
-        result = PayPalResponse(
-            success=True,
-            status=PayPalStatusEnum(serialized_response["status"]),
-            timestamp=serialized_response["create_time"],
-            intent=OrderIntentEnum(serialized_response["intent"]),
-            create_time=datetime.fromisoformat(serialized_response["create_time"]),
+        return PayPalResponse(
             external_id=serialized_response["id"],
+            timestamp=datetime.fromisoformat(serialized_response["create_time"]),
             raw_data=serialized_response,
+            status=PayPalStatusEnum(serialized_response["status"]),
+            intent=OrderIntentEnum(serialized_response["intent"]),
         )
-        return result
 
 
 class UnauthorizedError(Exception):

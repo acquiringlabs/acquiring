@@ -210,10 +210,14 @@ class BlockEvent(django.db.models.Model):
 
 class Transaction(django.db.models.Model):
 
-    # Filled with Provided data on request, not auto added
-    created_at = django.db.models.DateTimeField(auto_now_add=False)
-
     external_id = django.db.models.TextField()  # No arbitrary limitations are imposed
+
+    # Filled with Provided data on request, not auto added
+    timestamp = django.db.models.DateTimeField(auto_now_add=False)
+
+    raw_data = django.db.models.JSONField()
+
+    provider_name = django.db.models.TextField()
 
     payment_method = django.db.models.ForeignKey(
         PaymentMethod,
@@ -221,18 +225,14 @@ class Transaction(django.db.models.Model):
         related_name="transaction",
     )
 
-    provider_name = django.db.models.TextField()
-
-    raw_data = django.db.models.JSONField()
-
     def __str__(self) -> str:
-        return f"[id={self.provider_name}]"
+        return f"[provider={self.provider_name}|payment_method={self.payment_method_id}|{self.external_id}]"
 
     def to_domain(self) -> "protocols.AbstractTransaction":
         return domain.Transaction(
-            created_at=self.created_at,
             external_id=self.external_id,
+            timestamp=self.timestamp,
+            raw_data=self.raw_data,
             provider_name=self.provider_name,
             payment_method_id=self.payment_method_id,
-            raw_data=self.raw_data,
         )
