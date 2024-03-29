@@ -7,7 +7,7 @@ from django_acquiring.enums import OperationStatusEnum
 from django_acquiring.protocols import AbstractBlock, AbstractBlockResponse, AbstractPaymentMethod
 
 from ..adapter import PayPalAdapter
-from ..domain import Order, OrderIntentEnum, PayPalStatusEnum
+from ..domain import Amount, Order, OrderIntentEnum, PayPalStatusEnum, PurchaseUnit
 
 
 @dataclass
@@ -18,10 +18,19 @@ class PayPalCreateOrder:
     def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: dict) -> AbstractBlockResponse:
         external_id = uuid.uuid4()
 
-        # TODO Implement Order from payment_method.payment_attempt
+        items = payment_method.payment_attempt.items
         order = Order(
             intent=OrderIntentEnum.CAPTURE,
-            purchase_units=[],
+            purchase_units=[
+                PurchaseUnit(
+                    reference_id=item.reference,
+                    amount=Amount(
+                        currency_code=payment_method.payment_attempt.currency,
+                        value=str(item.quantity),
+                    ),
+                )
+                for item in items
+            ],
         )
         response = self.adapter.create_order(
             payment_method=payment_method,

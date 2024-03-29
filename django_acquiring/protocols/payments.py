@@ -32,10 +32,10 @@ class AbstractToken(Protocol):
 
 
 class AbstractDraftItem(Protocol):
+    reference: str
     name: str
     quantity: int
     unit_price: int
-    reference: Optional[str]
     quantity_unit: Optional[str]
 
 
@@ -43,10 +43,10 @@ class AbstractItem(Protocol):
     id: UUID
     created_at: datetime
     payment_attempt_id: UUID
+    reference: str
     name: str
     quantity: int
     quantity_unit: Optional[str]
-    reference: Optional[str]
     unit_price: int
 
 

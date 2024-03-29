@@ -81,8 +81,6 @@ class Item(Identifiable, django.db.models.Model):
 
     reference = django.db.models.TextField(
         help_text="Used for storing merchant's internal reference number",
-        blank=True,
-        null=True,
     )
 
     unit_price = django.db.models.BigIntegerField(

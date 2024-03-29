@@ -50,10 +50,10 @@ class Item:
     id: UUID
     created_at: datetime
     payment_attempt_id: UUID
+    reference: str
     name: str
     quantity: int
     quantity_unit: Optional[str]
-    reference: Optional[str]
     unit_price: int
 
     class InvalidTotalAmount(Exception):
@@ -62,10 +62,10 @@ class Item:
 
 @dataclass
 class DraftItem:
+    reference: str
     name: str
     quantity: int
     unit_price: int
-    reference: Optional[str]
     quantity_unit: Optional[str] = None
 
 
