@@ -186,7 +186,7 @@ class PaymentOperationTypeChoices(django.db.models.TextChoices):
     AFTER_REFUND = "after_refund"
 
 
-class PaymentOperationStatusChoices(django.db.models.TextChoices):
+class StatusChoices(django.db.models.TextChoices):
     STARTED = "started"
     FAILED = "failed"
     COMPLETED = "completed"
@@ -199,7 +199,7 @@ class PaymentOperation(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
 
     type = django.db.models.CharField(max_length=16, choices=PaymentOperationTypeChoices)
-    status = django.db.models.CharField(max_length=15, choices=PaymentOperationStatusChoices)
+    status = django.db.models.CharField(max_length=15, choices=StatusChoices)
     payment_method = django.db.models.ForeignKey(
         PaymentMethod,
         on_delete=django.db.models.CASCADE,
@@ -217,17 +217,9 @@ class PaymentOperation(django.db.models.Model):
         )
 
 
-class BlockEventStatusChoices(django.db.models.TextChoices):
-    started = "started"
-    failed = "failed"
-    completed = "completed"
-    requires_action = "requires_action"
-    pending = "pending"
-
-
 class BlockEvent(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
-    status = django.db.models.CharField(max_length=15, choices=BlockEventStatusChoices)
+    status = django.db.models.CharField(max_length=15, choices=StatusChoices)
     payment_method = django.db.models.ForeignKey(PaymentMethod, on_delete=django.db.models.CASCADE)
     block_name = django.db.models.CharField(max_length=20)
 

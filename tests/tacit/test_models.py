@@ -1,5 +1,4 @@
-from django_acquiring import models
-from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
+from django_acquiring import enums, models
 
 
 # TODO Figure out a way to ensure that these two enums match at compile time/initialization time
@@ -7,27 +6,15 @@ def test_PaymentOperationTypeChoices_match_OperationTypeEnum() -> None:
     choices = set(
         member.value for member in models.PaymentOperationTypeChoices  # type:ignore[attr-defined]
     )
-    enums = set(item.value for item in OperationTypeEnum)
+    type_enums = set(item.value for item in enums.OperationTypeEnum)
 
-    assert choices == enums
+    assert choices == type_enums
 
 
-def test_PaymentOperationStatusChoices_match_OperationStatusEnum() -> None:
+def test_StatusChoices_match_OperationStatusEnum() -> None:
     choices = set(
-        member.value for member in models.PaymentOperationStatusChoices  # type:ignore[attr-defined]
+        member.value for member in models.StatusChoices  # type:ignore[attr-defined]
     )
-    enums = set(item.value for item in OperationStatusEnum)
+    status_enums = set(item.value for item in enums.OperationStatusEnum)
 
-    assert choices == enums
-
-
-def test_BlockEventStatusChoices_match_OperationStatusEnum() -> None:
-    choices = set(
-        member.value for member in models.BlockEventStatusChoices  # type:ignore[attr-defined]
-    )
-    enums = set(item.value for item in OperationStatusEnum)
-
-    assert choices == enums
-
-
-# TODO Figure out a way to ensure that there are no import specific objects, but instead it's always import modules
+    assert choices == status_enums
