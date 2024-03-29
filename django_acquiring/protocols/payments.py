@@ -23,12 +23,31 @@ class AbstractPaymentOperation(Protocol):
 
 class AbstractToken(Protocol):
     created_at: datetime
-    expires_at: datetime | None
     token: str
+    metadata: Optional[dict[str, str | int]]
+    expires_at: Optional[datetime]
     fingerprint: Optional[str]
-    metadata: dict[str, str | int] | None
 
     def __repr__(self) -> str: ...
+
+
+class AbstractDraftItem(Protocol):
+    name: str
+    quantity: int
+    unit_price: int
+    reference: Optional[str]
+    quantity_unit: Optional[str]
+
+
+class AbstractItem(Protocol):
+    id: UUID
+    created_at: datetime
+    payment_attempt_id: UUID
+    name: str
+    quantity: int
+    quantity_unit: Optional[str]
+    reference: Optional[str]
+    unit_price: int
 
 
 # TODO Have this class the DoesNotExist internal class
@@ -38,6 +57,7 @@ class AbstractPaymentAttempt(Protocol):
     amount: int
     currency: str
     payment_method_ids: list[UUID]
+    items: Sequence[AbstractItem] = field(default_factory=list)
 
     def __repr__(self) -> str: ...
 
@@ -69,6 +89,7 @@ class AbstractDraftPaymentMethod(Protocol):
 class AbstractDraftPaymentAttempt(Protocol):
     amount: int
     currency: str
+    items: Sequence[AbstractDraftItem] = field(default_factory=list)
 
 
 class AbstractOperationResponse(Protocol):

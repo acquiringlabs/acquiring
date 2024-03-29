@@ -23,10 +23,8 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
         confirmable=True,
     )
 
-    with django_assert_num_queries(6):
+    with django_assert_num_queries(7):
         result = repositories.PaymentMethodRepository().add(data)
-
-    # Then PaymentMethod gets created
 
     db_payment_methods = models.PaymentMethod.objects.all()
     assert len(db_payment_methods) == 1
@@ -56,7 +54,7 @@ def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(
         ),
     )
 
-    with django_assert_num_queries(7):
+    with django_assert_num_queries(8):
         result = repositories.PaymentMethodRepository().add(data)
 
     db_tokens = models.Token.objects.all()
@@ -76,7 +74,6 @@ def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(
 def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
     django_assert_num_queries: Callable,
 ) -> None:
-    # Given existing payment method row in payment methods table
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_method = PaymentMethodFactory(payment_attempt=db_payment_attempt)
     db_token = TokenFactory(
@@ -87,10 +84,9 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
     db_payment_method.save()
     PaymentOperationFactory.create_batch(3, payment_method_id=db_payment_method.id)
 
-    with django_assert_num_queries(3):
+    with django_assert_num_queries(4):
         result = repositories.PaymentMethodRepository().get(id=db_payment_method.id)
 
-    # Then PaymentMethod gets retrieved
     assert result == db_payment_method.to_domain()
 
 
@@ -133,7 +129,6 @@ def test_givenCorrectTokenDataAndExistingPaymentMethod_whenCallingRepositoryAddT
             token=token,
         )
 
-    # Then Token gets created
     db_tokens = models.Token.objects.all()
     assert len(db_tokens) == 1
     db_token = db_tokens[0]

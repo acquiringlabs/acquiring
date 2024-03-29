@@ -12,17 +12,37 @@ if TYPE_CHECKING:
 
 class PaymentAttemptRepository:
     def add(self, data: "protocols.AbstractDraftPaymentAttempt") -> "protocols.AbstractPaymentAttempt":
-        payment_attempt = models.PaymentAttempt(
-            amount=data.amount,
-            currency=data.currency,
-        )
-        payment_attempt.save()
+        with django.db.transaction.atomic():
+
+            payment_attempt = models.PaymentAttempt(
+                amount=data.amount,
+                currency=data.currency,
+            )
+            payment_attempt.save()
+            if data.items:
+                items = [
+                    models.Item(
+                        name=item.name,
+                        quantity=item.quantity,
+                        quantity_unit=item.quantity_unit,
+                        reference=item.reference,
+                        unit_price=item.unit_price,
+                        payment_attempt=payment_attempt,
+                    )
+                    for item in data.items
+                ]
+                # TODO Embed this validation into Item somehow?
+                if sum(item.quantity * item.unit_price for item in items) != payment_attempt.amount:
+                    raise domain.Item.InvalidTotalAmount
+                models.Item.objects.bulk_create(items)
+
         return payment_attempt.to_domain()
 
     def get(self, id: UUID) -> "protocols.AbstractPaymentAttempt":
         try:
             payment_attempt = models.PaymentAttempt.objects.prefetch_related(
-                "payment_methods", "payment_methods__payment_operations"
+                "payment_methods",
+                "payment_methods__payment_operations",
             ).get(id=id)
             return payment_attempt.to_domain()
         except models.PaymentAttempt.DoesNotExist:

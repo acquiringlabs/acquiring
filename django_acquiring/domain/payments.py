@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Sequence
 from uuid import UUID
 
 if TYPE_CHECKING:
@@ -46,12 +46,37 @@ class DraftPaymentMethod:
 
 
 @dataclass
+class Item:
+    id: UUID
+    created_at: datetime
+    payment_attempt_id: UUID
+    name: str
+    quantity: int
+    quantity_unit: Optional[str]
+    reference: Optional[str]
+    unit_price: int
+
+    class InvalidTotalAmount(Exception):
+        pass
+
+
+@dataclass
+class DraftItem:
+    name: str
+    quantity: int
+    unit_price: int
+    reference: Optional[str]
+    quantity_unit: Optional[str] = None
+
+
+@dataclass
 class PaymentAttempt:
     id: UUID
     created_at: datetime
     amount: int
     currency: str
     payment_method_ids: list[UUID] = field(default_factory=list)
+    items: Sequence["protocols.AbstractItem"] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}|{self.amount}{self.currency}"
@@ -64,15 +89,16 @@ class PaymentAttempt:
 class DraftPaymentAttempt:
     amount: int
     currency: str
+    items: Sequence["protocols.AbstractDraftItem"] = field(default_factory=list)
 
 
 @dataclass
 class Token:
     created_at: datetime
     token: str
-    expires_at: datetime | None = None
+    metadata: Optional[dict[str, str | int]] = field(default_factory=dict)
+    expires_at: Optional[datetime] = None
     fingerprint: Optional[str] = None
-    metadata: dict[str, str | int] | None = None
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.token}"

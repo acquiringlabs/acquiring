@@ -30,3 +30,12 @@ class PaymentOperationFactory(factory.django.DjangoModelFactory):
 class TokenFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "django_acquiring.Token"
+
+
+class ItemFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "django_acquiring.Item"
+
+    name = factory.LazyAttribute(lambda _: fake.name())
+    quantity = factory.LazyAttribute(lambda _: random.randint(0, 999999))
+    unit_price = factory.LazyAttribute(lambda _: random.randint(0, 999999))

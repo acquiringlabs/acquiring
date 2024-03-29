@@ -2,8 +2,10 @@ from .events import AbstractBlockEvent
 from .payments import (
     AbstractBlock,
     AbstractBlockResponse,
+    AbstractDraftItem,
     AbstractDraftPaymentAttempt,
     AbstractDraftPaymentMethod,
+    AbstractItem,
     AbstractOperationResponse,
     AbstractPaymentAttempt,
     AbstractPaymentMethod,
@@ -19,8 +21,10 @@ __all__ = [
     "AbstractBlock",
     "AbstractBlockEvent",
     "AbstractBlockResponse",
+    "AbstractDraftItem",
     "AbstractDraftPaymentAttempt",
     "AbstractDraftPaymentMethod",
+    "AbstractItem",
     "AbstractOperationResponse",
     "AbstractPaymentAttempt",
     "AbstractPaymentMethod",
@@ -31,3 +35,4 @@ __all__ = [
 ]
 
 assert __all__ == sorted(__all__), sorted(__all__)
+assert all(protocol.startswith("Abstract") for protocol in __all__)
