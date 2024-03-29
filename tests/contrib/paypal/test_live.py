@@ -30,8 +30,11 @@ class TestLiveSandbox:
             self.BASE_URL,
             client_id=os.environ["PAYPAL_CLIENT_ID"],
             client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
+            callback_url=os.environ["CALLBACK_URL"],  # Check https://webhook-test.com/
+            override_webhook_id=os.environ.get("WEBHOOK_ID"),
         )
         assert adapter.access_token is not None
+        assert adapter.webhook_id is not None
 
         payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory()).to_domain()
 

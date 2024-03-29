@@ -1,9 +1,11 @@
 import base64
+import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 from urllib.parse import urljoin
 from uuid import UUID
+
 import requests
 
 from django_acquiring import domain, protocols
@@ -22,6 +24,7 @@ class PayPalResponse:
 
 
 GET_ACCESS_TOKEN = "v1/oauth2/token"
+CREATE_WEBHOOK = "v1/notifications/webhooks"
 CREATE_ORDER = "/v2/checkout/orders"
 
 
@@ -44,7 +47,9 @@ class PayPalAdapter:
     ...     PayPalAdapter(
     ...         base_url="https://api-m.sandbox.paypal.com/",
     ...         client_id="TEST_CLIENT_ID",
-    ...         client_secret="TEST_CLIENT_SECRET"
+    ...         client_secret="TEST_CLIENT_SECRET",
+    ...         callback_url="https://www.example.com",
+    ...         override_webhook_id="LONG_ID"
     ...     )
     Traceback (most recent call last):
         ...
@@ -70,7 +75,9 @@ class PayPalAdapter:
     ...     PayPalAdapter(
     ...         base_url="https://api-m.sandbox.paypal.com/",
     ...         client_id="TEST_CLIENT_ID",
-    ...         client_secret="TEST_CLIENT_SECRET"
+    ...         client_secret="TEST_CLIENT_SECRET",
+    ...         callback_url="https://www.example.com",
+    ...         override_webhook_id="LONG_ID"
     ...     )
     <Response(url='https://api-m.sandbox.paypal.com/v1/oauth2/token' status=201 content_type='application/json' headers='null')>
     PayPalAdapter:base_url=https://api-m.sandbox.paypal.com/|access_token=long-token|expires in 31668 seconds
@@ -79,7 +86,9 @@ class PayPalAdapter:
     >>> PayPalAdapter(
     ...     base_url="https://bad-url.com",
     ...     client_id="TEST_CLIENT_ID",
-    ...     client_secret="TEST_CLIENT_SECRET"
+    ...     client_secret="TEST_CLIENT_SECRET",
+    ...     callback_url="https://www.example.com",
+    ...     override_webhook_id="LONG_ID"
     ... )
     Traceback (most recent call last):
         ...
@@ -87,13 +96,16 @@ class PayPalAdapter:
     """
 
     base_url: str
+    callback_url: str
     client_id: str
     client_secret: str
-
-    access_token: str = field(init=False, repr=False)
-    scope: list[str] = field(init=False, repr=False)
-    expires_in: int = field(init=False, repr=False)
     provider_name: str = "paypal"
+    override_webhook_id: Optional[str] = None
+
+    access_token: str = field(init=False)
+    scope: list[str] = field(init=False)
+    expires_in: int = field(init=False)
+    webhook_id: str = field(init=False)
 
     def __repr__(self) -> str:
         return f"PayPalAdapter:base_url={self.base_url}|access_token={self.access_token}|expires in {self.expires_in} seconds"
@@ -112,24 +124,11 @@ class PayPalAdapter:
         if not self.base_url.endswith("/"):
             raise BadUrlError("base_url must end with /")
 
-        url = urljoin(self.base_url, GET_ACCESS_TOKEN)
-
-        # Encode client ID and secret in Base64
-        credentials = f"{self.client_id}:{self.client_secret}"
-        credentials_b64 = base64.b64encode(credentials.encode()).decode()
-
-        headers = {"Authorization": f"Basic {credentials_b64}", "Content-Type": "application/x-www-form-urlencoded"}
-
-        try:
-            response = requests.post(url, headers=headers, data={"grant_type": "client_credentials"})
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as exception:
-            raise UnauthorizedError(*exception.args)
-
-        serialized_response = response.json()
-        self.scope = serialized_response["scope"].split(" ")
-        self.access_token = serialized_response["access_token"]
-        self.expires_in = serialized_response["expires_in"]
+        self._authenticate()
+        if self.override_webhook_id is not None:
+            self.webhook_id = self.override_webhook_id
+        else:
+            self._subscribe_to_webhook_events()
 
     @domain.wrapped_by_transaction
     def create_order(
@@ -179,6 +178,59 @@ class PayPalAdapter:
             status=PayPalStatusEnum(serialized_response["status"]),
             intent=OrderIntentEnum(serialized_response["intent"]),
         )
+
+    def _authenticate(self) -> None:
+        url = urljoin(self.base_url, GET_ACCESS_TOKEN)
+
+        credentials_b64 = base64.b64encode(f"{self.client_id}:{self.client_secret}".encode()).decode()
+
+        headers = {
+            "Authorization": f"Basic {credentials_b64}",
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+
+        try:
+            response = requests.post(url, headers=headers, data={"grant_type": "client_credentials"})
+            response.raise_for_status()
+
+            serialized_response = response.json()
+            self.scope = serialized_response["scope"].split(" ")
+            self.access_token = serialized_response["access_token"]
+            self.expires_in = serialized_response["expires_in"]
+
+        except requests.exceptions.HTTPError as exception:
+            raise UnauthorizedError(*exception.args)
+
+    def _subscribe_to_webhook_events(self) -> None:
+        assert self.access_token is not None
+
+        url = urljoin(self.base_url, CREATE_WEBHOOK)
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.access_token}",
+        }
+
+        try:
+            response = requests.post(
+                url,
+                headers=headers,
+                data=json.dumps(
+                    {
+                        "url": f"{self.callback_url}",
+                        "event_types": [
+                            {"name": "PAYMENT.AUTHORIZATION.CREATED"},
+                            {"name": "PAYMENT.AUTHORIZATION.VOIDED"},
+                        ],
+                    }
+                ),
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            raise UnauthorizedError(response.text)
+
+        self.webhook_id = response.json()["id"]
+        print(self.webhook_id)
 
 
 class UnauthorizedError(Exception):
