@@ -8,7 +8,7 @@ from django.utils import timezone
 from faker import Faker
 
 from django_acquiring import domain, enums, models
-from django_acquiring.providers import paypal
+from django_acquiring.contrib import paypal
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 fake = Faker()

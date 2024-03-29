@@ -48,7 +48,7 @@ class PayPalAdapter:
     ...     )
     Traceback (most recent call last):
         ...
-    django_acquiring.providers.paypal.adapter.UnauthorizedError: 401 Client Error: Unauthorized for url: https://api-m.sandbox.paypal.com/v1/oauth2/token
+    django_acquiring.contrib.paypal.adapter.UnauthorizedError: 401 Client Error: Unauthorized for url: https://api-m.sandbox.paypal.com/v1/oauth2/token
 
     When accessing the adapter with valid credentials, an access token is retrieved from PayPal
     >>> import responses
@@ -83,7 +83,7 @@ class PayPalAdapter:
     ... )
     Traceback (most recent call last):
         ...
-    django_acquiring.providers.paypal.adapter.BadUrlError: base_url must end with /
+    django_acquiring.contrib.paypal.adapter.BadUrlError: base_url must end with /
     """
 
     base_url: str

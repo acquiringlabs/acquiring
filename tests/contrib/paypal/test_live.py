@@ -1,12 +1,11 @@
 import operator
 import os
-import pprint
 import uuid
 
 import pytest
 from dotenv import load_dotenv
 
-from django_acquiring.providers import paypal
+from django_acquiring.contrib import paypal
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 load_dotenv()  # take environment variables from .env.
@@ -49,6 +48,13 @@ class TestLiveSandbox:
                             value="10.00",
                         ),
                     ),
+                    paypal.PurchaseUnit(
+                        reference_id=str(uuid.uuid4()),
+                        amount=paypal.Amount(
+                            currency_code="USD",
+                            value="20.00",
+                        ),
+                    ),
                 ],
             ),
         )
@@ -59,7 +65,10 @@ class TestLiveSandbox:
         assert response.timestamp is not None
 
         raw_data = response.raw_data
-        assert raw_data.get("links") is not None
+
+        assert len(raw_data.get("purchase_units", [])) == 2, raw_data
+
+        assert raw_data.get("links") is not None, raw_data
         assert len(raw_data["links"]) == 4
         assert set(link["rel"] for link in raw_data["links"]) == set(["approve", "capture", "self", "update"])
         links = sorted(raw_data["links"], key=operator.itemgetter("rel"))  # ordered by rel
@@ -67,5 +76,9 @@ class TestLiveSandbox:
         assert approve_link["href"] == f"https://www.sandbox.paypal.com/checkoutnow?token={response.external_id}"
 
         print("***")
-        pprint.pprint(response.raw_data)
+        print(approve_link["href"])
         print("***")
+
+        # import pprint
+
+        # order_id = raw_data["id"]
