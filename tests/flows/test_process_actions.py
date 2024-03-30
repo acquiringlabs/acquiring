@@ -32,7 +32,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
 
     # when Processing Actions
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(fake_response_status=OperationStatusEnum.FAILED),
@@ -86,7 +86,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
 
     # when Processing Actions
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(fake_response_status=OperationStatusEnum.COMPLETED),
@@ -146,7 +146,7 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
 
     # when Processing Actions
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=None,
@@ -195,7 +195,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
 
     # when Processing Actions
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(fake_response_status=OperationStatusEnum.COMPLETED),
@@ -234,7 +234,7 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
 
     # When Processing Actions
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),

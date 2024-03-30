@@ -41,7 +41,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
 
     # when Initializing
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(
             fake_response_status=OperationStatusEnum.COMPLETED,

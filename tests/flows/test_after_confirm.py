@@ -88,7 +88,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
 
     # when Confirming
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(
             fake_response_status=OperationStatusEnum.COMPLETED,
@@ -159,7 +159,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
 
     # When Initializing
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
@@ -197,7 +197,7 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
 
     # When Confirming
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),

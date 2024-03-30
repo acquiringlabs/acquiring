@@ -57,7 +57,7 @@ def refresh_payment_method(function: Callable) -> Callable:
     @functools.wraps(function)
     def wrapper(self, payment_method: "protocols.AbstractPaymentMethod", **kwargs) -> OperationResponse:  # type: ignore[no-untyped-def]
         try:
-            payment_method = self.repository.get(id=payment_method.id)
+            payment_method = self.payment_method_repository.get(id=payment_method.id)
         except domain.PaymentMethod.DoesNotExist:
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
@@ -82,7 +82,7 @@ class OperationResponse:
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
 @dataclass(frozen=True)
 class PaymentFlow:
-    repository: "protocols.AbstractRepository"
+    payment_method_repository: "protocols.AbstractRepository"
     operations_repository: "protocols.AbstractRepository"
 
     initialize_block: Optional["protocols.AbstractBlock"]

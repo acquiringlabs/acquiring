@@ -63,7 +63,7 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
 
     # when after paying
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
@@ -117,7 +117,7 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowRe
 
     # When After Paying
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
@@ -156,7 +156,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
 
     # When After Paying
     result = domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),

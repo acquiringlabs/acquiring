@@ -14,7 +14,7 @@ def paypal_payment_flow() -> "PaymentFlow":
     from django_acquiring import domain, repositories
 
     return domain.PaymentFlow(
-        repository=repositories.PaymentMethodRepository(),
+        payment_method_repository=repositories.PaymentMethodRepository(),
         operations_repository=repositories.PaymentOperationRepository(),
         initialize_block=None,
         process_action_block=None,
