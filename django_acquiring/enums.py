@@ -21,3 +21,4 @@ class OperationStatusEnum(StrEnum):
     COMPLETED = "completed"
     REQUIRES_ACTION = "requires_action"
     PENDING = "pending"
+    NOT_PERFORMED = "not_performed"

@@ -85,8 +85,8 @@ class PaymentFlow:
     repository: "protocols.AbstractRepository"
     operations_repository: "protocols.AbstractRepository"
 
-    initialize_block: "protocols.AbstractBlock"
-    process_action_block: "protocols.AbstractBlock"
+    initialize_block: Optional["protocols.AbstractBlock"]
+    process_action_block: Optional["protocols.AbstractBlock"]
 
     pay_blocks: list["protocols.AbstractBlock"]
     after_pay_blocks: list["protocols.AbstractBlock"]
@@ -113,7 +113,15 @@ class PaymentFlow:
             status=OperationStatusEnum.STARTED,
         )
 
-        # Run Operation Block
+        # Run Operation Block if it exists
+        if self.initialize_block is None:
+            self.operations_repository.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.INITIALIZE,
+                status=OperationStatusEnum.NOT_PERFORMED,
+            )
+            return self.__pay(payment_method)
+
         block_response = self.initialize_block.run(payment_method=payment_method)
 
         # Validate that status is one of the expected ones
@@ -170,6 +178,7 @@ class PaymentFlow:
         self, payment_method: "protocols.AbstractPaymentMethod", action_data: dict
     ) -> "protocols.AbstractOperationResponse":
         # Verify that the payment can go through this operation type
+
         if not dl.can_process_action(payment_method):
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
@@ -184,6 +193,19 @@ class PaymentFlow:
             type=OperationTypeEnum.PROCESS_ACTION,
             status=OperationStatusEnum.STARTED,
         )
+
+        if self.process_action_block is None:
+            self.operations_repository.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.PROCESS_ACTION,
+                status=OperationStatusEnum.NOT_PERFORMED,
+            )
+            return OperationResponse(
+                status=OperationStatusEnum.NOT_PERFORMED,
+                payment_method=payment_method,
+                type=OperationTypeEnum.PROCESS_ACTION,
+                error_message="PaymentFlow does not include a block for this operation type",
+            )
 
         # Run Operation Block
         block_response = self.process_action_block.run(payment_method=payment_method, action_data=action_data)

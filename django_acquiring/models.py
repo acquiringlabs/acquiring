@@ -192,6 +192,7 @@ class StatusChoices(django.db.models.TextChoices):
     COMPLETED = "completed"
     REQUIRES_ACTION = "requires_action"
     PENDING = "pending"
+    NOT_PERFORMED = "not_performed"
 
 
 # TODO Add failure reason to Payment Operation as an optional string

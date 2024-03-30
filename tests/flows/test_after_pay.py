@@ -16,6 +16,7 @@ FAILED_STATUS = [
     OperationStatusEnum.REQUIRES_ACTION,
     OperationStatusEnum.FAILED,
     OperationStatusEnum.PENDING,
+    OperationStatusEnum.NOT_PERFORMED,
 ]
 
 

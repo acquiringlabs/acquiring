@@ -36,6 +36,11 @@ def can_initialize(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     ...     type=OperationTypeEnum.INITIALIZE,
     ...     status=OperationStatusEnum.REQUIRES_ACTION,
     ... )
+    >>> payment_operation_initialized_not_performed = PaymentOperation(
+    ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     type=OperationTypeEnum.INITIALIZE,
+    ...     status=OperationStatusEnum.NOT_PERFORMED,
+    ... )
     >>> payment_attempt = PaymentAttempt(
     ...     id="612a66aa-a133-4585-8866-977b08ecc05f",
     ...     created_at=datetime.now(),
@@ -103,18 +108,21 @@ def can_initialize(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     ...     ],
     ... ))
     False
+
+    A Payment Method that has not performed initialize requiring actions cannot go through initialize.
+    >>> can_initialize(PaymentMethod(
+    ...     id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     payment_attempt=payment_attempt,
+    ...     created_at=datetime.now(),
+    ...     confirmable=True,
+    ...     payment_operations=[
+    ...         payment_operation_initialized_started,
+    ...         payment_operation_initialized_not_performed,
+    ...     ],
+    ... ))
+    False
     """
     if payment_method.has_payment_operation(type=OperationTypeEnum.INITIALIZE, status=OperationStatusEnum.STARTED):
-        return False
-
-    # If initialization already finished, it cannot go through initialize again
-    if payment_method.has_payment_operation(
-        type=OperationTypeEnum.INITIALIZE,
-        status=OperationStatusEnum.COMPLETED,
-    ) or payment_method.has_payment_operation(
-        type=OperationTypeEnum.INITIALIZE,
-        status=OperationStatusEnum.FAILED,
-    ):
         return False
 
     return True
@@ -149,6 +157,11 @@ def can_process_action(payment_method: "protocols.AbstractPaymentMethod") -> boo
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.INITIALIZE,
     ...     status=OperationStatusEnum.REQUIRES_ACTION,
+    ... )
+    >>> payment_operation_initialized_not_performed = PaymentOperation(
+    ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     type=OperationTypeEnum.INITIALIZE,
+    ...     status=OperationStatusEnum.NOT_PERFORMED,
     ... )
     >>> payment_operation_process_action_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
@@ -190,6 +203,19 @@ def can_process_action(payment_method: "protocols.AbstractPaymentMethod") -> boo
     ... ))
     False
 
+    A Payment Method that has not performed initialize cannot go through process_action.
+    >>> can_process_action(PaymentMethod(
+    ...     id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     payment_attempt=payment_attempt,
+    ...     created_at=datetime.now(),
+    ...     confirmable=True,
+    ...     payment_operations=[
+    ...         payment_operation_initialized_started,
+    ...         payment_operation_initialized_not_performed,
+    ...     ],
+    ... ))
+    False
+
     A Payment Method that has started initialized but failed
     cannot go through process_action.
     >>> can_process_action(PaymentMethod(
@@ -210,7 +236,6 @@ def can_process_action(payment_method: "protocols.AbstractPaymentMethod") -> boo
     ):
         return False
 
-    # Unless Payment Method initialized and required action, it cannot go through process_action
     if not (
         payment_method.has_payment_operation(
             type=OperationTypeEnum.INITIALIZE,
@@ -256,6 +281,11 @@ def can_after_pay(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     ...     type=OperationTypeEnum.INITIALIZE,
     ...     status=OperationStatusEnum.REQUIRES_ACTION,
     ... )
+    >>> payment_operation_initialized_not_performed = PaymentOperation(
+    ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     type=OperationTypeEnum.INITIALIZE,
+    ...     status=OperationStatusEnum.NOT_PERFORMED,
+    ... )
     >>> payment_operation_process_action_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.PROCESS_ACTION,
@@ -300,6 +330,21 @@ def can_after_pay(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     ...         payment_operation_initialized_requires_action,
     ...         payment_operation_process_action_started,
     ...         payment_operation_process_action_completed,
+    ...         payment_operation_pay_started,
+    ...         payment_operation_pay_completed,
+    ...     ],
+    ... ))
+    True
+
+    A Payment Method that has not performed initialized and has already pay can go through.
+    >>> can_after_pay(PaymentMethod(
+    ...     id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     payment_attempt=payment_attempt,
+    ...     created_at=datetime.now(),
+    ...     confirmable=True,
+    ...     payment_operations=[
+    ...         payment_operation_initialized_started,
+    ...         payment_operation_initialized_not_performed,
     ...         payment_operation_pay_started,
     ...         payment_operation_pay_completed,
     ...     ],
@@ -372,9 +417,17 @@ def can_after_pay(payment_method: "protocols.AbstractPaymentMethod") -> bool:
         elif not payment_method.has_payment_operation(
             type=OperationTypeEnum.INITIALIZE,
             status=OperationStatusEnum.REQUIRES_ACTION,
-        ) and not payment_method.has_payment_operation(
-            type=OperationTypeEnum.INITIALIZE,
-            status=OperationStatusEnum.COMPLETED,
+        ) and not any(
+            [
+                payment_method.has_payment_operation(
+                    type=OperationTypeEnum.INITIALIZE,
+                    status=OperationStatusEnum.COMPLETED,
+                ),
+                payment_method.has_payment_operation(
+                    type=OperationTypeEnum.INITIALIZE,
+                    status=OperationStatusEnum.NOT_PERFORMED,
+                ),
+            ]
         ):
             return False
 
@@ -429,6 +482,11 @@ def can_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     ...     type=OperationTypeEnum.INITIALIZE,
     ...     status=OperationStatusEnum.REQUIRES_ACTION,
     ... )
+    >>> payment_operation_initialized_not_performed = PaymentOperation(
+    ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     type=OperationTypeEnum.INITIALIZE,
+    ...     status=OperationStatusEnum.NOT_PERFORMED,
+    ... )
     >>> payment_operation_process_action_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.PROCESS_ACTION,
@@ -481,6 +539,23 @@ def can_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     ...     payment_operations=[
     ...         payment_operation_initialized_started,
     ...         payment_operation_initialized_completed,
+    ...         payment_operation_pay_started,
+    ...         payment_operation_pay_completed,
+    ...         payment_operation_after_pay_started,
+    ...         payment_operation_after_pay_completed,
+    ...     ],
+    ... ))
+    True
+
+    A Payment Method that is confirmable and has not completed initialize, then pay can go through.
+    >>> can_confirm(PaymentMethod(
+    ...     id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     payment_attempt=payment_attempt,
+    ...     created_at=datetime.now(),
+    ...     confirmable=True,
+    ...     payment_operations=[
+    ...         payment_operation_initialized_started,
+    ...         payment_operation_initialized_not_performed,
     ...         payment_operation_pay_started,
     ...         payment_operation_pay_completed,
     ...         payment_operation_after_pay_started,
@@ -596,6 +671,11 @@ def can_after_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool
     ...     type=OperationTypeEnum.INITIALIZE,
     ...     status=OperationStatusEnum.REQUIRES_ACTION,
     ... )
+    >>> payment_operation_initialized_not_performed = PaymentOperation(
+    ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     type=OperationTypeEnum.INITIALIZE,
+    ...     status=OperationStatusEnum.NOT_PERFORMED,
+    ... )
     >>> payment_operation_process_action_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.PROCESS_ACTION,
@@ -658,6 +738,25 @@ def can_after_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool
     ...     payment_operations=[
     ...         payment_operation_initialized_started,
     ...         payment_operation_initialized_completed,
+    ...         payment_operation_pay_started,
+    ...         payment_operation_pay_completed,
+    ...         payment_operation_after_pay_started,
+    ...         payment_operation_after_pay_completed,
+    ...         payment_operation_confirm_started,
+    ...         payment_operation_confirm_completed,
+    ...     ],
+    ... ))
+    True
+
+    A Payment Method that has not performed initialized and has already pay and has already confirmed can go through.
+    >>> can_after_confirm(PaymentMethod(
+    ...     id="e974291a-f788-47cb-bf15-67104f3845c0",
+    ...     payment_attempt=payment_attempt,
+    ...     created_at=datetime.now(),
+    ...     confirmable=True,
+    ...     payment_operations=[
+    ...         payment_operation_initialized_started,
+    ...         payment_operation_initialized_not_performed,
     ...         payment_operation_pay_started,
     ...         payment_operation_pay_completed,
     ...         payment_operation_after_pay_started,
@@ -760,9 +859,17 @@ def can_after_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool
     if not payment_method.confirmable:
         return False
 
-    if not payment_method.has_payment_operation(
-        type=OperationTypeEnum.INITIALIZE,
-        status=OperationStatusEnum.COMPLETED,
+    if not any(
+        [
+            payment_method.has_payment_operation(
+                type=OperationTypeEnum.INITIALIZE,
+                status=OperationStatusEnum.COMPLETED,
+            ),
+            payment_method.has_payment_operation(
+                type=OperationTypeEnum.INITIALIZE,
+                status=OperationStatusEnum.NOT_PERFORMED,
+            ),
+        ]
     ):
         return False
 

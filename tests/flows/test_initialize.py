@@ -127,6 +127,48 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
 
 
 @pytest.mark.django_db
+def test_givenAValidPaymentMethod_whenInitializingDoesntPerform_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
+    fake_block: Type[protocols.AbstractBlock],
+    fake_process_action_block: Type[protocols.AbstractBlock],
+) -> None:
+    # given a valid payment attempt
+    db_payment_attempt = PaymentAttemptFactory.create()
+    db_payment_method = PaymentMethodFactory.create(payment_attempt_id=db_payment_attempt.id)
+
+    # when Initializing
+    result = domain.PaymentFlow(
+        repository=repositories.PaymentMethodRepository(),
+        operations_repository=repositories.PaymentOperationRepository(),
+        initialize_block=None,
+        process_action_block=fake_process_action_block(),
+        pay_blocks=[],
+        after_pay_blocks=[],
+        confirm_blocks=[],
+        after_confirm_blocks=[],
+    ).initialize(db_payment_method.to_domain())
+
+    # then the payment flow returns the correct Operation Response
+    assert models.PaymentOperation.objects.count() == 4
+    db_payment_operations = models.PaymentOperation.objects.order_by("created_at").all()
+    assert db_payment_operations[0].type == OperationTypeEnum.INITIALIZE
+    assert db_payment_operations[0].status == OperationStatusEnum.STARTED
+
+    assert db_payment_operations[1].type == OperationTypeEnum.INITIALIZE
+    assert db_payment_operations[1].status == OperationStatusEnum.NOT_PERFORMED
+
+    assert db_payment_operations[2].type == OperationTypeEnum.PAY
+    assert db_payment_operations[2].status == OperationStatusEnum.STARTED
+
+    assert db_payment_operations[3].type == OperationTypeEnum.PAY
+    assert db_payment_operations[3].status == OperationStatusEnum.COMPLETED
+
+    assert result.type == OperationTypeEnum.PAY
+    assert result.status == OperationStatusEnum.COMPLETED
+    assert result.actions == []
+    assert result.payment_method.id == db_payment_method.id
+
+
+@pytest.mark.django_db
 def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlowReturnsAFailedStatusOperationResponse(
     fake_block: Type[protocols.AbstractBlock],
     fake_process_action_block: Type[protocols.AbstractBlock],
