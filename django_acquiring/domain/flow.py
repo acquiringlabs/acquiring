@@ -91,7 +91,7 @@ class PaymentFlow:
     pay_blocks: list["protocols.AbstractBlock"]
     after_pay_blocks: list["protocols.AbstractBlock"]
 
-    confirm_blocks: list["protocols.AbstractBlock"]
+    confirm_block: Optional["protocols.AbstractBlock"]
     after_confirm_blocks: list["protocols.AbstractBlock"]
 
     @refresh_payment_method
@@ -362,35 +362,53 @@ class PaymentFlow:
         )
 
         # Run Operation Blocks
-        responses = [block.run(payment_method) for block in self.confirm_blocks]
+        if self.confirm_block is None:
+            self.operations_repository.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.CONFIRM,
+                status=OperationStatusEnum.NOT_PERFORMED,
+            )
+            return OperationResponse(
+                status=OperationStatusEnum.NOT_PERFORMED,
+                payment_method=payment_method,
+                type=OperationTypeEnum.CONFIRM,
+                error_message="PaymentFlow does not include a block for this operation type",
+            )
 
-        has_completed = all([response.status == OperationStatusEnum.COMPLETED for response in responses])
+        # Run Operation Block
+        block_response = self.confirm_block.run(payment_method=payment_method)
 
-        is_pending = any([response.status == OperationStatusEnum.PENDING for response in responses])
-
-        if has_completed:
-            status = OperationStatusEnum.COMPLETED
-        elif not has_completed and is_pending:
-            status = OperationStatusEnum.PENDING
-        else:
-            # TODO Allow for the possibility of any block forcing the response to be failed
-            status = OperationStatusEnum.FAILED
+        # Validate that status is one of the expected ones
+        if block_response.status not in [
+            OperationStatusEnum.COMPLETED,
+            OperationStatusEnum.FAILED,
+            OperationStatusEnum.PENDING,
+        ]:
+            self.operations_repository.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.CONFIRM,
+                status=OperationStatusEnum.FAILED,
+            )
+            return OperationResponse(
+                status=OperationStatusEnum.FAILED,
+                payment_method=payment_method,
+                type=OperationTypeEnum.CONFIRM,
+                error_message=f"Invalid status {block_response.status}",
+            )
 
         # Create PaymentOperation with the outcome
         self.operations_repository.add(
             payment_method=payment_method,
             type=OperationTypeEnum.CONFIRM,
-            status=status,
+            status=block_response.status,
         )
 
         # Return Response
         return OperationResponse(
-            status=status,
+            status=block_response.status,
             payment_method=payment_method,
             type=OperationTypeEnum.CONFIRM,
-            error_message=", ".join(
-                [response.error_message for response in responses if response.error_message is not None]
-            ),
+            error_message=block_response.error_message,
         )
 
     @refresh_payment_method

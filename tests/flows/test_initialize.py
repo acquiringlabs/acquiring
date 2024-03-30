@@ -56,7 +56,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).initialize(db_payment_method.to_domain())
 
@@ -101,7 +101,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).initialize(db_payment_method.to_domain())
 
@@ -143,7 +143,7 @@ def test_givenAValidPaymentMethod_whenInitializingDoesntPerform_thenPaymentFlowR
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).initialize(db_payment_method.to_domain())
 
@@ -191,7 +191,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).initialize(db_payment_method.to_domain())
 
@@ -230,7 +230,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).initialize(payment_method)
 

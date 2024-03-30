@@ -97,7 +97,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[
             fake_block(
                 fake_response_status=payment_operation_status,
@@ -165,7 +165,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[fake_block()],
+        confirm_block=fake_block(),
         after_confirm_blocks=[],
     ).after_confirm(db_payment_method.to_domain())
 
@@ -203,7 +203,7 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).after_confirm(payment_method)
 

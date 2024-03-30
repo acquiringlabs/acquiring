@@ -50,7 +50,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
         process_action_block=fake_process_action_block(),
         pay_blocks=[fake_block(fake_response_status=payment_operation_status)],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).initialize(db_payment_method.to_domain())
 

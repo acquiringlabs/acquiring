@@ -38,7 +38,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
         process_action_block=fake_process_action_block(fake_response_status=OperationStatusEnum.FAILED),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).process_action(db_payment_method.to_domain(), action_data={})
 
@@ -92,7 +92,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
         process_action_block=fake_process_action_block(fake_response_status=OperationStatusEnum.COMPLETED),
         pay_blocks=[fake_block(fake_response_status=OperationStatusEnum.COMPLETED)],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).process_action(db_payment_method.to_domain(), action_data={})
 
@@ -152,7 +152,7 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
         process_action_block=None,
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).process_action(db_payment_method.to_domain(), action_data={})
 
@@ -201,7 +201,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         process_action_block=fake_process_action_block(fake_response_status=OperationStatusEnum.COMPLETED),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).process_action(db_payment_method.to_domain(), action_data={})
 
@@ -240,7 +240,7 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_blocks=[],
+        confirm_block=None,
         after_confirm_blocks=[],
     ).process_action(payment_method, action_data={})
 
