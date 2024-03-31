@@ -6,7 +6,12 @@ from django.utils import timezone
 from faker import Faker
 
 from django_acquiring import domain, models, repositories
-from tests.factories import ItemFactory, PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+from tests.repositories.factories import (
+    ItemFactory,
+    PaymentAttemptFactory,
+    PaymentMethodFactory,
+    PaymentOperationFactory,
+)
 
 fake = Faker()
 

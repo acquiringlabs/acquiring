@@ -4,7 +4,7 @@ import pytest
 
 from django_acquiring import domain, models, protocols, repositories
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
+from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 COMPLETED_STATUS = [OperationStatusEnum.COMPLETED]
 

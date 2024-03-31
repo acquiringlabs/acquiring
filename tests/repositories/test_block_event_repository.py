@@ -4,7 +4,7 @@ import pytest
 
 from django_acquiring import domain, models, repositories
 from django_acquiring.enums import OperationStatusEnum
-from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
+from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 
 @pytest.mark.django_db
