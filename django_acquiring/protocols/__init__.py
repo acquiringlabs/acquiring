@@ -1,3 +1,5 @@
+from typing import Optional, Protocol
+
 from .events import AbstractBlockEvent
 from .payments import (
     AbstractBlock,
@@ -15,6 +17,35 @@ from .payments import (
 from .providers import AbstractAdapter, AbstractAdapterResponse, AbstractTransaction
 from .repositories import AbstractRepository
 
+
+class AbstractPaymentFlow(Protocol):
+    payment_method_repository: "AbstractRepository"
+    operations_repository: "AbstractRepository"
+
+    initialize_block: Optional["AbstractBlock"]
+    process_action_block: Optional["AbstractBlock"]
+
+    pay_blocks: list["AbstractBlock"]
+    after_pay_blocks: list["AbstractBlock"]
+
+    confirm_block: Optional["AbstractBlock"]
+    after_confirm_blocks: list["AbstractBlock"]
+
+    def initialize(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+
+    def process_actions(
+        self, payment_method: "AbstractPaymentMethod", action_data: dict
+    ) -> "AbstractOperationResponse": ...
+
+    def __pay(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+
+    def after_pay(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+
+    def confirm(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+
+    def after_confirm(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+
+
 __all__ = [
     "AbstractAdapter",
     "AbstractAdapterResponse",
@@ -27,6 +58,7 @@ __all__ = [
     "AbstractItem",
     "AbstractOperationResponse",
     "AbstractPaymentAttempt",
+    "AbstractPaymentFlow",
     "AbstractPaymentMethod",
     "AbstractPaymentOperation",
     "AbstractRepository",

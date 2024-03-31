@@ -94,9 +94,10 @@ class AbstractDraftPaymentAttempt(Protocol):
 
 class AbstractOperationResponse(Protocol):
     status: OperationStatusEnum
-    actions: list[dict] = field(default_factory=list)
+    payment_method: Optional["AbstractPaymentMethod"]
     type: OperationTypeEnum
-    error_message: Optional[str] = None
+    error_message: Optional[str]
+    actions: list[dict]
 
 
 class AbstractBlockResponse(Protocol):

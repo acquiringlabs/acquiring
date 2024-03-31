@@ -78,6 +78,7 @@ def test_givenAValidPaymentMethod_whenInitializing_thenPaymentFlowReturnsTheCorr
         payment_operations_status if payment_operations_status in VALID_RESPONSE_STATUS else OperationStatusEnum.FAILED
     )
     assert result.actions == block_response_actions
+    assert result.payment_method is not None
     assert result.payment_method.id == db_payment_method.id
 
 
@@ -123,6 +124,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
     assert result.type == OperationTypeEnum.PAY
     assert result.status == OperationStatusEnum.COMPLETED
     assert result.actions == []
+    assert result.payment_method is not None
     assert result.payment_method.id == db_payment_method.id
 
 
@@ -165,6 +167,7 @@ def test_givenAValidPaymentMethod_whenInitializingDoesntPerform_thenPaymentFlowR
     assert result.type == OperationTypeEnum.PAY
     assert result.status == OperationStatusEnum.COMPLETED
     assert result.actions == []
+    assert result.payment_method is not None
     assert result.payment_method.id == db_payment_method.id
 
 

@@ -1,6 +1,6 @@
 import functools
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Callable, Optional, Sequence
 
 import django_acquiring.domain.decision_logic as dl
 from django_acquiring import domain
@@ -10,7 +10,9 @@ if TYPE_CHECKING:
     from django_acquiring import protocols
 
 
-def payment_operation_type(function: Callable) -> Callable:
+def payment_operation_type(  # type:ignore[misc]
+    function: Callable[..., "protocols.AbstractOperationResponse"]
+) -> Callable[..., "protocols.AbstractOperationResponse"]:
     """
     This decorator verifies that the name of this function belongs to one of the OperationTypeEnums
 
@@ -35,7 +37,10 @@ def payment_operation_type(function: Callable) -> Callable:
     """
 
     @functools.wraps(function)
-    def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
+    def wrapper(
+        *args: Sequence,
+        **kwargs: dict,
+    ) -> "protocols.AbstractOperationResponse":
         if function.__name__ not in OperationTypeEnum:
 
             # Private methods that start with double _ and have a name that belongs to enum are also allowed
@@ -49,13 +54,20 @@ def payment_operation_type(function: Callable) -> Callable:
     return wrapper
 
 
-def refresh_payment_method(function: Callable) -> Callable:
+def refresh_payment_method(  # type:ignore[misc]
+    function: Callable[..., "protocols.AbstractOperationResponse"]
+) -> Callable[..., "protocols.AbstractOperationResponse"]:
     """
     Refresh the payment from the database, or force an early failed OperationResponse otherwise.
     """
 
     @functools.wraps(function)
-    def wrapper(self, payment_method: "protocols.AbstractPaymentMethod", **kwargs) -> OperationResponse:  # type: ignore[no-untyped-def]
+    def wrapper(
+        self: "protocols.AbstractPaymentFlow",
+        payment_method: "protocols.AbstractPaymentMethod",
+        *args: Sequence,
+        **kwargs: dict,
+    ) -> "protocols.AbstractOperationResponse":
         try:
             payment_method = self.payment_method_repository.get(id=payment_method.id)
         except domain.PaymentMethod.DoesNotExist:
@@ -65,7 +77,7 @@ def refresh_payment_method(function: Callable) -> Callable:
                 error_message="PaymentMethod not found",
                 type=OperationTypeEnum(function.__name__),  # already valid thanks to @payment_operation_type
             )
-        return function(self, payment_method, **kwargs)
+        return function(self, payment_method, *args, **kwargs)
 
     return wrapper
 

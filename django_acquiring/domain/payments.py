@@ -4,15 +4,14 @@ from typing import TYPE_CHECKING, Optional, Sequence
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from django_acquiring import protocols
-    from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
+    from django_acquiring import enums, protocols
 
 
 # TODO frozen=True compatible with protocols.AbstractPaymentOperation (expected settable variable, got read-only attribute)
 @dataclass
 class PaymentOperation:
-    type: "OperationTypeEnum"
-    status: "OperationStatusEnum"
+    type: "enums.OperationTypeEnum"
+    status: "enums.OperationStatusEnum"
     payment_method_id: UUID
 
     def __repr__(self) -> str:
@@ -31,7 +30,7 @@ class PaymentMethod:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}"
 
-    def has_payment_operation(self, type: "OperationTypeEnum", status: "OperationStatusEnum") -> bool:
+    def has_payment_operation(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> bool:
         return any(operation.type == type and operation.status == status for operation in self.payment_operations)
 
     class DoesNotExist(Exception):

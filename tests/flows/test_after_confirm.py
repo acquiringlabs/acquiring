@@ -141,6 +141,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
     assert result.type == OperationTypeEnum.AFTER_CONFIRM
     assert result.status == result_status
     assert result.actions == []
+    assert result.payment_method is not None
     assert result.payment_method.id == db_payment_method.id
 
 

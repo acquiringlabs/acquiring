@@ -46,6 +46,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
     assert result.type == OperationTypeEnum.PROCESS_ACTION
     assert result.status == OperationStatusEnum.FAILED
 
+    assert result.payment_method is not None
     assert result.payment_method.id == db_payment_method.id
 
     assert models.PaymentOperation.objects.count() == 4
@@ -100,6 +101,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
     assert result.type == OperationTypeEnum.PAY
     assert result.status == OperationStatusEnum.COMPLETED
 
+    assert result.payment_method is not None
     assert result.payment_method.id == db_payment_method.id
 
     assert models.PaymentOperation.objects.count() == 6
@@ -160,6 +162,7 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
     assert result.type == OperationTypeEnum.PROCESS_ACTION
     assert result.status == OperationStatusEnum.NOT_PERFORMED
 
+    assert result.payment_method is not None
     assert result.payment_method.id == db_payment_method.id
 
     assert models.PaymentOperation.objects.count() == 4
