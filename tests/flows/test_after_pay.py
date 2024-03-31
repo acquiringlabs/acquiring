@@ -7,7 +7,7 @@ import pytest
 from django_acquiring import domain, protocols
 from django_acquiring.domain import decision_logic as dl
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from tests import domain_factories
+from tests.flows import factories
 
 COMPLETED_STATUS = [OperationStatusEnum.COMPLETED]
 
@@ -44,9 +44,9 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
     payment_operation_status: OperationStatusEnum,
 ) -> None:
     # given a valid payment attempt
-    payment_attempt = domain_factories.PaymentAttemptFactory()
+    payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
-    payment_method = domain_factories.PaymentMethodFactory(
+    payment_method = factories.PaymentMethodFactory(
         payment_attempt=payment_attempt,
         id=payment_method_id,
         confirmable=True,
@@ -128,9 +128,9 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowRe
     ],
 ) -> None:
     # Given a payment method that cannot initialize
-    payment_attempt = domain_factories.PaymentAttemptFactory()
+    payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
-    payment_method = domain_factories.PaymentMethodFactory(
+    payment_method = factories.PaymentMethodFactory(
         payment_attempt=payment_attempt,
         id=payment_method_id,
         confirmable=True,

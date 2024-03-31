@@ -7,7 +7,7 @@ import pytest
 from django_acquiring import domain, protocols
 from django_acquiring.domain import decision_logic as dl
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from tests import domain_factories
+from tests.flows import factories
 
 VALID_RESPONSE_STATUS = [
     OperationStatusEnum.COMPLETED,
@@ -49,9 +49,9 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
     payment_operations_status: OperationStatusEnum,
 ) -> None:
     # given a valid payment attempt
-    payment_attempt = domain_factories.PaymentAttemptFactory()
+    payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
-    payment_method = domain_factories.PaymentMethodFactory(
+    payment_method = factories.PaymentMethodFactory(
         payment_attempt=payment_attempt,
         id=payment_method_id,
     )
@@ -113,9 +113,9 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
     payment_operations_status: OperationStatusEnum,
 ) -> None:
     # given a valid payment attempt
-    payment_attempt = domain_factories.PaymentAttemptFactory()
+    payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
-    payment_method = domain_factories.PaymentMethodFactory(
+    payment_method = factories.PaymentMethodFactory(
         payment_attempt=payment_attempt,
         id=payment_method_id,
     )
@@ -175,9 +175,9 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
     ],
 ) -> None:
     # Given a payment method that cannot initialize
-    payment_attempt = domain_factories.PaymentAttemptFactory()
+    payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
-    payment_method = domain_factories.PaymentMethodFactory(
+    payment_method = factories.PaymentMethodFactory(
         payment_attempt=payment_attempt,
         id=payment_method_id,
         payment_operations=[
