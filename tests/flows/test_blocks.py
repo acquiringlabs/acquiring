@@ -2,7 +2,7 @@ from typing import Callable, Sequence
 
 import pytest
 
-from django_acquiring import domain, models, protocols
+from django_acquiring import domain, models, protocols, repositories
 from django_acquiring.enums import OperationStatusEnum
 from tests.factories import PaymentAttemptFactory, PaymentMethodFactory
 
@@ -15,7 +15,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
 
     class FooBlock:
 
-        @domain.wrapped_by_block_events
+        @domain.wrapped_by_block_events(repository=repositories.BlockEventRepository())
         def run(
             self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
         ) -> protocols.AbstractBlockResponse:
@@ -39,3 +39,20 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
     assert block_events[1].status == status
     assert block_events[1].payment_method_id == payment_method.id
     assert block_events[1].block_name == FooBlock.__name__
+
+
+def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenNameAndDocsArePreserved() -> None:
+
+    class FooBlock:
+
+        @domain.wrapped_by_block_events(repository=repositories.BlockEventRepository())
+        def run(
+            self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
+        ) -> protocols.AbstractBlockResponse:
+            """This is the expected doc"""
+            return domain.BlockResponse(status=OperationStatusEnum.COMPLETED)
+
+    assert issubclass(FooBlock, protocols.AbstractBlock)
+
+    assert FooBlock.run.__name__ == "run"
+    assert FooBlock.run.__doc__ == "This is the expected doc"

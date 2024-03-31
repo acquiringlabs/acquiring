@@ -1,21 +1,24 @@
 import uuid
 from dataclasses import dataclass
-from typing import Sequence
+from typing import TYPE_CHECKING, Sequence
 
-from django_acquiring.domain import BlockResponse, wrapped_by_block_events
-from django_acquiring.enums import OperationStatusEnum
-from django_acquiring.protocols import AbstractBlock, AbstractBlockResponse, AbstractPaymentMethod
+from django_acquiring import domain, enums, repositories
 
 from ..adapter import PayPalAdapter
 from ..domain import Amount, Order, OrderIntentEnum, PayPalStatusEnum, PurchaseUnit
+
+if TYPE_CHECKING:
+    from django_acquiring import protocols
 
 
 @dataclass
 class PayPalCreateOrder:
     adapter: PayPalAdapter
 
-    @wrapped_by_block_events
-    def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: dict) -> AbstractBlockResponse:
+    @domain.wrapped_by_block_events(repository=repositories.BlockEventRepository())
+    def run(
+        self, payment_method: "protocols.AbstractPaymentMethod", *args: Sequence, **kwargs: dict
+    ) -> "protocols.AbstractBlockResponse":
         external_id = uuid.uuid4()
 
         items = payment_method.payment_attempt.items
@@ -39,21 +42,18 @@ class PayPalCreateOrder:
         )
 
         if response.status == PayPalStatusEnum.FAILED:
-            return BlockResponse(
-                status=OperationStatusEnum.FAILED,
+            return domain.BlockResponse(
+                status=enums.OperationStatusEnum.FAILED,
                 actions=[],
                 error_message=str(response.raw_data),
             )
 
         parsed_data = self._parse_response_data(response.raw_data)
 
-        return BlockResponse(
-            status=OperationStatusEnum.COMPLETED,
+        return domain.BlockResponse(
+            status=enums.OperationStatusEnum.COMPLETED,
             actions=[{"redirect_url": parsed_data["redirect_url"]}],  # TODO Convert Action to dataclass
         )
 
     def _parse_response_data(self, data: dict) -> dict:
         return {"redirect_url": next((link["href"] for link in data["links"] if link["rel"] == "approve"))}
-
-
-assert issubclass(PayPalCreateOrder, AbstractBlock)
