@@ -7,7 +7,7 @@ import responses
 from django.utils import timezone
 from faker import Faker
 
-from django_acquiring import domain, enums, models
+from django_acquiring import domain, enums, models, repositories
 from django_acquiring.contrib import paypal
 from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFactory
 
@@ -42,6 +42,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
             base_url=os.environ["PAYPAL_BASE_URL"],
             client_id=os.environ["PAYPAL_CLIENT_ID"],
             client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
+            transaction_repository=repositories.TransactionRepository(),
             callback_url=fake.url(),
             webhook_id=fake.isbn10(),
         )

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Optional, Protocol
 from uuid import UUID
+from django_acquiring.protocols import repositories
 
 
 @dataclass(match_args=False)
@@ -18,6 +19,7 @@ class AbstractAdapterResponse(Protocol):  # type:ignore[misc]
 class AbstractAdapter(Protocol):
     base_url: str
     provider_name: str
+    transaction_repository: repositories.AbstractRepository
 
 
 @dataclass

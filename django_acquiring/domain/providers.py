@@ -25,9 +25,6 @@ def wrapped_by_transaction(  # type:ignore[misc]
     function: Callable[..., "protocols.AbstractAdapterResponse"]
 ) -> Callable[..., "protocols.AbstractAdapterResponse"]:
     """This decorator ensures that a Transaction gets created after interacting with the Provider via its adapter"""
-    from django_acquiring import repositories
-
-    repository = repositories.TransactionRepository()
 
     @functools.wraps(function)
     def wrapper(
@@ -47,7 +44,7 @@ def wrapped_by_transaction(  # type:ignore[misc]
                 provider_name=self.provider_name,
                 payment_method_id=payment_method.id,
             )
-            repository.add(transaction)
+            self.transaction_repository.add(transaction)
 
         return result
 

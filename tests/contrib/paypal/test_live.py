@@ -4,7 +4,7 @@ import uuid
 
 import pytest
 from dotenv import load_dotenv
-
+from django_acquiring import repositories
 from django_acquiring.contrib import paypal
 from tests.repositories import factories
 
@@ -30,6 +30,7 @@ class TestLiveSandbox:
             self.BASE_URL,
             client_id=os.environ["PAYPAL_CLIENT_ID"],
             client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
+            transaction_repository=repositories.TransactionRepository(),
             callback_url=os.environ["CALLBACK_URL"],  # Check https://webhook-test.com/
             webhook_id=os.environ.get("WEBHOOK_ID"),
         )

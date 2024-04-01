@@ -36,6 +36,7 @@ class PayPalAdapter:
 
     When accessing the adapter, an access token is requested to PayPal
     >>> import responses
+    >>> from django_acquiring import repositories
     >>> with responses.RequestsMock() as rsps:
     ...     rsps.add(
     ...         responses.POST,
@@ -49,6 +50,7 @@ class PayPalAdapter:
     ...         client_id="TEST_CLIENT_ID",
     ...         client_secret="TEST_CLIENT_SECRET",
     ...         callback_url="https://www.example.com",
+    ...         transaction_repository=repositories.TransactionRepository(),
     ...         webhook_id="LONG_ID"
     ...     )
     Traceback (most recent call last):
@@ -57,6 +59,7 @@ class PayPalAdapter:
 
     When accessing the adapter with valid credentials, an access token is retrieved from PayPal
     >>> import responses
+    >>> from django_acquiring import repositories
     >>> with responses.RequestsMock() as rsps:
     ...     rsps.add(
     ...         responses.POST,
@@ -76,6 +79,7 @@ class PayPalAdapter:
     ...         base_url="https://api-m.sandbox.paypal.com/",
     ...         client_id="TEST_CLIENT_ID",
     ...         client_secret="TEST_CLIENT_SECRET",
+    ...         transaction_repository=repositories.TransactionRepository(),
     ...         callback_url="https://www.example.com",
     ...         webhook_id="LONG_ID"
     ...     )
@@ -83,11 +87,13 @@ class PayPalAdapter:
     PayPalAdapter:base_url=https://api-m.sandbox.paypal.com/|access_token=long-token|expires in 31668 seconds
 
     A base url that doesn't end in / is invalid
+    >>> from django_acquiring import repositories
     >>> PayPalAdapter(
     ...     base_url="https://bad-url.com",
     ...     client_id="TEST_CLIENT_ID",
     ...     client_secret="TEST_CLIENT_SECRET",
     ...     callback_url="https://www.example.com",
+    ...     transaction_repository=repositories.TransactionRepository(),
     ...     webhook_id="LONG_ID"
     ... )
     Traceback (most recent call last):
@@ -99,6 +105,7 @@ class PayPalAdapter:
     callback_url: str
     client_id: str
     client_secret: str
+    transaction_repository: protocols.AbstractRepository
     provider_name: str = "paypal"
     webhook_id: Optional[str] = None
 
