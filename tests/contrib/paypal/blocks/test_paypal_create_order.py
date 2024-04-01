@@ -43,7 +43,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
             client_id=os.environ["PAYPAL_CLIENT_ID"],
             client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
             callback_url=fake.url(),
-            override_webhook_id=fake.isbn10(),
+            webhook_id=fake.isbn10(),
         )
     )
 

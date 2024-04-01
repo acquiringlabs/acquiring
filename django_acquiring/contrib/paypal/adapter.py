@@ -1,7 +1,7 @@
 import base64
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from urllib.parse import urljoin
 from uuid import UUID
@@ -49,7 +49,7 @@ class PayPalAdapter:
     ...         client_id="TEST_CLIENT_ID",
     ...         client_secret="TEST_CLIENT_SECRET",
     ...         callback_url="https://www.example.com",
-    ...         override_webhook_id="LONG_ID"
+    ...         webhook_id="LONG_ID"
     ...     )
     Traceback (most recent call last):
         ...
@@ -77,7 +77,7 @@ class PayPalAdapter:
     ...         client_id="TEST_CLIENT_ID",
     ...         client_secret="TEST_CLIENT_SECRET",
     ...         callback_url="https://www.example.com",
-    ...         override_webhook_id="LONG_ID"
+    ...         webhook_id="LONG_ID"
     ...     )
     <Response(url='https://api-m.sandbox.paypal.com/v1/oauth2/token' status=201 content_type='application/json' headers='null')>
     PayPalAdapter:base_url=https://api-m.sandbox.paypal.com/|access_token=long-token|expires in 31668 seconds
@@ -88,7 +88,7 @@ class PayPalAdapter:
     ...     client_id="TEST_CLIENT_ID",
     ...     client_secret="TEST_CLIENT_SECRET",
     ...     callback_url="https://www.example.com",
-    ...     override_webhook_id="LONG_ID"
+    ...     webhook_id="LONG_ID"
     ... )
     Traceback (most recent call last):
         ...
@@ -100,12 +100,11 @@ class PayPalAdapter:
     client_id: str
     client_secret: str
     provider_name: str = "paypal"
-    override_webhook_id: Optional[str] = None
+    webhook_id: Optional[str] = None
 
     access_token: str = field(init=False)
     scope: list[str] = field(init=False)
     expires_in: int = field(init=False)
-    webhook_id: str = field(init=False)
 
     def __repr__(self) -> str:
         return f"PayPalAdapter:base_url={self.base_url}|access_token={self.access_token}|expires in {self.expires_in} seconds"
@@ -125,9 +124,7 @@ class PayPalAdapter:
             raise BadUrlError("base_url must end with /")
 
         self._authenticate()
-        if self.override_webhook_id is not None:
-            self.webhook_id = self.override_webhook_id
-        else:
+        if self.webhook_id is None:
             self._subscribe_to_webhook_events()
 
     @domain.wrapped_by_transaction
@@ -157,7 +154,20 @@ class PayPalAdapter:
                 }
                 for purchase_unit in order.purchase_units
             ],
+            "payment_source": {
+                "paypal": {
+                    "experience_context": {
+                        "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
+                        "locale": "en-US",
+                        "shipping_preference": "NO_SHIPPING",
+                        "user_action": "PAY_NOW",
+                        "return_url": "https://example.com/returnUrl",
+                        "cancel_url": "https://example.com/cancelUrl",
+                    },
+                },
+            },
         }
+
         try:
             response = requests.post(url, json=data, headers=headers)
             response.raise_for_status()
@@ -173,7 +183,11 @@ class PayPalAdapter:
         serialized_response = response.json()
         return PayPalResponse(
             external_id=serialized_response["id"],
-            timestamp=datetime.fromisoformat(serialized_response["create_time"]),
+            timestamp=(
+                datetime.fromisoformat(serialized_response["create_time"])
+                if serialized_response.get("create_time")
+                else datetime.now(timezone.utc)
+            ),
             raw_data=serialized_response,
             status=PayPalStatusEnum(serialized_response["status"]),
             intent=OrderIntentEnum(serialized_response["intent"]),
@@ -219,8 +233,7 @@ class PayPalAdapter:
                     {
                         "url": f"{self.callback_url}",
                         "event_types": [
-                            {"name": "PAYMENT.AUTHORIZATION.CREATED"},
-                            {"name": "PAYMENT.AUTHORIZATION.VOIDED"},
+                            {"name": "*"},
                         ],
                     }
                 ),
@@ -230,7 +243,6 @@ class PayPalAdapter:
             raise UnauthorizedError(response.text)
 
         self.webhook_id = response.json()["id"]
-        print(self.webhook_id)
 
 
 class UnauthorizedError(Exception):

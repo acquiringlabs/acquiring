@@ -1,14 +1,17 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Protocol
+from typing import Any, Optional, Protocol
 from uuid import UUID
 
 
 @dataclass(match_args=False)
-class AbstractAdapterResponse(Protocol):
+class AbstractAdapterResponse(Protocol):  # type:ignore[misc]
     external_id: Optional[str]  # UUID cannot be imposed across all adapters
     timestamp: Optional[datetime]
     raw_data: dict
+
+    # TODO implement status as StrEnum and all the classes that inherit from StrEnum. TypeVar? bound?
+    status: Any  # type:ignore[misc]
 
 
 @dataclass

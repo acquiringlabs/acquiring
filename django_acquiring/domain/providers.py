@@ -23,7 +23,7 @@ class Transaction:
 
 def wrapped_by_transaction(  # type:ignore[misc]
     function: Callable[..., "protocols.AbstractAdapterResponse"]
-) -> Callable:
+) -> Callable[..., "protocols.AbstractAdapterResponse"]:
     """This decorator ensures that a Transaction gets created after interacting with the Provider via its adapter"""
     from django_acquiring import repositories
 

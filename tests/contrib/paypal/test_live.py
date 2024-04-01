@@ -6,7 +6,7 @@ import pytest
 from dotenv import load_dotenv
 
 from django_acquiring.contrib import paypal
-from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFactory
+from tests.repositories import factories
 
 load_dotenv()  # take environment variables from .env.
 
@@ -31,12 +31,15 @@ class TestLiveSandbox:
             client_id=os.environ["PAYPAL_CLIENT_ID"],
             client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
             callback_url=os.environ["CALLBACK_URL"],  # Check https://webhook-test.com/
-            override_webhook_id=os.environ.get("WEBHOOK_ID"),
+            webhook_id=os.environ.get("WEBHOOK_ID"),
         )
         assert adapter.access_token is not None
         assert adapter.webhook_id is not None
+        print("***")
+        print(adapter.webhook_id)
+        print("***")
 
-        payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory()).to_domain()
+        payment_method = factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory()).to_domain()
 
         response = adapter.create_order(
             payment_method=payment_method,
@@ -62,9 +65,8 @@ class TestLiveSandbox:
             ),
         )
 
-        assert response.external_id is not None
-        assert response.status == paypal.PayPalStatusEnum.CREATED
-        assert response.intent == paypal.OrderIntentEnum.CAPTURE
+        assert response.external_id is not None, response.raw_data
+        assert response.status == paypal.PayPalStatusEnum.PAYER_ACTION_REQUIRED
         assert response.timestamp is not None
 
         raw_data = response.raw_data
@@ -72,16 +74,12 @@ class TestLiveSandbox:
         assert len(raw_data.get("purchase_units", [])) == 2, raw_data
 
         assert raw_data.get("links") is not None, raw_data
-        assert len(raw_data["links"]) == 4
-        assert set(link["rel"] for link in raw_data["links"]) == set(["approve", "capture", "self", "update"])
+        assert len(raw_data["links"]) == 2
+        assert set(link["rel"] for link in raw_data["links"]) == set(["payer-action", "self"])
         links = sorted(raw_data["links"], key=operator.itemgetter("rel"))  # ordered by rel
-        approve_link = links[0]
-        assert approve_link["href"] == f"https://www.sandbox.paypal.com/checkoutnow?token={response.external_id}"
+        redirect_link = links[0]
+        assert redirect_link["href"] == f"https://www.sandbox.paypal.com/checkoutnow?token={response.external_id}"
 
         print("***")
-        print(approve_link["href"])
+        print(redirect_link["href"])
         print("***")
-
-        # import pprint
-
-        # order_id = raw_data["id"]

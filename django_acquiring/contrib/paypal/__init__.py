@@ -25,6 +25,7 @@ def paypal_payment_flow() -> "PaymentFlow":
                     callback_url=os.environ["CALLBACK_BASE_URL"],
                     client_id=os.environ["PAYPAL_CLIENT_ID"],
                     client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
+                    webhook_id=os.environ.get("WEBHOOK_ID"),
                 )
             )
         ],
