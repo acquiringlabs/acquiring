@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class PayPalCreateOrder:
     adapter: PayPalAdapter
 
-    @domain.wrapped_by_block_events(repository=repositories.BlockEventRepository())
+    @domain.wrapped_by_block_events(block_event_repository=repositories.BlockEventRepository())
     def run(
         self, payment_method: "protocols.AbstractPaymentMethod", *args: Sequence, **kwargs: dict
     ) -> "protocols.AbstractBlockResponse":

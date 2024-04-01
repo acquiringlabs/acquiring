@@ -13,7 +13,6 @@ from django_acquiring import domain, protocols
 from .domain import Order, OrderIntentEnum, PayPalStatusEnum
 
 
-# TODO Create AbstractAdapterResponse, wrapped_by_transactions
 @dataclass(match_args=False)
 class PayPalResponse:
     external_id: Optional[str]

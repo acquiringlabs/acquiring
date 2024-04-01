@@ -17,7 +17,7 @@ class BlockResponse:
 
 
 def wrapped_by_block_events(
-    repository: "protocols.AbstractRepository",
+    block_event_repository: "protocols.AbstractRepository",
 ) -> Callable:
     """
     This decorator ensures that the starting and finishing block events get created.
@@ -36,7 +36,7 @@ def wrapped_by_block_events(
         ) -> "protocols.AbstractBlockResponse":
             block_name = self.__class__.__name__
 
-            repository.add(
+            block_event_repository.add(
                 block_event=domain.BlockEvent(
                     status=OperationStatusEnum.STARTED,
                     payment_method_id=payment_method.id,
@@ -46,7 +46,7 @@ def wrapped_by_block_events(
 
             result = function(self, payment_method, *args, **kwargs)
 
-            repository.add(
+            block_event_repository.add(
                 block_event=domain.BlockEvent(
                     status=result.status,
                     payment_method_id=payment_method.id,

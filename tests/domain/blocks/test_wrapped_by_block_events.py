@@ -20,7 +20,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
 
     class FooBlock:
 
-        @domain.wrapped_by_block_events(repository=repository)
+        @domain.wrapped_by_block_events(block_event_repository=repository)
         def run(
             self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
         ) -> protocols.AbstractBlockResponse:
@@ -53,7 +53,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenNameAnd
 
     class FooBlock:
 
-        @domain.wrapped_by_block_events(repository=repositories.BlockEventRepository())
+        @domain.wrapped_by_block_events(block_event_repository=repositories.BlockEventRepository())
         def run(
             self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
         ) -> protocols.AbstractBlockResponse:

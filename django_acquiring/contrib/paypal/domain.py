@@ -1,5 +1,6 @@
 import enum
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 
@@ -54,3 +55,15 @@ class HATEOASLink:
 
     """The HTTP method. Use this method to make a request to the target URL."""
     method: Optional[str] = "GET"
+
+
+@dataclass
+class PayPalWebhookData:
+    id: str
+    event_version: str
+    create_time: datetime
+    resource_type: str
+    resource_version: str
+    event_type: str
+    summary: str
+    raw_data: dict
