@@ -5,7 +5,7 @@ from typing import Callable, Optional, Type
 from django_acquiring import domain, protocols
 from django_acquiring.domain import decision_logic as dl
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from tests.flows import factories
+from tests.domain import factories
 
 
 def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowReturnsTheCorrectOperationResponse(

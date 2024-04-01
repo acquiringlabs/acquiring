@@ -4,19 +4,19 @@ from typing import Callable, Optional, Sequence
 import pytest
 
 from django_acquiring import domain, enums, protocols, repositories
-from tests.flows import factories
+from tests.domain import factories
 
 
 @pytest.mark.parametrize("status", enums.OperationStatusEnum)
 def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStartedAndCompletedBlockEventsGetsCreated(
     status: enums.OperationStatusEnum,
-    fake_block_events_repository: Callable[
+    fake_block_event_repository: Callable[
         [Optional[list[protocols.AbstractBlockEvent]]],
         protocols.AbstractRepository,
     ],
 ) -> None:
 
-    repository = fake_block_events_repository([])
+    repository = fake_block_event_repository([])
 
     class FooBlock:
 
