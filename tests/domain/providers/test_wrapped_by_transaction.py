@@ -1,4 +1,3 @@
-import json
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -18,7 +17,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
 
     external_id = "external"
     timestamp = datetime.now()
-    raw_data = json.loads(fake.json(num_rows=1))
+    raw_data = fake.pydict()
     provider_name = fake.company()
 
     @dataclass(match_args=False)
@@ -104,7 +103,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenNameAndD
             return FakeAdapterResponse(
                 external_id="external",
                 timestamp=datetime.now(),
-                raw_data=json.loads(fake.json(num_rows=1)),
+                raw_data=fake.pydict(),
                 status=enums.OperationStatusEnum.COMPLETED,
             )
 

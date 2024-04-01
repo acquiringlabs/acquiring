@@ -14,7 +14,6 @@ class PayPalAfterCreatingOrder:
         payment_method: "protocols.AbstractPaymentMethod",
         webhook_data: paypal.domain.PayPalWebhookData,
     ) -> "protocols.AbstractBlockResponse":
-
         self.transaction_repository.add(
             domain.Transaction(
                 external_id=webhook_data.id,
