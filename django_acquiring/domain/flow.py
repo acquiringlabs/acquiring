@@ -271,7 +271,12 @@ class PaymentFlow:
         )
 
         # Run Operation Blocks
-        responses = [block.run(payment_method) for block in self.pay_blocks]
+        responses = []
+        actions = []
+        for block in self.pay_blocks:
+            response = block.run(payment_method)
+            responses.append(response)
+            actions += response.actions
 
         has_completed = all([response.status == OperationStatusEnum.COMPLETED for response in responses])
 
@@ -296,6 +301,7 @@ class PaymentFlow:
         return OperationResponse(
             status=status,
             payment_method=payment_method,
+            actions=actions,
             type=OperationTypeEnum.PAY,
             error_message=", ".join(
                 [response.error_message for response in responses if response.error_message is not None]
