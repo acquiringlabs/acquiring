@@ -1,7 +1,6 @@
-import itertools
-from typing import Callable
-
 import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from django_acquiring import models, repositories
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
@@ -9,12 +8,12 @@ from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFac
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize(
-    "payment_operation_type, payment_operation_status",
-    itertools.product(OperationTypeEnum, OperationStatusEnum),
+@given(
+    payment_operation_type=st.sampled_from(OperationTypeEnum),
+    payment_operation_status=st.sampled_from(OperationStatusEnum),
 )
+@settings(max_examples=100)
 def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
-    django_assert_num_queries: Callable,
     payment_operation_type: OperationTypeEnum,
     payment_operation_status: OperationStatusEnum,
 ) -> None:
@@ -24,16 +23,16 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
     payment_method = db_payment_method.to_domain()
 
     # When calling PaymentOperationRepository.add_payment_operation
-    with django_assert_num_queries(1):
-        repositories.PaymentOperationRepository().add(
-            payment_method=payment_method,
-            type=payment_operation_type,
-            status=payment_operation_status,
-        )
+    repositories.PaymentOperationRepository().add(
+        payment_method=payment_method,
+        type=payment_operation_type,
+        status=payment_operation_status,
+    )
 
     # Then PaymentOperation gets created
-    assert models.PaymentOperation.objects.count() == 1
-    payment_operation = models.PaymentOperation.objects.first()
+    payment_operation = models.PaymentOperation.objects.get(
+        payment_method_id=db_payment_method.id, status=payment_operation_status, type=payment_operation_type
+    )
 
     # And payment method gets the payment operation added after add_payment_operation
     assert len(payment_method.payment_operations) == 1

@@ -6,6 +6,9 @@ if TYPE_CHECKING:
     from django_acquiring import protocols
 
 
+# TODO Test these functions with hypothesis
+
+
 def can_initialize(payment_method: "protocols.AbstractPaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the initialize operation.

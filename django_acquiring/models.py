@@ -207,6 +207,9 @@ class PaymentOperation(django.db.models.Model):
         related_name="payment_operations",
     )
 
+    class Meta:
+        unique_together = ("status", "payment_method", "type")
+
     def __str__(self) -> str:
         return f"[type={self.type}, status={self.status}]"
 
@@ -223,6 +226,9 @@ class BlockEvent(django.db.models.Model):
     status = django.db.models.CharField(max_length=15, choices=StatusChoices)
     payment_method = django.db.models.ForeignKey(PaymentMethod, on_delete=django.db.models.CASCADE)
     block_name = django.db.models.CharField(max_length=20)
+
+    class Meta:
+        unique_together = ("status", "payment_method", "block_name")
 
     def __str__(self) -> str:
         return f"[{self.block_name}|status={self.status}]"

@@ -1,5 +1,8 @@
 -r base.txt
 
+# Deal to implement contract driven development
+deal
+
 # Django specific testing libraries
 django-test-migrations
 
@@ -10,7 +13,10 @@ faker
 # Flit to simplify package management
 flit
 
-# ipdb to access the IPython debugger as if it were the pdb module.
+# Hypothesis to find edge cases
+hypothesis[django, pytz]
+
+# ipdb to access the IPython debugger as if it were the pdb module
 ipdb
 
 # Mypy to support typing
