@@ -17,3 +17,6 @@ class BlockEvent:
 
     class DoesNotExist(Exception):
         pass
+
+    class DuplicateError(Exception):
+        pass

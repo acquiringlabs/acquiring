@@ -17,6 +17,9 @@ class PaymentOperation:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.type}|{self.status}"
 
+    class DuplicateError(Exception):
+        pass
+
 
 @dataclass
 class PaymentMethod:

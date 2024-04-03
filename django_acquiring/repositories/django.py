@@ -52,7 +52,6 @@ class PaymentAttemptRepository:
 class PaymentMethodRepository:
     def add(self, data: "protocols.AbstractDraftPaymentMethod") -> "protocols.AbstractPaymentMethod":
         with django.db.transaction.atomic():
-
             db_payment_method = models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
@@ -121,10 +120,13 @@ class PaymentOperationRepository:
             type=type,
             status=status,
         )
-        db_payment_operation.save()
-        payment_operation = db_payment_operation.to_domain()
-        payment_method.payment_operations.append(payment_operation)
-        return payment_operation
+        try:
+            db_payment_operation.save()
+            payment_operation = db_payment_operation.to_domain()
+            payment_method.payment_operations.append(payment_operation)
+            return payment_operation
+        except django.db.utils.IntegrityError:
+            raise domain.PaymentOperation.DuplicateError
 
     def get(self, id: UUID) -> "protocols.AbstractPaymentOperation": ...  # type: ignore[empty-body]
 
@@ -133,13 +135,16 @@ class PaymentOperationRepository:
 # TODO Test when payment method id does not correspond to any existing payment method
 class BlockEventRepository:
     def add(self, block_event: "protocols.AbstractBlockEvent") -> "protocols.AbstractBlockEvent":
-        db_block_event = models.BlockEvent(
-            status=block_event.status,
-            payment_method_id=block_event.payment_method_id,
-            block_name=block_event.block_name,
-        )
-        db_block_event.save()
-        return db_block_event.to_domain()
+        try:
+            db_block_event = models.BlockEvent(
+                status=block_event.status,
+                payment_method_id=block_event.payment_method_id,
+                block_name=block_event.block_name,
+            )
+            db_block_event.save()
+            return db_block_event.to_domain()
+        except django.db.utils.IntegrityError:
+            raise domain.BlockEvent.DuplicateError
 
     def get(self, id: UUID) -> "protocols.AbstractBlockEvent": ...  # type: ignore[empty-body]
 

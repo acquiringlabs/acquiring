@@ -127,7 +127,7 @@ def test_givenInCorrectCurrencyData_whenCallingRepositoryAdd_thenPaymentAttemptR
 
 
 @pytest.mark.django_db
-def test_givenExistingPaymentAttemptRowInPaymentAttemptsTable_whenCallingRepositoryGet_thenPaymentAttemptGetsRetrieved(
+def test_givenExistingPaymentAttemptRow_whenCallingRepositoryGet_thenPaymentAttemptGetsRetrieved(
     django_assert_num_queries: Callable,
 ) -> None:
     # Given existing payment attempt row in payments table

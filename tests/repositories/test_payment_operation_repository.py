@@ -2,9 +2,9 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from django_acquiring import models, repositories
+from django_acquiring import domain, models, repositories
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFactory
+from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @pytest.mark.django_db
@@ -13,7 +13,7 @@ from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFac
     payment_operation_status=st.sampled_from(OperationStatusEnum),
 )
 @settings(max_examples=100)
-def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
+def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
     payment_operation_type: OperationTypeEnum,
     payment_operation_status: OperationStatusEnum,
 ) -> None:
@@ -37,3 +37,25 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
     # And payment method gets the payment operation added after add_payment_operation
     assert len(payment_method.payment_operations) == 1
     assert payment_method.payment_operations[0] == payment_operation.to_domain()
+
+
+@pytest.mark.django_db
+def test_givenExistingPaymentOperationRow_whenCallingRepositoryAdd_thenthenDuplicateErrorGetsRaised() -> None:
+
+    db_payment_attempt = PaymentAttemptFactory()
+    db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
+    payment_method = db_payment_method.to_domain()
+
+    # given existing payment operation
+    PaymentOperationFactory(
+        payment_method_id=payment_method.id,
+        type=OperationTypeEnum.INITIALIZE,
+        status=OperationStatusEnum.STARTED,
+    )
+
+    with pytest.raises(domain.PaymentOperation.DuplicateError):
+        repositories.PaymentOperationRepository().add(
+            payment_method=payment_method,
+            type=OperationTypeEnum.INITIALIZE,
+            status=OperationStatusEnum.STARTED,
+        )

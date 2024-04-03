@@ -6,7 +6,7 @@ from hypothesis import strategies as st
 
 from django_acquiring import domain, models, repositories
 from django_acquiring.enums import OperationStatusEnum
-from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFactory
+from tests.repositories.factories import BlockEventFactory, PaymentAttemptFactory, PaymentMethodFactory
 
 
 @pytest.mark.django_db
@@ -55,3 +55,22 @@ def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
         block_name=block_name, payment_method_id=db_payment_method.id, status=status
     )
     assert db_block_event.to_domain() == result
+
+
+@pytest.mark.django_db
+def test_givenExistingBlockEventRow_whenCallingRepositoryAdd_thenthenDuplicateErrorGetsRaised() -> None:
+
+    db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
+    db_block_event = BlockEventFactory(
+        status=OperationStatusEnum.PENDING,
+        payment_method_id=db_payment_method.id,
+        block_name="test",
+    )
+    block_event = domain.BlockEvent(
+        status=db_block_event.status,
+        payment_method_id=db_payment_method.id,
+        block_name=db_block_event.block_name,
+    )
+
+    with pytest.raises(domain.BlockEvent.DuplicateError):
+        repositories.BlockEventRepository().add(block_event)

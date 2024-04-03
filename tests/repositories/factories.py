@@ -39,3 +39,8 @@ class ItemFactory(factory.django.DjangoModelFactory):
     name = factory.LazyAttribute(lambda _: fake.name())
     quantity = factory.LazyAttribute(lambda _: random.randint(0, 999999))
     unit_price = factory.LazyAttribute(lambda _: random.randint(0, 999999))
+
+
+class BlockEventFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "django_acquiring.BlockEvent"

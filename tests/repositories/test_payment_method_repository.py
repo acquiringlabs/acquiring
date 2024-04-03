@@ -76,7 +76,7 @@ def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(
 
 
 @pytest.mark.django_db
-def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
+def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
     django_assert_num_queries: Callable,
 ) -> None:
     db_payment_attempt = PaymentAttemptFactory()
