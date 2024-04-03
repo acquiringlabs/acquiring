@@ -24,6 +24,11 @@ mypy
 
 # Pytest to run the tests
 pytest
+
+# pytest-cov to measure code coverage
+pytest-cov
+
+# pytest-django to implement django utils
 pytest-django
 
 # python-dotenv to manage environment variables

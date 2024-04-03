@@ -5,7 +5,7 @@ import pytest
 from django.utils import timezone
 from faker import Faker
 
-from django_acquiring import domain, models, repositories
+from django_acquiring import domain, enums, models, repositories
 from tests.repositories.factories import (
     ItemFactory,
     PaymentAttemptFactory,
@@ -133,7 +133,16 @@ def test_givenExistingPaymentAttemptRowInPaymentAttemptsTable_whenCallingReposit
     # Given existing payment attempt row in payments table
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_methods = PaymentMethodFactory.create_batch(3, payment_attempt_id=db_payment_attempt.id)
-    PaymentOperationFactory.create_batch(3, payment_method_id=db_payment_methods[0].id)
+    PaymentOperationFactory.create(
+        payment_method_id=db_payment_methods[0].id,
+        status=enums.OperationStatusEnum.STARTED,
+        type=enums.OperationTypeEnum.INITIALIZE,
+    )
+    PaymentOperationFactory.create(
+        payment_method_id=db_payment_methods[0].id,
+        status=enums.OperationStatusEnum.COMPLETED,
+        type=enums.OperationTypeEnum.INITIALIZE,
+    )
     ItemFactory.create_batch(3, payment_attempt_id=db_payment_attempt.id)
 
     # When calling PaymentAttemptRepository.get

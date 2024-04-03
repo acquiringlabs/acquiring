@@ -6,7 +6,7 @@ import pytest
 from django.utils import timezone  # TODO replace with native aware Python datetime object
 from faker import Faker
 
-from django_acquiring import domain, models, repositories
+from django_acquiring import domain, enums, models, repositories
 from tests.repositories.factories import (
     PaymentAttemptFactory,
     PaymentMethodFactory,
@@ -87,7 +87,16 @@ def test_givenExistingPaymentMethodRowInPaymentMethodsTable_whenCallingRepositor
     )
     db_payment_method.token = db_token
     db_payment_method.save()
-    PaymentOperationFactory.create_batch(3, payment_method_id=db_payment_method.id)
+    PaymentOperationFactory.create(
+        payment_method_id=db_payment_method.id,
+        status=enums.OperationStatusEnum.STARTED,
+        type=enums.OperationTypeEnum.INITIALIZE,
+    )
+    PaymentOperationFactory.create(
+        payment_method_id=db_payment_method.id,
+        status=enums.OperationStatusEnum.COMPLETED,
+        type=enums.OperationTypeEnum.INITIALIZE,
+    )
 
     with django_assert_num_queries(4):
         result = repositories.PaymentMethodRepository().get(id=db_payment_method.id)
