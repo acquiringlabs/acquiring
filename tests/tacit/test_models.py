@@ -4,7 +4,7 @@ from django_acquiring import enums, models
 # TODO Figure out a way to ensure that these two enums match at compile time/initialization time
 def test_PaymentOperationTypeChoices_match_OperationTypeEnum() -> None:
     choices = set(
-        member.value for member in models.PaymentOperationTypeChoices  # type:ignore[attr-defined]
+        member.value for member in models.django.PaymentOperationTypeChoices  # type:ignore[attr-defined]
     )
     type_enums = set(item.value for item in enums.OperationTypeEnum)
 
@@ -13,7 +13,7 @@ def test_PaymentOperationTypeChoices_match_OperationTypeEnum() -> None:
 
 def test_StatusChoices_match_OperationStatusEnum() -> None:
     choices = set(
-        member.value for member in models.StatusChoices  # type:ignore[attr-defined]
+        member.value for member in models.django.StatusChoices  # type:ignore[attr-defined]
     )
     status_enums = set(item.value for item in enums.OperationStatusEnum)
 
