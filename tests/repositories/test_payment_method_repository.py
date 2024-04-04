@@ -123,7 +123,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
         confirmable=False,
     )
 
-    with django_assert_num_queries(1), pytest.raises(domain.PaymentMethod.DoesNotExist):
+    with django_assert_num_queries(2), pytest.raises(domain.PaymentMethod.DoesNotExist):
         repositories.PaymentMethodRepository().get(id=payment_method.id)
 
 
@@ -174,7 +174,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAddToken_thenDoes
     )
     token = domain.Token(created_at=timezone.now(), token=fake.sha256())
 
-    with django_assert_num_queries(1), pytest.raises(domain.PaymentMethod.DoesNotExist):
+    with django_assert_num_queries(2), pytest.raises(domain.PaymentMethod.DoesNotExist):
         repositories.PaymentMethodRepository().add_token(
             payment_method=payment_method,
             token=token,

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+import deal
 import django.db.transaction
 
 from django_acquiring import domain, models
@@ -11,6 +12,11 @@ if TYPE_CHECKING:
 
 
 class PaymentAttemptRepository:
+
+    @deal.reason(
+        domain.Item.InvalidTotalAmount,
+        lambda _, data: sum(i.quantity * i.unit_price for i in data.items) != data.amount,
+    )
     def add(self, data: "protocols.AbstractDraftPaymentAttempt") -> "protocols.AbstractPaymentAttempt":
         with django.db.transaction.atomic():
 
@@ -38,6 +44,10 @@ class PaymentAttemptRepository:
 
         return payment_attempt.to_domain()
 
+    @deal.reason(
+        domain.PaymentAttempt.DoesNotExist,
+        lambda _, id: models.PaymentAttempt.objects.filter(id=id).count() == 0,
+    )
     def get(self, id: UUID) -> "protocols.AbstractPaymentAttempt":
         try:
             payment_attempt = models.PaymentAttempt.objects.prefetch_related(
@@ -50,6 +60,8 @@ class PaymentAttemptRepository:
 
 
 class PaymentMethodRepository:
+
+    @deal.safe()
     def add(self, data: "protocols.AbstractDraftPaymentMethod") -> "protocols.AbstractPaymentMethod":
         with django.db.transaction.atomic():
             db_payment_method = models.PaymentMethod(
@@ -71,6 +83,10 @@ class PaymentMethodRepository:
             db_payment_method.save()
         return db_payment_method.to_domain()
 
+    @deal.reason(
+        domain.PaymentMethod.DoesNotExist,
+        lambda _, id: models.PaymentMethod.objects.filter(id=id).count() == 0,
+    )
     def get(self, id: UUID) -> "protocols.AbstractPaymentMethod":
         try:
             payment_method = (
@@ -82,6 +98,10 @@ class PaymentMethodRepository:
         except models.PaymentMethod.DoesNotExist:
             raise domain.PaymentMethod.DoesNotExist
 
+    @deal.reason(
+        domain.PaymentMethod.DoesNotExist,
+        lambda _, payment_method, token: models.PaymentMethod.objects.filter(id=payment_method.id).count() == 0,
+    )
     def add_token(
         self, payment_method: "protocols.AbstractPaymentMethod", token: "protocols.AbstractToken"
     ) -> "protocols.AbstractPaymentMethod":
@@ -109,6 +129,7 @@ class PaymentMethodRepository:
 
 class PaymentOperationRepository:
 
+    @deal.raises(domain.PaymentOperation.DuplicateError)  # TODO Turn this into deal.reason
     def add(
         self,
         payment_method: "protocols.AbstractPaymentMethod",
@@ -134,6 +155,8 @@ class PaymentOperationRepository:
 # TODO Append block event to payment_method.block_events?
 # TODO Test when payment method id does not correspond to any existing payment method
 class BlockEventRepository:
+
+    @deal.raises(domain.BlockEvent.DuplicateError)  # TODO Turn this into deal.reason
     def add(self, block_event: "protocols.AbstractBlockEvent") -> "protocols.AbstractBlockEvent":
         try:
             db_block_event = models.BlockEvent(
@@ -152,6 +175,8 @@ class BlockEventRepository:
 # TODO Append transaction to payment_method.transactions?
 # TODO Test when payment method id does not correspond to any existing payment method
 class TransactionRepository:
+
+    @deal.safe()
     def add(
         self,
         transaction: "protocols.AbstractTransaction",

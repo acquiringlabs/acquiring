@@ -165,5 +165,5 @@ def test_givenNonExistingPaymentAttemptRow_whenCallingRepositoryGet_thenDoesNotE
         currency="NZD",
     )
 
-    with django_assert_num_queries(1), pytest.raises(domain.PaymentAttempt.DoesNotExist):
+    with django_assert_num_queries(2), pytest.raises(domain.PaymentAttempt.DoesNotExist):
         repositories.PaymentAttemptRepository().get(id=payment_method.id)
