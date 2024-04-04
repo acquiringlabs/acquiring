@@ -28,6 +28,7 @@ def pytest_configure(config: Callable) -> None:
         ROOT_URLCONF="tests.urls",
         INSTALLED_APPS=project_settings.INSTALLED_APPS,
         PASSWORD_HASHERS=("django.contrib.auth.hashers.MD5PasswordHasher",),
+        MIGRATION_MODULES={"django_acquiring": "django_acquiring.migrations.django"},
         **use_l10n,
     )
 
