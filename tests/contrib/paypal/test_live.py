@@ -6,7 +6,7 @@ import pytest
 from dotenv import load_dotenv
 from django_acquiring import repositories
 from django_acquiring.contrib import paypal
-from tests.repositories import factories
+from tests.django import factories
 
 load_dotenv()  # take environment variables from .env.
 

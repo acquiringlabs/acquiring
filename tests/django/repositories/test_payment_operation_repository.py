@@ -4,7 +4,7 @@ from hypothesis import strategies as st
 
 from django_acquiring import domain, models, repositories
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @pytest.mark.django_db
@@ -31,7 +31,9 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOpera
 
     # Then PaymentOperation gets created
     payment_operation = models.PaymentOperation.objects.get(
-        payment_method_id=db_payment_method.id, status=payment_operation_status, type=payment_operation_type
+        payment_method_id=db_payment_method.id,
+        status=payment_operation_status,
+        type=payment_operation_type,
     )
 
     # And payment method gets the payment operation added after add_payment_operation

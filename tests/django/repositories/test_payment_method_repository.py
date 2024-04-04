@@ -7,12 +7,7 @@ from django.utils import timezone  # TODO replace with native aware Python datet
 from faker import Faker
 
 from django_acquiring import domain, enums, models, repositories
-from tests.repositories.factories import (
-    PaymentAttemptFactory,
-    PaymentMethodFactory,
-    PaymentOperationFactory,
-    TokenFactory,
-)
+from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory, TokenFactory
 
 fake = Faker()
 

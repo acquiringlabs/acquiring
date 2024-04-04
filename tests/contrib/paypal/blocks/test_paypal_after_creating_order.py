@@ -6,7 +6,7 @@ from faker import Faker
 
 from django_acquiring import domain, enums, models, repositories
 from django_acquiring.contrib import paypal
-from tests.repositories.factories import PaymentAttemptFactory, PaymentMethodFactory
+from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 fake = Faker()
 

@@ -6,7 +6,7 @@ from hypothesis import strategies as st
 
 from django_acquiring import domain, models, repositories
 from django_acquiring.enums import OperationStatusEnum
-from tests.repositories.factories import BlockEventFactory, PaymentAttemptFactory, PaymentMethodFactory
+from tests.django.factories import BlockEventFactory, PaymentAttemptFactory, PaymentMethodFactory
 
 
 @pytest.mark.django_db
