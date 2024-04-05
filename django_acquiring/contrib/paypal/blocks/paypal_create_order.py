@@ -2,7 +2,7 @@ import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Sequence
 
-from django_acquiring import domain, enums, repositories
+from django_acquiring import domain, enums
 
 from ..adapter import PayPalAdapter
 from ..domain import Amount, Order, OrderIntentEnum, PayPalStatusEnum, PurchaseUnit
@@ -15,7 +15,8 @@ if TYPE_CHECKING:
 class PayPalCreateOrder:
     adapter: PayPalAdapter
 
-    @domain.wrapped_by_block_events(block_event_repository=repositories.BlockEventRepository())
+    # TODO block_event_repo is taken from block, not as an argument
+    # @domain.wrapped_by_block_events(block_event_repository=repositories.BlockEventRepository())
     def run(
         self, payment_method: "protocols.AbstractPaymentMethod", *args: Sequence, **kwargs: dict
     ) -> "protocols.AbstractBlockResponse":

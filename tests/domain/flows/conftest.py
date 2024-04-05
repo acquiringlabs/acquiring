@@ -1,12 +1,9 @@
-import uuid
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Callable, Optional, Sequence, Type
+from typing import Sequence, Type
 
 import pytest
 
 from django_acquiring import domain, protocols
-from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
+from django_acquiring.enums import OperationStatusEnum
 
 
 @pytest.fixture(scope="module")
@@ -57,79 +54,3 @@ def fake_process_action_block() -> Type[protocols.AbstractBlock]:
 
     assert issubclass(FakeProcessActionsBlock, protocols.AbstractBlock)
     return FakeProcessActionsBlock
-
-
-@pytest.fixture(scope="module")
-def fake_payment_method_repository() -> Callable[
-    [Optional[list[protocols.AbstractPaymentMethod]]],
-    protocols.AbstractRepository,
-]:
-
-    @dataclass
-    class FakePaymentMethodRepository:
-        units: list[protocols.AbstractPaymentMethod]
-
-        def add(self, data: protocols.AbstractDraftPaymentMethod) -> protocols.AbstractPaymentMethod:
-            payment_method = domain.PaymentMethod(
-                id=uuid.uuid4(),
-                created_at=datetime.now(),
-                payment_attempt=data.payment_attempt,
-                confirmable=data.confirmable,
-                token=data.token,
-                payment_operations=[],
-            )
-            self.units.append(payment_method)
-            return payment_method
-
-        def get(self, id: uuid.UUID) -> protocols.AbstractPaymentMethod:
-            for unit in self.units:
-                if unit.id == id:
-                    return unit
-            raise domain.PaymentMethod.DoesNotExist
-
-    assert issubclass(FakePaymentMethodRepository, protocols.AbstractRepository)
-
-    def build_repository(
-        units: Optional[list[protocols.AbstractPaymentMethod]] = None,
-    ) -> protocols.AbstractRepository:
-        return FakePaymentMethodRepository(units=units if units else [])
-
-    return build_repository
-
-
-@pytest.fixture(scope="module")
-def fake_payment_operations_repository() -> Callable[
-    [Optional[list[protocols.AbstractPaymentOperation]]],
-    protocols.AbstractRepository,
-]:
-
-    @dataclass
-    class FakePaymentOperationRepository:
-        units: list[protocols.AbstractPaymentOperation]
-
-        def add(
-            self,
-            payment_method: protocols.AbstractPaymentMethod,
-            type: OperationTypeEnum,
-            status: OperationStatusEnum,
-        ) -> protocols.AbstractPaymentOperation:
-            payment_operation = domain.PaymentOperation(
-                type=type,
-                status=status,
-                payment_method_id=payment_method.id,
-            )
-            payment_method.payment_operations.append(payment_operation)
-            return payment_operation
-
-        def get(  # type:ignore[empty-body]
-            self, id: uuid.UUID
-        ) -> protocols.AbstractPaymentOperation: ...
-
-    assert issubclass(FakePaymentOperationRepository, protocols.AbstractRepository)
-
-    def build_repository(
-        units: Optional[list[protocols.AbstractPaymentOperation]] = None,
-    ) -> protocols.AbstractRepository:
-        return FakePaymentOperationRepository(units=units if units else [])
-
-    return build_repository

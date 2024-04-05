@@ -1,7 +1,7 @@
 import enum
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 
 @dataclass
@@ -24,7 +24,7 @@ class OrderIntentEnum(enum.StrEnum):
 @dataclass
 class Order:
     intent: OrderIntentEnum
-    purchase_units: list[PurchaseUnit]
+    purchase_units: List[PurchaseUnit]
 
 
 class PayPalStatusEnum(enum.StrEnum):

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from django_acquiring import domain, enums, protocols, repositories
+from django_acquiring import domain, enums, protocols
 from django_acquiring.contrib import paypal
 
 
@@ -8,7 +8,8 @@ from django_acquiring.contrib import paypal
 class PayPalAfterCreatingOrder:
     transaction_repository: protocols.AbstractRepository
 
-    @domain.wrapped_by_block_events(block_event_repository=repositories.BlockEventRepository())
+    # TODO block_event_repo is taken from block, not as an argument
+    # @domain.wrapped_by_block_events(block_event_repository=repositories.BlockEventRepository())
     def run(
         self,
         payment_method: "protocols.AbstractPaymentMethod",

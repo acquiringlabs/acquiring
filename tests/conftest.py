@@ -1,35 +1,29 @@
 import os
-from typing import Callable, Generator
+import uuid
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Callable, Generator, List, Optional
 from unittest import mock
 
-import django
 import pytest
+
+from django_acquiring import domain, enums, protocols
 
 
 # https://docs.pytest.org/en/7.1.x/reference/reference.html?highlight=pytest_config#pytest.hookspec.pytest_configure
 def pytest_configure(config: Callable) -> None:
+    import django
     from django.conf import settings
 
     from django_acquiring import settings as project_settings
 
-    # USE_L10N is deprecated, and will be removed in Django 5.0.
-    use_l10n = {"USE_L10N": True} if django.VERSION < (4, 0) else {}
     settings.configure(
-        DEBUG_PROPAGATE_EXCEPTIONS=True,
         DATABASES={
             "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"},
             "secondary": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"},
         },
-        ALLOWED_HOSTS=["*"],
-        SITE_ID=1,
-        SECRET_KEY="not very secret in tests",
-        USE_I18N=True,
-        STATIC_URL="/static/",
-        ROOT_URLCONF="tests.urls",
         INSTALLED_APPS=project_settings.INSTALLED_APPS,
-        PASSWORD_HASHERS=("django.contrib.auth.hashers.MD5PasswordHasher",),
         MIGRATION_MODULES={"django_acquiring": "django_acquiring.migrations.django"},
-        **use_l10n,
     )
 
     django.setup()
@@ -46,3 +40,109 @@ def fake_os_environ() -> Generator:
         },
     ):
         yield
+
+
+@pytest.fixture(scope="module")
+def fake_payment_method_repository() -> Callable[
+    [Optional[List[protocols.AbstractPaymentMethod]]],
+    protocols.AbstractRepository,
+]:
+
+    @dataclass
+    class FakePaymentMethodRepository:
+        units: List[protocols.AbstractPaymentMethod]
+
+        def add(self, data: protocols.AbstractDraftPaymentMethod) -> protocols.AbstractPaymentMethod:
+            payment_method = domain.PaymentMethod(
+                id=uuid.uuid4(),
+                created_at=datetime.now(),
+                payment_attempt=data.payment_attempt,
+                confirmable=data.confirmable,
+                token=data.token,
+                payment_operations=[],
+            )
+            self.units.append(payment_method)
+            return payment_method
+
+        def get(self, id: uuid.UUID) -> protocols.AbstractPaymentMethod:
+            for unit in self.units:
+                if unit.id == id:
+                    return unit
+            raise domain.PaymentMethod.DoesNotExist
+
+    def build_repository(
+        units: Optional[list[protocols.AbstractPaymentMethod]] = None,
+    ) -> protocols.AbstractRepository:
+        return FakePaymentMethodRepository(units=units if units else [])
+
+    return build_repository
+
+
+@pytest.fixture(scope="module")
+def fake_payment_operations_repository() -> Callable[
+    [Optional[list[protocols.AbstractPaymentOperation]]],
+    protocols.AbstractRepository,
+]:
+
+    @dataclass
+    class FakePaymentOperationRepository:
+        units: list[protocols.AbstractPaymentOperation]
+
+        def add(
+            self,
+            payment_method: protocols.AbstractPaymentMethod,
+            type: enums.OperationTypeEnum,
+            status: enums.OperationStatusEnum,
+        ) -> protocols.AbstractPaymentOperation:
+            payment_operation = domain.PaymentOperation(
+                type=type,
+                status=status,
+                payment_method_id=payment_method.id,
+            )
+            payment_method.payment_operations.append(payment_operation)
+            return payment_operation
+
+        def get(  # type:ignore[empty-body]
+            self, id: uuid.UUID
+        ) -> protocols.AbstractPaymentOperation: ...
+
+    def build_repository(
+        units: Optional[list[protocols.AbstractPaymentOperation]] = None,
+    ) -> protocols.AbstractRepository:
+        return FakePaymentOperationRepository(units=units if units else [])
+
+    return build_repository
+
+
+@pytest.fixture(scope="module")
+def fake_transaction_repository() -> Callable[
+    [Optional[List[protocols.AbstractTransaction]]],
+    protocols.AbstractRepository,
+]:
+
+    @dataclass
+    class FakeAbstractTransactionRepository:
+        units: List[protocols.AbstractTransaction]
+
+        def add(self, transaction: protocols.AbstractTransaction) -> protocols.AbstractTransaction:
+            transaction = domain.Transaction(
+                external_id=transaction.external_id,
+                timestamp=transaction.timestamp,
+                raw_data=transaction.raw_data,
+                provider_name=transaction.provider_name,
+                payment_method_id=transaction.payment_method_id,
+            )
+            self.units.append(transaction)
+            return transaction
+
+        def get(  # type:ignore[empty-body]
+            self,
+            id: uuid.UUID,
+        ) -> protocols.AbstractTransaction: ...
+
+    def build_repository(
+        units: Optional[list[protocols.AbstractTransaction]] = None,
+    ) -> protocols.AbstractRepository:
+        return FakeAbstractTransactionRepository(units=units if units else [])
+
+    return build_repository

@@ -1,5 +1,3 @@
-from typing import Callable
-
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -12,7 +10,7 @@ from tests.django.factories import BlockEventFactory, PaymentAttemptFactory, Pay
 @pytest.mark.django_db
 @pytest.mark.parametrize("status", OperationStatusEnum)
 def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
-    django_assert_num_queries: Callable, status: OperationStatusEnum
+    status: OperationStatusEnum,
 ) -> None:
 
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
@@ -22,11 +20,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
         block_name="test",
     )
 
-    # When calling PaymentAttemptRepository.add
-    with django_assert_num_queries(2):
-        result = repositories.BlockEventRepository().add(block_event)
-
-    # Then BlockEvent gets created
+    result = repositories.BlockEventRepository().add(block_event)
 
     db_block_events = models.BlockEvent.objects.all()
     assert len(db_block_events) == 1

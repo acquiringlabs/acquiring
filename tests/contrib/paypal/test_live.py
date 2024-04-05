@@ -1,12 +1,14 @@
 import operator
 import os
 import uuid
+from datetime import datetime
+from typing import Callable, List, Optional
 
 import pytest
 from dotenv import load_dotenv
-from django_acquiring import repositories
+
+from django_acquiring import domain, protocols
 from django_acquiring.contrib import paypal
-from tests.django import factories
 
 load_dotenv()  # take environment variables from .env.
 
@@ -24,23 +26,35 @@ class TestLiveSandbox:
 
     BASE_URL = "https://api-m.sandbox.paypal.com/"
 
-    @pytest.mark.django_db
-    def test_givenCorrectCredentials_weCanCreateAnOrder(self) -> None:
+    def test_givenCorrectCredentials_weCanCreateAnOrder(
+        self,
+        fake_transaction_repository: Callable[
+            [Optional[List[protocols.AbstractTransaction]]],
+            protocols.AbstractRepository,
+        ],
+    ) -> None:
         adapter = paypal.PayPalAdapter(
             self.BASE_URL,
             client_id=os.environ["PAYPAL_CLIENT_ID"],
             client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
-            transaction_repository=repositories.TransactionRepository(),
+            transaction_repository=fake_transaction_repository([]),
             callback_url=os.environ["CALLBACK_URL"],  # Check https://webhook-test.com/
             webhook_id=os.environ.get("WEBHOOK_ID"),
         )
         assert adapter.access_token is not None
         assert adapter.webhook_id is not None
-        print("***")
-        print(adapter.webhook_id)
-        print("***")
 
-        payment_method = factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory()).to_domain()
+        payment_method = domain.PaymentMethod(
+            id=uuid.uuid4(),
+            created_at=datetime.now(),
+            payment_attempt=domain.PaymentAttempt(
+                id=uuid.uuid4(),
+                created_at=datetime.now(),
+                amount=30,
+                currency="USD",
+            ),
+            confirmable=False,
+        )
 
         response = adapter.create_order(
             payment_method=payment_method,
