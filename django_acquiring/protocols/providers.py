@@ -1,18 +1,20 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Optional, Protocol
+from enum import StrEnum
+from typing import Generic, Optional, Protocol, TypeVar
 from uuid import UUID
+
 from django_acquiring.protocols import repositories
+
+Status = TypeVar("Status", bound=StrEnum)
 
 
 @dataclass(match_args=False)
-class AbstractAdapterResponse(Protocol):  # type:ignore[misc]
+class AbstractAdapterResponse(Generic[Status], Protocol):
     external_id: Optional[str]  # UUID cannot be imposed across all adapters
     timestamp: Optional[datetime]
     raw_data: dict
-
-    # TODO implement status as StrEnum and all the classes that inherit from StrEnum. TypeVar? bound?
-    status: Any  # type:ignore[misc]
+    status: Status
 
 
 @dataclass
