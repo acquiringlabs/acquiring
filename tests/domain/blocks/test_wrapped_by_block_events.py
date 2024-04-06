@@ -3,7 +3,7 @@ from typing import Callable, Optional, Sequence
 
 import pytest
 
-from django_acquiring import domain, enums, protocols, repositories
+from django_acquiring import domain, enums, protocols
 from tests.domain import factories
 
 
@@ -49,11 +49,16 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
     assert block_events[1].block_name == FooBlock.__name__
 
 
-def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenNameAndDocsArePreserved() -> None:
+def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenNameAndDocsArePreserved(
+    fake_block_event_repository: Callable[
+        [Optional[list[protocols.AbstractBlockEvent]]],
+        protocols.AbstractRepository,
+    ],
+) -> None:
 
     class FooBlock:
 
-        @domain.wrapped_by_block_events(block_event_repository=repositories.django.BlockEventRepository())
+        @domain.wrapped_by_block_events(block_event_repository=fake_block_event_repository([]))
         def run(
             self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
         ) -> protocols.AbstractBlockResponse:
