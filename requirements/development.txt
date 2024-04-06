@@ -3,18 +3,12 @@
 # Deal to implement contract driven development
 deal
 
-# Django specific testing libraries
-django-test-migrations
-
 # factory_boy and faker to generate dummy data in the database
 factory_boy
 faker
 
 # Flit to simplify package management
 flit
-
-# Hypothesis to find edge cases
-hypothesis[django, pytz]
 
 # ipdb to access the IPython debugger as if it were the pdb module
 ipdb
@@ -27,9 +21,6 @@ pytest
 
 # pytest-cov to measure code coverage
 pytest-cov
-
-# pytest-django to implement django utils
-pytest-django
 
 # python-dotenv to manage environment variables
 python-dotenv

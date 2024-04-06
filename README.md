@@ -39,7 +39,7 @@ INSTALLED_APPS = [
 
 ## Local development
 
-This project relies on Docker as the main way to test and develop. You can `docker compose build web` and be ready to roll.
+This project relies on Docker as the main way to test and develop. You can `docker compose build` and be ready to roll.
 
 ## Funding
 
