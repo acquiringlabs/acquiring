@@ -9,10 +9,9 @@ from django_acquiring import domain, protocols
 
 
 @pytest.fixture(scope="module")
-def fake_block_event_repository() -> Callable[
-    [Optional[list[protocols.AbstractBlockEvent]]],
-    protocols.AbstractRepository,
-]:
+def fake_block_event_repository() -> (
+    Callable[[Optional[list[protocols.AbstractBlockEvent]]], protocols.AbstractRepository]
+):
 
     @dataclass
     class FakeBlockEventRepository:
