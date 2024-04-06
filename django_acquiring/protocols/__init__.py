@@ -20,7 +20,7 @@ from .repositories import AbstractRepository
 
 class AbstractPaymentFlow(Protocol):
     payment_method_repository: "AbstractRepository"
-    operations_repository: "AbstractRepository"
+    payment_operation_repository: "AbstractRepository"
 
     initialize_block: Optional["AbstractBlock"]
     process_action_block: Optional["AbstractBlock"]

@@ -38,7 +38,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
         [Optional[list[protocols.AbstractPaymentMethod]]],
         protocols.AbstractRepository,
     ],
-    fake_payment_operations_repository: Callable[
+    fake_payment_payment_operation_repository: Callable[
         [Optional[list[protocols.AbstractPaymentOperation]]],
         protocols.AbstractRepository,
     ],
@@ -99,8 +99,8 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
     # when Confirming
     result = domain.PaymentFlow(
         payment_method_repository=fake_payment_method_repository([payment_method]),
-        operations_repository=fake_payment_operations_repository([]),
-        initialize_block=fake_block(
+        payment_operation_repository=fake_payment_payment_operation_repository([]),
+        initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.COMPLETED,
             fake_response_actions=[],
         ),
@@ -109,7 +109,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
         after_pay_blocks=[],
         confirm_block=None,
         after_confirm_blocks=[
-            fake_block(
+            fake_block(  # type:ignore[call-arg]
                 fake_response_status=payment_operation_status,
             ),
         ],
@@ -163,7 +163,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
         [Optional[list[protocols.AbstractPaymentMethod]]],
         protocols.AbstractRepository,
     ],
-    fake_payment_operations_repository: Callable[
+    fake_payment_payment_operation_repository: Callable[
         [Optional[list[protocols.AbstractPaymentOperation]]],
         protocols.AbstractRepository,
     ],
@@ -181,7 +181,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
     # When Initializing
     result = domain.PaymentFlow(
         payment_method_repository=fake_payment_method_repository([payment_method]),
-        operations_repository=fake_payment_operations_repository([]),
+        payment_operation_repository=fake_payment_payment_operation_repository([]),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
@@ -203,7 +203,7 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
         [Optional[list[protocols.AbstractPaymentMethod]]],
         protocols.AbstractRepository,
     ],
-    fake_payment_operations_repository: Callable[
+    fake_payment_payment_operation_repository: Callable[
         [Optional[list[protocols.AbstractPaymentOperation]]],
         protocols.AbstractRepository,
     ],
@@ -227,7 +227,7 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
     # When Confirming
     result = domain.PaymentFlow(
         payment_method_repository=fake_payment_method_repository([payment_method]),
-        operations_repository=fake_payment_operations_repository([]),
+        payment_operation_repository=fake_payment_payment_operation_repository([]),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
