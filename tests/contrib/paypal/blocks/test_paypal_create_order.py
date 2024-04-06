@@ -20,6 +20,10 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         ...,
         protocols.AbstractRepository,
     ],
+    fake_block_event_repository: Callable[
+        ...,
+        protocols.AbstractRepository,
+    ],
 ) -> None:
     payment_method = domain.PaymentMethod(
         id=uuid.uuid4(),
@@ -48,7 +52,10 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         content_type="application/json",
     )
 
+    repository = fake_block_event_repository()
+
     block = paypal.blocks.PayPalCreateOrder(
+        block_event_repository=repository,
         adapter=paypal.adapter.PayPalAdapter(
             base_url=os.environ["PAYPAL_BASE_URL"],
             client_id=os.environ["PAYPAL_CLIENT_ID"],
@@ -56,7 +63,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
             transaction_repository=fake_transaction_repository(),
             callback_url=fake.url(),
             webhook_id=fake.isbn10(),
-        )
+        ),
     )
 
     fake_create_time = timezone.now().isoformat()
@@ -102,12 +109,12 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         error_message=None,
     )
 
-    # assert models.BlockEvent.objects.count() == 2
-    # block_events = models.BlockEvent.objects.order_by("created_at")
-    # assert [block.status for block in block_events] == [
-    #     enums.OperationStatusEnum.STARTED,
-    #     enums.OperationStatusEnum.COMPLETED,
-    # ]
+    block_events: list[domain.BlockEvent] = repository.units  # type:ignore[attr-defined]
+    assert len(block_events) == 2
+    assert [block.status for block in block_events] == [
+        enums.OperationStatusEnum.STARTED,
+        enums.OperationStatusEnum.COMPLETED,
+    ]
 
     # assert models.Transaction.objects.count() == 1
     # transaction = models.Transaction.objects.first()

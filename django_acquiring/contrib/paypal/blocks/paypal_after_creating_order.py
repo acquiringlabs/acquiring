@@ -6,10 +6,10 @@ from django_acquiring.contrib import paypal
 
 @dataclass
 class PayPalAfterCreatingOrder:
+    block_event_repository: protocols.AbstractRepository
     transaction_repository: protocols.AbstractRepository
 
-    # TODO block_event_repo is taken from block, not as an argument
-    # @domain.wrapped_by_block_events(block_event_repository=repositories.django.BlockEventRepository())
+    @domain.wrapped_by_block_events
     def run(
         self,
         payment_method: "protocols.AbstractPaymentMethod",

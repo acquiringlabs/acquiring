@@ -1,22 +1,19 @@
 import uuid
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Sequence
+from typing import Sequence
 
-from django_acquiring import domain, enums
+from django_acquiring import domain, enums, protocols
 
 from ..adapter import PayPalAdapter
 from ..domain import Amount, Order, OrderIntentEnum, PayPalStatusEnum, PurchaseUnit
-
-if TYPE_CHECKING:
-    from django_acquiring import protocols
 
 
 @dataclass
 class PayPalCreateOrder:
     adapter: PayPalAdapter
+    block_event_repository: protocols.AbstractRepository
 
-    # TODO block_event_repo is taken from block, not as an argument
-    # @domain.wrapped_by_block_events(block_event_repository=repositories.django.BlockEventRepository())
+    @domain.wrapped_by_block_events
     def run(
         self, payment_method: "protocols.AbstractPaymentMethod", *args: Sequence, **kwargs: dict
     ) -> "protocols.AbstractBlockResponse":

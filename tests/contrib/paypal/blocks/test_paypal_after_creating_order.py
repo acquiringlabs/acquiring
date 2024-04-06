@@ -17,6 +17,10 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         ...,
         protocols.AbstractRepository,
     ],
+    fake_block_event_repository: Callable[
+        ...,
+        protocols.AbstractRepository,
+    ],
 ) -> None:
 
     payment_method = domain.PaymentMethod(
@@ -31,7 +35,10 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         confirmable=False,
     )
 
+    repository = fake_block_event_repository()
+
     block = paypal.blocks.PayPalAfterCreatingOrder(
+        block_event_repository=repository,
         transaction_repository=fake_transaction_repository(),
     )
 
@@ -133,6 +140,13 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         actions=[],
         error_message=None,
     )
+
+    block_events: list[domain.BlockEvent] = repository.units  # type:ignore[attr-defined]
+    assert len(block_events) == 2
+    assert [block.status for block in block_events] == [
+        enums.OperationStatusEnum.STARTED,
+        enums.OperationStatusEnum.COMPLETED,
+    ]
 
     # transactions = models.Transaction.objects.all()
 
