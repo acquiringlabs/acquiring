@@ -1,4 +1,4 @@
-from typing import Sequence, Type
+from typing import Callable, Sequence, Type
 
 import pytest
 
@@ -7,8 +7,11 @@ from django_acquiring.enums import OperationStatusEnum
 
 
 @pytest.fixture(scope="module")
-def fake_block() -> Type[protocols.AbstractBlock]:
+def fake_block(  # type:ignore[misc]
+    fake_block_event_repository: Callable[..., protocols.AbstractRepository]
+) -> Type[protocols.AbstractBlock]:
     class FakeBlock:
+        block_event_repository: protocols.AbstractRepository = fake_block_event_repository()
 
         def __init__(
             self,
@@ -32,14 +35,16 @@ def fake_block() -> Type[protocols.AbstractBlock]:
                 actions=self.response_actions,
             )
 
-    assert issubclass(FakeBlock, protocols.AbstractBlock)
     return FakeBlock
 
 
 @pytest.fixture(scope="module")
-def fake_process_action_block() -> Type[protocols.AbstractBlock]:
+def fake_process_action_block(  # type:ignore[misc]
+    fake_block_event_repository: Callable[..., protocols.AbstractRepository]
+) -> Type[protocols.AbstractBlock]:
 
     class FakeProcessActionsBlock:
+        block_event_repository: protocols.AbstractRepository = fake_block_event_repository()
 
         def __init__(
             self,
@@ -52,5 +57,4 @@ def fake_process_action_block() -> Type[protocols.AbstractBlock]:
         ) -> protocols.AbstractBlockResponse:
             return domain.BlockResponse(status=self.response_status)
 
-    assert issubclass(FakeProcessActionsBlock, protocols.AbstractBlock)
     return FakeProcessActionsBlock

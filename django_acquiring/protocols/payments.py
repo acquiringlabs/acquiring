@@ -7,10 +7,12 @@ https://typing.readthedocs.io/en/latest/spec/protocol.html#protocols
 
 from dataclasses import field
 from datetime import datetime
-from typing import Optional, Protocol, Sequence, runtime_checkable
+from typing import Optional, Protocol, Sequence
 from uuid import UUID
 
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
+
+from .repositories import AbstractRepository
 
 
 class AbstractPaymentOperation(Protocol):
@@ -106,8 +108,8 @@ class AbstractBlockResponse(Protocol):
     error_message: Optional[str] = None
 
 
-@runtime_checkable
 class AbstractBlock(Protocol):
+    block_event_repository: AbstractRepository
 
     def __init__(self, *args, **kwargs) -> None: ...  # type:ignore[no-untyped-def]
 

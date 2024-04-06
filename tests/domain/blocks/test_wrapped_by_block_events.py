@@ -23,8 +23,6 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
         ) -> protocols.AbstractBlockResponse:
             return domain.BlockResponse(status=status)
 
-    assert issubclass(FooBlock, protocols.AbstractBlock)
-
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -58,8 +56,6 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenNameAnd
         ) -> protocols.AbstractBlockResponse:
             """This is the expected doc"""
             return domain.BlockResponse(status=enums.OperationStatusEnum.COMPLETED)
-
-    assert issubclass(FooBlock, protocols.AbstractBlock)
 
     assert FooBlock.run.__name__ == "run"
     assert FooBlock.run.__doc__ == "This is the expected doc"
