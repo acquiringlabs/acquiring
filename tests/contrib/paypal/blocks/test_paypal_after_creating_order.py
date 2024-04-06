@@ -35,11 +35,12 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         confirmable=False,
     )
 
-    repository = fake_block_event_repository()
+    block_event_repository = fake_block_event_repository()
+    transaction_repository = fake_transaction_repository()
 
     block = paypal.blocks.PayPalAfterCreatingOrder(
-        block_event_repository=repository,
-        transaction_repository=fake_transaction_repository(),
+        block_event_repository=block_event_repository,
+        transaction_repository=transaction_repository,
     )
 
     external_id = "WH-684457241H310260F-0FC94184GF055315P"
@@ -141,22 +142,21 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         error_message=None,
     )
 
-    block_events: list[domain.BlockEvent] = repository.units  # type:ignore[attr-defined]
+    block_events: list[domain.BlockEvent] = block_event_repository.units  # type:ignore[attr-defined]
     assert len(block_events) == 2
     assert [block.status for block in block_events] == [
         enums.OperationStatusEnum.STARTED,
         enums.OperationStatusEnum.COMPLETED,
     ]
 
-    # transactions = models.Transaction.objects.all()
+    transactions: list[domain.Transaction] = transaction_repository.units  # type:ignore[attr-defined]
 
-    # assert len(transactions) == 1
-    # transaction = transactions[0]
+    assert len(transactions) == 1
 
-    # assert transaction.to_domain() == domain.Transaction(
-    #     external_id=external_id,
-    #     timestamp=datetime.fromisoformat(fake_create_time),
-    #     raw_data=raw_data,
-    #     provider_name="paypal",
-    #     payment_method_id=payment_method.id,
-    # )
+    assert transactions[0] == domain.Transaction(
+        external_id=external_id,
+        timestamp=datetime.fromisoformat(fake_create_time),
+        raw_data=raw_data,
+        provider_name="paypal",
+        payment_method_id=payment_method.id,
+    )
