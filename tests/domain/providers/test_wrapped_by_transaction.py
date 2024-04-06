@@ -1,7 +1,7 @@
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Sequence, Type
+from typing import Callable, Optional, Sequence
 
 from faker import Faker
 
@@ -11,8 +11,11 @@ from tests.domain import factories
 fake = Faker()
 
 
-def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransactionGetsCorrectlyCreated(
-    fake_transaction_repository: Type[protocols.AbstractRepository],
+def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransactionGetsCorrectlyCreated(  # type:ignore[misc]
+    fake_transaction_repository: Callable[
+        ...,
+        protocols.AbstractRepository,
+    ],
 ) -> None:
 
     external_id = "external"

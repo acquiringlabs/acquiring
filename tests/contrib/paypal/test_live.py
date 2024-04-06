@@ -2,7 +2,7 @@ import operator
 import os
 import uuid
 from datetime import datetime
-from typing import Callable, List, Optional
+from typing import Callable
 
 import pytest
 from dotenv import load_dotenv
@@ -26,10 +26,10 @@ class TestLiveSandbox:
 
     BASE_URL = "https://api-m.sandbox.paypal.com/"
 
-    def test_givenCorrectCredentials_weCanCreateAnOrder(
+    def test_givenCorrectCredentials_weCanCreateAnOrder(  # type:ignore[misc]
         self,
         fake_transaction_repository: Callable[
-            [Optional[List[protocols.AbstractTransaction]]],
+            ...,
             protocols.AbstractRepository,
         ],
     ) -> None:
@@ -37,7 +37,7 @@ class TestLiveSandbox:
             self.BASE_URL,
             client_id=os.environ["PAYPAL_CLIENT_ID"],
             client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
-            transaction_repository=fake_transaction_repository([]),
+            transaction_repository=fake_transaction_repository(),
             callback_url=os.environ["CALLBACK_URL"],  # Check https://webhook-test.com/
             webhook_id=os.environ.get("WEBHOOK_ID"),
         )

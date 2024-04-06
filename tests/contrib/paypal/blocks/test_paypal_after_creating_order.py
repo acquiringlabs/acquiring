@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Callable, List, Optional
+from typing import Callable
 
 from django.utils import timezone
 from faker import Faker
@@ -12,9 +12,9 @@ fake = Faker()
 
 
 # TODO implement hypothesis
-def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCompletesPayment(
+def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCompletesPayment(  # type:ignore[misc]
     fake_transaction_repository: Callable[
-        [Optional[List[protocols.AbstractTransaction]]],
+        ...,
         protocols.AbstractRepository,
     ],
 ) -> None:
@@ -32,7 +32,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
     )
 
     block = paypal.blocks.PayPalAfterCreatingOrder(
-        transaction_repository=fake_transaction_repository([]),
+        transaction_repository=fake_transaction_repository(),
     )
 
     external_id = "WH-684457241H310260F-0FC94184GF055315P"

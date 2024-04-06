@@ -1,7 +1,7 @@
 import os
 import uuid
 from datetime import datetime
-from typing import Callable, Generator, List, Optional
+from typing import Callable, Generator
 
 import responses
 from django.utils import timezone
@@ -14,10 +14,10 @@ fake = Faker()
 
 
 @responses.activate
-def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRedirectAction(
+def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRedirectAction(  # type:ignore[misc]
     fake_os_environ: Generator,
     fake_transaction_repository: Callable[
-        [Optional[List[protocols.AbstractTransaction]]],
+        ...,
         protocols.AbstractRepository,
     ],
 ) -> None:
@@ -53,7 +53,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
             base_url=os.environ["PAYPAL_BASE_URL"],
             client_id=os.environ["PAYPAL_CLIENT_ID"],
             client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
-            transaction_repository=fake_transaction_repository([]),
+            transaction_repository=fake_transaction_repository(),
             callback_url=fake.url(),
             webhook_id=fake.isbn10(),
         )
