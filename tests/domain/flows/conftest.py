@@ -6,6 +6,9 @@ from django_acquiring import domain, protocols
 from django_acquiring.enums import OperationStatusEnum
 
 
+# TODO Define these two to accept block_event_repository as an optional argument
+
+
 @pytest.fixture(scope="module")
 def fake_block(  # type:ignore[misc]
     fake_block_event_repository: Callable[..., protocols.AbstractRepository]

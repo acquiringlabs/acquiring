@@ -33,7 +33,7 @@ class AbstractPaymentFlow(Protocol):
 
     def initialize(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
 
-    def process_actions(
+    def process_action(
         self, payment_method: "AbstractPaymentMethod", action_data: dict
     ) -> "AbstractOperationResponse": ...
 

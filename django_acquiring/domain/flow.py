@@ -92,7 +92,7 @@ class OperationResponse:
 
 
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
-@dataclass(frozen=True)
+@dataclass
 class PaymentFlow:
     payment_method_repository: "protocols.AbstractRepository"
     payment_operation_repository: "protocols.AbstractRepository"

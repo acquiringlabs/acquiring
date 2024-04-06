@@ -79,7 +79,7 @@ def fake_payment_method_repository() -> Callable[
 
 
 @pytest.fixture(scope="module")
-def fake_payment_payment_operation_repository() -> Callable[
+def fake_payment_operation_repository() -> Callable[
     [Optional[list[protocols.AbstractPaymentOperation]]],
     protocols.AbstractRepository,
 ]:
