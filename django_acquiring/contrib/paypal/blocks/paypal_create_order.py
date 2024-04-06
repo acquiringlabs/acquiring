@@ -16,7 +16,7 @@ class PayPalCreateOrder:
     adapter: PayPalAdapter
 
     # TODO block_event_repo is taken from block, not as an argument
-    # @domain.wrapped_by_block_events(block_event_repository=repositories.BlockEventRepository())
+    # @domain.wrapped_by_block_events(block_event_repository=repositories.django.BlockEventRepository())
     def run(
         self, payment_method: "protocols.AbstractPaymentMethod", *args: Sequence, **kwargs: dict
     ) -> "protocols.AbstractBlockResponse":

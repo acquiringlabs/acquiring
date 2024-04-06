@@ -24,7 +24,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     )
 
     with django_assert_num_queries(7):
-        result = repositories.PaymentMethodRepository().add(data)
+        result = repositories.django.PaymentMethodRepository().add(data)
 
     db_payment_methods = models.PaymentMethod.objects.all()
     assert len(db_payment_methods) == 1
@@ -55,7 +55,7 @@ def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(
     )
 
     with django_assert_num_queries(8):
-        result = repositories.PaymentMethodRepository().add(data)
+        result = repositories.django.PaymentMethodRepository().add(data)
 
     db_tokens = models.Token.objects.all()
     assert len(db_tokens) == 1
@@ -94,7 +94,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsR
     )
 
     with django_assert_num_queries(4):
-        result = repositories.PaymentMethodRepository().get(id=db_payment_method.id)
+        result = repositories.django.PaymentMethodRepository().get(id=db_payment_method.id)
 
     assert result == db_payment_method.to_domain()
 
@@ -119,7 +119,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
     )
 
     with django_assert_num_queries(2), pytest.raises(domain.PaymentMethod.DoesNotExist):
-        repositories.PaymentMethodRepository().get(id=payment_method.id)
+        repositories.django.PaymentMethodRepository().get(id=payment_method.id)
 
 
 @pytest.mark.django_db
@@ -133,7 +133,7 @@ def test_givenCorrectTokenDataAndExistingPaymentMethod_whenCallingRepositoryAddT
     token = domain.Token(created_at=timezone.now(), token=fake.sha256())
 
     with django_assert_num_queries(5):
-        result = repositories.PaymentMethodRepository().add_token(
+        result = repositories.django.PaymentMethodRepository().add_token(
             payment_method=payment_method,
             token=token,
         )
@@ -170,7 +170,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAddToken_thenDoes
     token = domain.Token(created_at=timezone.now(), token=fake.sha256())
 
     with django_assert_num_queries(2), pytest.raises(domain.PaymentMethod.DoesNotExist):
-        repositories.PaymentMethodRepository().add_token(
+        repositories.django.PaymentMethodRepository().add_token(
             payment_method=payment_method,
             token=token,
         )

@@ -25,7 +25,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreat
     )
 
     with django_assert_num_queries(1):
-        repositories.TransactionRepository().add(
+        repositories.django.TransactionRepository().add(
             transaction=transaction,
         )
 

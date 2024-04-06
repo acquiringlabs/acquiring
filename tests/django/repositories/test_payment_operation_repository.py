@@ -23,7 +23,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOpera
     payment_method = db_payment_method.to_domain()
 
     # When calling PaymentOperationRepository.add_payment_operation
-    repositories.PaymentOperationRepository().add(
+    repositories.django.PaymentOperationRepository().add(
         payment_method=payment_method,
         type=payment_operation_type,
         status=payment_operation_status,
@@ -56,7 +56,7 @@ def test_givenExistingPaymentOperationRow_whenCallingRepositoryAdd_thenthenDupli
     )
 
     with pytest.raises(domain.PaymentOperation.DuplicateError):
-        repositories.PaymentOperationRepository().add(
+        repositories.django.PaymentOperationRepository().add(
             payment_method=payment_method,
             type=OperationTypeEnum.INITIALIZE,
             status=OperationStatusEnum.STARTED,

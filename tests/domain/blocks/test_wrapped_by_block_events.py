@@ -53,7 +53,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenNameAnd
 
     class FooBlock:
 
-        @domain.wrapped_by_block_events(block_event_repository=repositories.BlockEventRepository())
+        @domain.wrapped_by_block_events(block_event_repository=repositories.django.BlockEventRepository())
         def run(
             self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
         ) -> protocols.AbstractBlockResponse:

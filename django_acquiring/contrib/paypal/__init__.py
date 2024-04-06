@@ -14,8 +14,8 @@ def paypal_payment_flow() -> "PaymentFlow":
     from django_acquiring import domain, repositories
 
     return domain.PaymentFlow(
-        payment_method_repository=repositories.PaymentMethodRepository(),
-        operations_repository=repositories.PaymentOperationRepository(),
+        payment_method_repository=repositories.django.PaymentMethodRepository(),
+        operations_repository=repositories.django.PaymentOperationRepository(),
         initialize_block=None,
         process_action_block=None,
         pay_blocks=[
@@ -25,7 +25,7 @@ def paypal_payment_flow() -> "PaymentFlow":
                     callback_url=os.environ["CALLBACK_BASE_URL"],
                     client_id=os.environ["PAYPAL_CLIENT_ID"],
                     client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
-                    transaction_repository=repositories.TransactionRepository(),
+                    transaction_repository=repositories.django.TransactionRepository(),
                     webhook_id=os.environ.get("WEBHOOK_ID"),
                 )
             )

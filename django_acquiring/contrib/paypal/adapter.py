@@ -49,7 +49,7 @@ class PayPalAdapter:
     ...         client_id="TEST_CLIENT_ID",
     ...         client_secret="TEST_CLIENT_SECRET",
     ...         callback_url="https://www.example.com",
-    ...         transaction_repository=repositories.TransactionRepository(),
+    ...         transaction_repository=repositories.django.TransactionRepository(),
     ...         webhook_id="LONG_ID"
     ...     )
     Traceback (most recent call last):
@@ -78,7 +78,7 @@ class PayPalAdapter:
     ...         base_url="https://api-m.sandbox.paypal.com/",
     ...         client_id="TEST_CLIENT_ID",
     ...         client_secret="TEST_CLIENT_SECRET",
-    ...         transaction_repository=repositories.TransactionRepository(),
+    ...         transaction_repository=repositories.django.TransactionRepository(),
     ...         callback_url="https://www.example.com",
     ...         webhook_id="LONG_ID"
     ...     )
@@ -92,7 +92,7 @@ class PayPalAdapter:
     ...     client_id="TEST_CLIENT_ID",
     ...     client_secret="TEST_CLIENT_SECRET",
     ...     callback_url="https://www.example.com",
-    ...     transaction_repository=repositories.TransactionRepository(),
+    ...     transaction_repository=repositories.django.TransactionRepository(),
     ...     webhook_id="LONG_ID"
     ... )
     Traceback (most recent call last):

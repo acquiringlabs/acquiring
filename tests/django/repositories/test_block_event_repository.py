@@ -20,7 +20,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
         block_name="test",
     )
 
-    result = repositories.BlockEventRepository().add(block_event)
+    result = repositories.django.BlockEventRepository().add(block_event)
 
     db_block_events = models.BlockEvent.objects.all()
     assert len(db_block_events) == 1
@@ -43,7 +43,7 @@ def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
         block_name=block_name,
     )
 
-    result = repositories.BlockEventRepository().add(block_event)
+    result = repositories.django.BlockEventRepository().add(block_event)
 
     db_block_event = models.BlockEvent.objects.get(
         block_name=block_name, payment_method_id=db_payment_method.id, status=status
@@ -67,4 +67,4 @@ def test_givenExistingBlockEventRow_whenCallingRepositoryAdd_thenthenDuplicateEr
     )
 
     with pytest.raises(domain.BlockEvent.DuplicateError):
-        repositories.BlockEventRepository().add(block_event)
+        repositories.django.BlockEventRepository().add(block_event)
