@@ -3,15 +3,27 @@ from datetime import datetime, timedelta
 from typing import Callable
 
 import pytest
-from django.utils import timezone  # TODO replace with native aware Python datetime object
 from faker import Faker
 
-from django_acquiring import domain, enums, models, repositories
-from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory, TokenFactory
+from django_acquiring import enums
+from django_acquiring.utils import is_django_installed
+from tests.django.utils import skip_if_django_not_installed
 
 fake = Faker()
 
+if is_django_installed():
+    from django.utils import timezone  # TODO replace with native aware Python datetime object
 
+    from django_acquiring import domain, models, repositories
+    from tests.django.factories import (
+        PaymentAttemptFactory,
+        PaymentMethodFactory,
+        PaymentOperationFactory,
+        TokenFactory,
+    )
+
+
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     django_assert_num_queries: Callable,
@@ -35,6 +47,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     assert db_payment_method.to_domain() == result
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 @pytest.mark.parametrize("confirmable", [True, False])
 def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(
@@ -70,6 +83,7 @@ def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(
     assert result.token == db_token.to_domain()
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
     django_assert_num_queries: Callable,
@@ -99,6 +113,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsR
     assert result == db_payment_method.to_domain()
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotExistGetsRaise(
     django_assert_num_queries: Callable,
@@ -122,6 +137,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
         repositories.django.PaymentMethodRepository().get(id=payment_method.id)
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenCorrectTokenDataAndExistingPaymentMethod_whenCallingRepositoryAddToken_thenTokenGetsCreated(
     django_assert_num_queries: Callable,
@@ -148,6 +164,8 @@ def test_givenCorrectTokenDataAndExistingPaymentMethod_whenCallingRepositoryAddT
     assert result == payment_method
 
 
+# TODO Turn pytest.mark.django_db into skip if when pytest-django is not installed
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAddToken_thenDoesNotExistGetsRaise(
     django_assert_num_queries: Callable,

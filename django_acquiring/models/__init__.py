@@ -1,7 +1,4 @@
-def is_django_installed() -> bool:
-    import importlib.util
-
-    return bool(importlib.util.find_spec("django"))
+from django_acquiring.utils import is_django_installed
 
 
 if is_django_installed():

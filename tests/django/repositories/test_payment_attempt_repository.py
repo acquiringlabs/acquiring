@@ -2,15 +2,23 @@ import uuid
 from typing import Callable
 
 import pytest
-from django.utils import timezone
 from faker import Faker
 
-from django_acquiring import domain, enums, models, repositories
-from tests.django.factories import ItemFactory, PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+from django_acquiring import enums
+from django_acquiring.utils import is_django_installed
+from tests.django.utils import skip_if_django_not_installed
 
 fake = Faker()
 
 
+if is_django_installed():
+    from django.utils import timezone
+
+    from django_acquiring import domain, models, repositories
+    from tests.django.factories import ItemFactory, PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+
+
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated(
     django_assert_num_queries: Callable,
@@ -57,6 +65,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
     assert len(db_items) == len(items)
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenInvalidAmount_whenCallingRepositoryAdd_thenItemRaisesError(
     django_assert_num_queries: Callable,
@@ -98,6 +107,7 @@ def test_givenInvalidAmount_whenCallingRepositoryAdd_thenItemRaisesError(
     assert len(db_items) == 0
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenInCorrectCurrencyData_whenCallingRepositoryAdd_thenPaymentAttemptRaisesError(
     django_assert_num_queries: Callable,
@@ -121,6 +131,7 @@ def test_givenInCorrectCurrencyData_whenCallingRepositoryAdd_thenPaymentAttemptR
     assert db_payment.to_domain() == result
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenExistingPaymentAttemptRow_whenCallingRepositoryGet_thenPaymentAttemptGetsRetrieved(
     django_assert_num_queries: Callable,
@@ -148,6 +159,7 @@ def test_givenExistingPaymentAttemptRow_whenCallingRepositoryGet_thenPaymentAtte
     assert result == db_payment_attempt.to_domain()
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenNonExistingPaymentAttemptRow_whenCallingRepositoryGet_thenDoesNotExistGetsRaise(
     django_assert_num_queries: Callable,

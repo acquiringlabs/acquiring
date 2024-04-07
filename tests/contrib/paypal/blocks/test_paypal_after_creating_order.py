@@ -1,8 +1,7 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Callable
 
-from django.utils import timezone
 from faker import Faker
 
 from django_acquiring import domain, enums, protocols
@@ -44,7 +43,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
     )
 
     external_id = "WH-684457241H310260F-0FC94184GF055315P"
-    fake_create_time = timezone.now().isoformat()
+    fake_create_time = datetime.now(timezone.utc).isoformat()
     fake_merchant_id = fake.md5()
     fake_currency = fake.currency_code()
     payee_email = fake.email()
@@ -63,7 +62,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         "event_type": "CHECKOUT.ORDER.APPROVED",
         "summary": fake.sentence(),
         "resource": {
-            "create_time": timezone.now().isoformat(),
+            "create_time": datetime.now(timezone.utc).isoformat(),
             "purchase_units": [
                 {
                     "reference_id": fake.uuid4(),

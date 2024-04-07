@@ -1,10 +1,9 @@
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Callable, Generator
 
 import responses
-from django.utils import timezone
 from faker import Faker
 
 from django_acquiring import domain, enums, protocols
@@ -46,7 +45,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
             "token_type": "Bearer",
             "app_id": "APP-S3CR3T",
             "expires_in": 31668,
-            "nonce": f"{timezone.now().isoformat()}-{fake.password(length=40, special_chars=False, upper_case=False)}",
+            "nonce": f"{datetime.now(timezone.utc).isoformat()}-{fake.password(length=40, special_chars=False, upper_case=False)}",
         },
         status=201,
         content_type="application/json",
@@ -66,7 +65,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         ),
     )
 
-    fake_create_time = timezone.now().isoformat()
+    fake_create_time = datetime.now(timezone.utc).isoformat()
     fake_id = fake.password(length=10, special_chars=False, upper_case=False).upper()
     approve_url = f"{fake.url()}?token={fake_id}"
 

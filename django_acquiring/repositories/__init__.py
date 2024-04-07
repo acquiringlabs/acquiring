@@ -1,6 +1,9 @@
-from . import django as django
+from django_acquiring.utils import is_django_installed
 
 
-__all__ = ["django"]
+if is_django_installed():
+    from . import django as django
 
-assert __all__ == sorted(__all__), sorted(__all__)
+    __all__ = ["django"]
+
+    assert __all__ == sorted(__all__), sorted(__all__)

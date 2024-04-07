@@ -2,11 +2,16 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from django_acquiring import domain, models, repositories
 from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
-from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+from django_acquiring.utils import is_django_installed
+from tests.django.utils import skip_if_django_not_installed
+
+if is_django_installed():
+    from django_acquiring import domain, models, repositories
+    from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 @given(
     payment_operation_type=st.sampled_from(OperationTypeEnum),
@@ -41,6 +46,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOpera
     assert payment_method.payment_operations[0] == payment_operation.to_domain()
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenExistingPaymentOperationRow_whenCallingRepositoryAdd_thenthenDuplicateErrorGetsRaised() -> None:
 

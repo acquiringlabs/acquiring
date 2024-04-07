@@ -2,11 +2,16 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from django_acquiring import domain, models, repositories
 from django_acquiring.enums import OperationStatusEnum
-from tests.django.factories import BlockEventFactory, PaymentAttemptFactory, PaymentMethodFactory
+from django_acquiring.utils import is_django_installed
+from tests.django.utils import skip_if_django_not_installed
+
+if is_django_installed():
+    from django_acquiring import domain, models, repositories
+    from tests.django.factories import BlockEventFactory, PaymentAttemptFactory, PaymentMethodFactory
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 @pytest.mark.parametrize("status", OperationStatusEnum)
 def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
@@ -29,6 +34,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
     assert db_block_event.to_domain() == result
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 @given(block_name=st.text(), status=st.sampled_from(OperationStatusEnum))
 @settings(max_examples=100)
@@ -51,6 +57,7 @@ def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
     assert db_block_event.to_domain() == result
 
 
+@skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenExistingBlockEventRow_whenCallingRepositoryAdd_thenthenDuplicateErrorGetsRaised() -> None:
 

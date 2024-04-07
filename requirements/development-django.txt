@@ -1,9 +1,7 @@
+-r development.txt
 
 # Django specific testing libraries
 django-test-migrations
-
-# Hypothesis to find edge cases
-hypothesis[django, pytz]
 
 # pytest-django to implement django utils
 pytest-django

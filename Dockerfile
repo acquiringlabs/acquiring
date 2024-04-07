@@ -7,15 +7,14 @@ ENV PYTHONUNBUFFERED 1
 
 # Set work directory
 WORKDIR /code
+COPY requirements/ /code/requirements/
 
-# Check if DJANGO_VERSION is provided, and install Django and requirements/$ENVIRONMENT-django.txt it if applicable
+# Check if DJANGO_VERSION is provided,
+# And install Django, the shared dependencies and requirements/$ENVIRONMENT-django.txt
+# Otherwise install just the shared dependencies
 ARG DJANGO_VERSION=""
 ARG ENVIRONMENT
-RUN if [ ! -z "$DJANGO_VERSION" ]; then pip install Django==$DJANGO_VERSION && pip install -r requirements/${ENVIRONMENT}-django; fi
-
-# Install shared dependencies
-COPY requirements/ /code/requirements/
-RUN pip install -r requirements/$ENVIRONMENT.txt
+RUN if [ ! -z "$DJANGO_VERSION" ]; then pip install Django==$DJANGO_VERSION && pip install -r requirements/${ENVIRONMENT}-django.txt; else pip install -r requirements/$ENVIRONMENT.txt; fi
 
 # Copy the django-acquiring package and the test project into the container
 COPY . /code/

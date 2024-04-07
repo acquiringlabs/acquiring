@@ -1,7 +1,13 @@
-from django_acquiring import enums, models
+"""TODO Figure out a way to ensure that these two enums match at compile time/initialization time"""
+
+from django_acquiring.utils import is_django_installed
+from tests.django.utils import skip_if_django_not_installed
+
+if is_django_installed():
+    from django_acquiring import enums, models
 
 
-# TODO Figure out a way to ensure that these two enums match at compile time/initialization time
+@skip_if_django_not_installed
 def test_PaymentOperationTypeChoices_match_OperationTypeEnum() -> None:
     choices = set(
         member.value for member in models.django.PaymentOperationTypeChoices  # type:ignore[attr-defined]
@@ -11,6 +17,7 @@ def test_PaymentOperationTypeChoices_match_OperationTypeEnum() -> None:
     assert choices == type_enums
 
 
+@skip_if_django_not_installed
 def test_StatusChoices_match_OperationStatusEnum() -> None:
     choices = set(
         member.value for member in models.django.StatusChoices  # type:ignore[attr-defined]

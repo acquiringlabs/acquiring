@@ -1,14 +1,14 @@
 -r base.txt
 
-# Deal to implement contract driven development
-deal
-
 # factory_boy and faker to generate dummy data in the database
 factory_boy
 faker
 
 # Flit to simplify package management
 flit
+
+# Hypothesis to find edge cases
+hypothesis[pytz]
 
 # ipdb to access the IPython debugger as if it were the pdb module
 ipdb
