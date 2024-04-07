@@ -4,8 +4,8 @@ from typing import Callable
 
 from faker import Faker
 
-from django_acquiring import domain, enums, protocols
-from django_acquiring.contrib import paypal
+from acquiring import domain, enums, protocols
+from acquiring.contrib import paypal
 
 fake = Faker()
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from django_acquiring import domain, enums, protocols
-from django_acquiring.contrib import paypal
+from acquiring import domain, enums, protocols
+from acquiring.contrib import paypal
 
 
 @dataclass

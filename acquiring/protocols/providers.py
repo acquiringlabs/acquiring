@@ -4,7 +4,7 @@ from enum import StrEnum
 from typing import Generic, Optional, Protocol, TypeVar
 from uuid import UUID
 
-from django_acquiring.protocols import repositories
+from acquiring.protocols import repositories
 
 Status = TypeVar("Status", bound=StrEnum)
 

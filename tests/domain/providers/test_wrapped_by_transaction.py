@@ -5,7 +5,7 @@ from typing import Callable, Optional, Sequence
 
 from faker import Faker
 
-from django_acquiring import domain, enums, protocols
+from acquiring import domain, enums, protocols
 from tests.domain import factories
 
 fake = Faker()

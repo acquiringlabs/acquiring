@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from django_acquiring.enums import OperationStatusEnum
+    from acquiring.enums import OperationStatusEnum
 
 
 @dataclass

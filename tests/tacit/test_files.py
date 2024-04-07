@@ -3,13 +3,13 @@ import importlib.util
 import inspect
 import os
 from typing import Protocol
-from django_acquiring import protocols
+from acquiring import protocols
 
 
 def test_allProtocolFilesContainSubclassesOfDecoratorProtocolOrEnum() -> None:
     project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    django_acquiring_dir = os.path.join(project_dir, "django_acquiring")
-    for root, dirs, files in os.walk(django_acquiring_dir):
+    acquiring_dir = os.path.join(project_dir, "acquiring")
+    for root, dirs, files in os.walk(acquiring_dir):
         for file in files:
             if "protocols" in root.split(os.path.sep):  # in protocols folder
                 file_path = os.path.join(root, file)
@@ -30,8 +30,8 @@ def test_allProtocolFilesContainSubclassesOfDecoratorProtocolOrEnum() -> None:
 
 def test_allRepositoryFilesContainSubclassesOfAbstractRepository() -> None:
     project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    django_acquiring_dir = os.path.join(project_dir, "django_acquiring")
-    for root, dirs, files in os.walk(django_acquiring_dir):
+    acquiring_dir = os.path.join(project_dir, "acquiring")
+    for root, dirs, files in os.walk(acquiring_dir):
         for file in files:
             if file.endswith("repositories.py"):
                 file_path = os.path.join(root, file)

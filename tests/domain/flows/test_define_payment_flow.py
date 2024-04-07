@@ -1,6 +1,6 @@
 from typing import Type
 
-from django_acquiring import domain, protocols
+from acquiring import domain, protocols
 
 
 def test_givenCorrectInformation_paymentFlowGetsDefined(

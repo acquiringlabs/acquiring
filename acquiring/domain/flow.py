@@ -2,12 +2,12 @@ import functools
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable, Optional, Sequence
 
-import django_acquiring.domain.decision_logic as dl
-from django_acquiring import domain
-from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
+import acquiring.domain.decision_logic as dl
+from acquiring import domain
+from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 if TYPE_CHECKING:
-    from django_acquiring import protocols
+    from acquiring import protocols
 
 
 def payment_operation_type(  # type:ignore[misc]

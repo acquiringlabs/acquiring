@@ -1,6 +1,6 @@
 import pytest
 
-from django_acquiring.utils import is_django_installed
+from acquiring.utils import is_django_installed
 from tests.django.utils import skip_if_django_not_installed
 
 if is_django_installed():
@@ -13,8 +13,8 @@ def test_migrationOrderingIsCorrect() -> None:
     main_migrations = all_migrations(
         "default",
         [
-            "django_acquiring",
+            "acquiring",
         ],
     )
 
-    assert nodes_to_tuples(main_migrations) == [("django_acquiring", "0001_initial")]
+    assert nodes_to_tuples(main_migrations) == [("acquiring", "0001_initial")]

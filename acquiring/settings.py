@@ -6,7 +6,7 @@ INSTALLED_APPS = (
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.messages",
-    "django_acquiring",
+    "acquiring",
 )
 
 TEMPLATES = [
@@ -35,4 +35,4 @@ MIDDLEWARE = (
 )
 
 
-MIGRATION_MODULES = {"django_acquiring": "django_acquiring.migrations.django"}
+MIGRATION_MODULES = {"acquiring": "acquiring.migrations.django"}

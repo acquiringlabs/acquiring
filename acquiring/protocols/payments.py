@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import Optional, Protocol, Sequence, runtime_checkable
 from uuid import UUID
 
-from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
+from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 from .repositories import AbstractRepository
 

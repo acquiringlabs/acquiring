@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional, Sequence
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from django_acquiring import enums, protocols
+    from acquiring import enums, protocols
 
 
 # TODO frozen=True compatible with protocols.AbstractPaymentOperation (expected settable variable, got read-only attribute)

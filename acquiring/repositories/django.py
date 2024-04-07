@@ -4,11 +4,11 @@ from uuid import UUID
 import deal
 import django.db.transaction
 
-from django_acquiring import domain, models
-from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
+from acquiring import domain, models
+from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 if TYPE_CHECKING:
-    from django_acquiring import protocols
+    from acquiring import protocols
 
 
 class PaymentAttemptRepository:

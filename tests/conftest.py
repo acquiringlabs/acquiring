@@ -7,7 +7,7 @@ from unittest import mock
 
 import pytest
 
-from django_acquiring import domain, enums, protocols
+from acquiring import domain, enums, protocols
 
 
 # https://docs.pytest.org/en/7.1.x/reference/reference.html?highlight=pytest_config#pytest.hookspec.pytest_configure
@@ -16,7 +16,7 @@ def pytest_configure(config: Callable) -> None:
         import django
         from django.conf import settings
 
-        from django_acquiring import settings as project_settings
+        from acquiring import settings as project_settings
 
         settings.configure(
             DATABASES={
@@ -24,7 +24,7 @@ def pytest_configure(config: Callable) -> None:
                 "secondary": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"},
             },
             INSTALLED_APPS=project_settings.INSTALLED_APPS,
-            MIGRATION_MODULES={"django_acquiring": "django_acquiring.migrations.django"},
+            MIGRATION_MODULES={"acquiring": "acquiring.migrations.django"},
         )
 
         django.setup()

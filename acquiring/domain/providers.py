@@ -3,10 +3,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING, Callable, Sequence
 from uuid import UUID
-from django_acquiring import domain
+from acquiring import domain
 
 if TYPE_CHECKING:
-    from django_acquiring import protocols
+    from acquiring import protocols
 
 
 @dataclass

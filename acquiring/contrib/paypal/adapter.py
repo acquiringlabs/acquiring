@@ -8,7 +8,7 @@ from uuid import UUID
 
 import requests
 
-from django_acquiring import domain, protocols
+from acquiring import domain, protocols
 
 from .domain import Order, OrderIntentEnum, PayPalStatusEnum
 
@@ -35,7 +35,7 @@ class PayPalAdapter:
 
     When accessing the adapter, an access token is requested to PayPal
     >>> import responses
-    >>> from django_acquiring import repositories
+    >>> from acquiring import repositories
     >>> with responses.RequestsMock() as rsps:
     ...     rsps.add(
     ...         responses.POST,
@@ -54,11 +54,11 @@ class PayPalAdapter:
     ...     )
     Traceback (most recent call last):
         ...
-    django_acquiring.contrib.paypal.adapter.UnauthorizedError: 401 Client Error: Unauthorized for url: https://api-m.sandbox.paypal.com/v1/oauth2/token
+    acquiring.contrib.paypal.adapter.UnauthorizedError: 401 Client Error: Unauthorized for url: https://api-m.sandbox.paypal.com/v1/oauth2/token
 
     When accessing the adapter with valid credentials, an access token is retrieved from PayPal
     >>> import responses
-    >>> from django_acquiring import repositories
+    >>> from acquiring import repositories
     >>> with responses.RequestsMock() as rsps:
     ...     rsps.add(
     ...         responses.POST,
@@ -86,7 +86,7 @@ class PayPalAdapter:
     PayPalAdapter:base_url=https://api-m.sandbox.paypal.com/|access_token=long-token|expires in 31668 seconds
 
     A base url that doesn't end in / is invalid
-    >>> from django_acquiring import repositories
+    >>> from acquiring import repositories
     >>> PayPalAdapter(
     ...     base_url="https://bad-url.com",
     ...     client_id="TEST_CLIENT_ID",
@@ -97,7 +97,7 @@ class PayPalAdapter:
     ... )
     Traceback (most recent call last):
         ...
-    django_acquiring.contrib.paypal.adapter.BadUrlError: base_url must end with /
+    acquiring.contrib.paypal.adapter.BadUrlError: base_url must end with /
     """
 
     base_url: str

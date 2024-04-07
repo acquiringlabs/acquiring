@@ -1,6 +1,6 @@
 include LICENSE
 include README.md
-recursive-include django_acquiring/static *
-recursive-include django_acquiring/templates *
-recursive-include django_acquiring/migrations *
-recursive-include django_acquiring/locale *
+recursive-include acquiring/static *
+recursive-include acquiring/templates *
+recursive-include acquiring/migrations *
+recursive-include acquiring/locale *

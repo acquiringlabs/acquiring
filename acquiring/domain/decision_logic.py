@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 
-from django_acquiring.enums import OperationStatusEnum, OperationTypeEnum
+from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 if TYPE_CHECKING:
-    from django_acquiring import protocols
+    from acquiring import protocols
 
 
 # TODO Test these functions with hypothesis
@@ -15,10 +15,10 @@ def can_initialize(payment_method: "protocols.AbstractPaymentMethod") -> bool:
 
     First, we instantiate everything we need
     >>> from datetime import datetime
-    >>> from django_acquiring.domain import PaymentMethod
-    >>> from django_acquiring.domain import PaymentAttempt
-    >>> from django_acquiring.domain import PaymentOperation
-    >>> from django_acquiring.enums import OperationTypeEnum, OperationStatusEnum
+    >>> from acquiring.domain import PaymentMethod
+    >>> from acquiring.domain import PaymentAttempt
+    >>> from acquiring.domain import PaymentOperation
+    >>> from acquiring.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.INITIALIZE,
@@ -137,10 +137,10 @@ def can_process_action(payment_method: "protocols.AbstractPaymentMethod") -> boo
 
     First, we instantiate everything we need
     >>> from datetime import datetime
-    >>> from django_acquiring.domain import PaymentMethod
-    >>> from django_acquiring.domain import PaymentAttempt
-    >>> from django_acquiring.domain import PaymentOperation
-    >>> from django_acquiring.enums import OperationTypeEnum, OperationStatusEnum
+    >>> from acquiring.domain import PaymentMethod
+    >>> from acquiring.domain import PaymentAttempt
+    >>> from acquiring.domain import PaymentOperation
+    >>> from acquiring.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.INITIALIZE,
@@ -260,10 +260,10 @@ def can_after_pay(payment_method: "protocols.AbstractPaymentMethod") -> bool:
 
     First, we instantiate everything we need
     >>> from datetime import datetime
-    >>> from django_acquiring.domain import PaymentMethod
-    >>> from django_acquiring.domain import PaymentAttempt
-    >>> from django_acquiring.domain import PaymentOperation
-    >>> from django_acquiring.enums import OperationTypeEnum, OperationStatusEnum
+    >>> from acquiring.domain import PaymentMethod
+    >>> from acquiring.domain import PaymentAttempt
+    >>> from acquiring.domain import PaymentOperation
+    >>> from acquiring.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.INITIALIZE,
@@ -461,10 +461,10 @@ def can_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool:
 
     First, we instantiate everything we need
     >>> from datetime import datetime
-    >>> from django_acquiring.domain import PaymentMethod
-    >>> from django_acquiring.domain import PaymentAttempt
-    >>> from django_acquiring.domain import PaymentOperation
-    >>> from django_acquiring.enums import OperationTypeEnum, OperationStatusEnum
+    >>> from acquiring.domain import PaymentMethod
+    >>> from acquiring.domain import PaymentAttempt
+    >>> from acquiring.domain import PaymentOperation
+    >>> from acquiring.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.INITIALIZE,
@@ -650,10 +650,10 @@ def can_after_confirm(payment_method: "protocols.AbstractPaymentMethod") -> bool
     Return whether the payment_method can go through the after confirm operation.
 
     >>> from datetime import datetime
-    >>> from django_acquiring.domain import PaymentMethod
-    >>> from django_acquiring.domain import PaymentAttempt
-    >>> from django_acquiring.domain import PaymentOperation
-    >>> from django_acquiring.enums import OperationTypeEnum, OperationStatusEnum
+    >>> from acquiring.domain import PaymentMethod
+    >>> from acquiring.domain import PaymentAttempt
+    >>> from acquiring.domain import PaymentOperation
+    >>> from acquiring.enums import OperationTypeEnum, OperationStatusEnum
     >>> payment_operation_initialized_started = PaymentOperation(
     ...     payment_method_id="e974291a-f788-47cb-bf15-67104f3845c0",
     ...     type=OperationTypeEnum.INITIALIZE,

@@ -2,7 +2,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Sequence
 
-from django_acquiring import domain, enums, protocols
+from acquiring import domain, enums, protocols
 
 from ..adapter import PayPalAdapter
 from ..domain import Amount, Order, OrderIntentEnum, PayPalStatusEnum, PurchaseUnit

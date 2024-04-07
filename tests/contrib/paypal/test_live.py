@@ -7,8 +7,8 @@ from typing import Callable
 import pytest
 from dotenv import load_dotenv
 
-from django_acquiring import domain, protocols
-from django_acquiring.contrib import paypal
+from acquiring import domain, protocols
+from acquiring.contrib import paypal
 
 load_dotenv()  # take environment variables from .env.
 

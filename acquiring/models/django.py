@@ -4,10 +4,10 @@ from uuid import uuid4
 import django.db.models
 from django.core import validators as django_validators
 
-from django_acquiring import domain
+from acquiring import domain
 
 if TYPE_CHECKING:
-    from django_acquiring import protocols
+    from acquiring import protocols
 
 
 CURRENCY_CODE_MAX_LENGTH = 3

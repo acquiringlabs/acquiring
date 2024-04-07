@@ -1,10 +1,10 @@
 """TODO Figure out a way to ensure that these two enums match at compile time/initialization time"""
 
-from django_acquiring.utils import is_django_installed
+from acquiring.utils import is_django_installed
 from tests.django.utils import skip_if_django_not_installed
 
 if is_django_installed():
-    from django_acquiring import enums, models
+    from acquiring import enums, models
 
 
 @skip_if_django_not_installed

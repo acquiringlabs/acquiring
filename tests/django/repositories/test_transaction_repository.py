@@ -3,7 +3,7 @@ from typing import Callable
 import pytest
 from faker import Faker
 
-from django_acquiring.utils import is_django_installed
+from acquiring.utils import is_django_installed
 from tests.django.utils import skip_if_django_not_installed
 
 fake = Faker()
@@ -12,7 +12,7 @@ fake = Faker()
 if is_django_installed():
     from django.utils import timezone
 
-    from django_acquiring import domain, models, repositories
+    from acquiring import domain, models, repositories
     from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 

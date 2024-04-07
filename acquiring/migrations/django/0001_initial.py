@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ('quantity_unit', models.TextField(blank=True, help_text='Unit used to describe the quantity, e.g. kg, pcs, etc.', null=True)),
                 ('reference', models.TextField(help_text="Used for storing merchant's internal reference number")),
                 ('unit_price', models.BigIntegerField(help_text='Price for a single unit of the order line. A positive integer representing how much to charge in the currency unit (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). Currency is assumed to be the one provided in PaymentAttempt.')),
-                ('payment_attempt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='django_acquiring.paymentattempt')),
+                ('payment_attempt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='acquiring.paymentattempt')),
             ],
             options={
                 'abstract': False,
@@ -59,8 +59,8 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('confirmable', models.BooleanField(editable=False, help_text='Whether this PaymentMethod can at some point run inside PaymentFlow.confirm')),
-                ('payment_attempt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_methods', to='django_acquiring.paymentattempt')),
-                ('token', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='payment_method', to='django_acquiring.token')),
+                ('payment_attempt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_methods', to='acquiring.paymentattempt')),
+                ('token', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='payment_method', to='acquiring.token')),
             ],
             options={
                 'abstract': False,
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
                 ('timestamp', models.DateTimeField()),
                 ('raw_data', models.JSONField()),
                 ('provider_name', models.TextField()),
-                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='transaction', to='django_acquiring.paymentmethod')),
+                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='transaction', to='acquiring.paymentmethod')),
             ],
         ),
         migrations.CreateModel(
@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('status', models.CharField(choices=[('started', 'Started'), ('failed', 'Failed'), ('completed', 'Completed'), ('requires_action', 'Requires Action'), ('pending', 'Pending'), ('not_performed', 'Not Performed')], max_length=15)),
                 ('block_name', models.CharField(max_length=20)),
-                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='django_acquiring.paymentmethod')),
+                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='acquiring.paymentmethod')),
             ],
             options={
                 'unique_together': {('status', 'payment_method', 'block_name')},
@@ -97,7 +97,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('type', models.CharField(choices=[('initialize', 'Initialize'), ('process_action', 'Process Action'), ('pay', 'Pay'), ('confirm', 'Confirm'), ('refund', 'Refund'), ('after_pay', 'After Pay'), ('after_confirm', 'After Confirm'), ('after_refund', 'After Refund')], max_length=16)),
                 ('status', models.CharField(choices=[('started', 'Started'), ('failed', 'Failed'), ('completed', 'Completed'), ('requires_action', 'Requires Action'), ('pending', 'Pending'), ('not_performed', 'Not Performed')], max_length=15)),
-                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_operations', to='django_acquiring.paymentmethod')),
+                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_operations', to='acquiring.paymentmethod')),
             ],
             options={
                 'unique_together': {('status', 'payment_method', 'type')},

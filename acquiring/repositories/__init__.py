@@ -1,4 +1,4 @@
-from django_acquiring.utils import is_django_installed
+from acquiring.utils import is_django_installed
 
 
 if is_django_installed():

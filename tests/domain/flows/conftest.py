@@ -2,8 +2,8 @@ from typing import Callable, Sequence, Type
 
 import pytest
 
-from django_acquiring import domain, protocols
-from django_acquiring.enums import OperationStatusEnum
+from acquiring import domain, protocols
+from acquiring.enums import OperationStatusEnum
 
 
 # TODO Define these two to accept block_event_repository as an optional argument

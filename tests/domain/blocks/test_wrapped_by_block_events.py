@@ -2,7 +2,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Callable, Sequence
 
-from django_acquiring import domain, enums, protocols
+from acquiring import domain, enums, protocols
 from tests.domain import factories
 
 

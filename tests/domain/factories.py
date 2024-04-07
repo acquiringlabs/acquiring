@@ -4,7 +4,7 @@ from datetime import datetime
 import factory
 from faker import Faker
 
-from django_acquiring import domain
+from acquiring import domain
 
 fake = Faker()
 

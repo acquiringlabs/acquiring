@@ -1,10 +1,10 @@
-# Django Acquiring
+# Acquiring
 
 Payment Orchestration Library for Django.
 
 ## Overview
 
-Django Acquiring aspires to be a flexible and effective toolkit for building applications that handle money.
+Acquiring aspires to be a flexible and effective toolkit for building applications that handle money.
 
 Some reasons you might want to check it out:
 
@@ -25,15 +25,15 @@ Some reasons you might want to check it out:
 Install using pip...
 
 ```
-pip install django-acquiring
+pip install acquiring
 ```
 
-Add 'django_acquiring' to your INSTALLED_APPS setting.
+Add 'acquiring' to your INSTALLED_APPS setting.
 
 ```python
 INSTALLED_APPS = [
     ...
-    'django_acquiring',
+    'acquiring',
 ]
 ```
 

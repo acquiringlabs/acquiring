@@ -1,6 +1,6 @@
 from typing import Protocol
 from uuid import UUID
-from django_acquiring.enums import OperationStatusEnum
+from acquiring.enums import OperationStatusEnum
 
 
 class AbstractBlockEvent(Protocol):

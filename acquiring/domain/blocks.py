@@ -2,11 +2,11 @@ import functools
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable, Optional, Sequence
 
-from django_acquiring import domain
-from django_acquiring.enums import OperationStatusEnum
+from acquiring import domain
+from acquiring.enums import OperationStatusEnum
 
 if TYPE_CHECKING:
-    from django_acquiring import protocols
+    from acquiring import protocols
 
 
 @dataclass

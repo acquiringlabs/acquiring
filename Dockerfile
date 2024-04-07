@@ -16,7 +16,7 @@ ARG DJANGO_VERSION=""
 ARG ENVIRONMENT
 RUN if [ ! -z "$DJANGO_VERSION" ]; then pip install Django==$DJANGO_VERSION && pip install -r requirements/${ENVIRONMENT}-django.txt; else pip install -r requirements/$ENVIRONMENT.txt; fi
 
-# Copy the django-acquiring package and the test project into the container
+# Copy the acquiring package and the test project into the container
 COPY . /code/
 
 # Expose the port Django will run on

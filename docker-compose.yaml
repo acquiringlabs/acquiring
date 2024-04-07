@@ -15,7 +15,7 @@ services:
     environment:
       - DEBUG=True
       - ENV=development
-      # - DJANGO_SETTINGS_MODULE=django_acquiring.settings
+      # - DJANGO_SETTINGS_MODULE=acquiring.settings
 
 volumes:
   postgres_data:
