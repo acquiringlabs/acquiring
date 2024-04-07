@@ -13,6 +13,10 @@ hypothesis[pytz]
 # ipdb to access the IPython debugger as if it were the pdb module
 ipdb
 
+
+# Mutatest to check if small modifications (mutations) in the code are detectable by tests
+mutatest
+
 # Mypy to support typing
 mypy
 
