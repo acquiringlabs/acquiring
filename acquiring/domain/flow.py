@@ -106,8 +106,8 @@ class PaymentFlow:
     confirm_block: Optional["protocols.AbstractBlock"]
     after_confirm_blocks: list["protocols.AbstractBlock"]
 
-    @refresh_payment_method
     @payment_operation_type
+    @refresh_payment_method
     def initialize(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
         # Verify that the payment can go through this operation type
         if not dl.can_initialize(payment_method):
@@ -184,8 +184,8 @@ class PaymentFlow:
             type=OperationTypeEnum.INITIALIZE,
         )
 
-    @refresh_payment_method
     @payment_operation_type
+    @refresh_payment_method
     def process_action(
         self, payment_method: "protocols.AbstractPaymentMethod", action_data: dict
     ) -> "protocols.AbstractOperationResponse":
@@ -308,8 +308,8 @@ class PaymentFlow:
             ),
         )
 
-    @refresh_payment_method
     @payment_operation_type
+    @refresh_payment_method
     def after_pay(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
         # Verify that the payment can go through this operation type
         if not dl.can_after_pay(payment_method):
@@ -360,8 +360,8 @@ class PaymentFlow:
             type=OperationTypeEnum.AFTER_PAY,
         )
 
-    @refresh_payment_method
     @payment_operation_type
+    @refresh_payment_method
     def confirm(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
         # Verify that the payment can go through this operation type
         if not dl.can_confirm(payment_method):
@@ -429,8 +429,8 @@ class PaymentFlow:
             error_message=block_response.error_message,
         )
 
-    @refresh_payment_method
     @payment_operation_type
+    @refresh_payment_method
     def after_confirm(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
         # Verify that the payment can go through this operation type
         if not dl.can_after_confirm(payment_method):
