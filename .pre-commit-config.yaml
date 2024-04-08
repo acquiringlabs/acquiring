@@ -87,3 +87,7 @@ repos:
     rev: v1.6.27.13
     hooks:
     -   id: actionlint
+-   repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.39.0
+    hooks:
+    -   id: markdownlint

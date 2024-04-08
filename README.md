@@ -24,7 +24,7 @@ Some reasons you might want to check it out:
 
 Install using pip...
 
-```
+```sh
 pip install acquiring
 ```
 
@@ -43,7 +43,9 @@ This project relies on Docker as the main way to test and develop. You can `dock
 
 ## Funding
 
-This project was created by Alvaro Duran. You can support his work or give him words of encouragement by subscribing to [Money In Transit](http://news.alvaroduran.com/), the weekly newsletter that bridges the gap between payments strategy and technology execution.
+This project was created by Alvaro Duran. You can support his work or give him words of encouragement
+by subscribing to [Money In Transit](http://news.alvaroduran.com/), the weekly newsletter that bridges the gap
+between payments strategy and technology execution.
 
 Speaking of, a few of the ideas that inspired this project were initially installments of Money in Transit:
 
