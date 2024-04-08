@@ -23,6 +23,10 @@ license = {file = "LICENSE"}
 long_description = {file = "README.md"}
 name = "acquiring"
 readme = "README.md"
+requires-python = ">=3.8"
+
+[tool.flit.metadata.requires-extra]
+django = ["django>=4.2"]
 
 [project.urls]
 Home = "https://github.com/acquiringlabs/acquiring"
