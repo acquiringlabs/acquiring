@@ -1,5 +1,54 @@
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.2,<4"]
+
+[project]
+authors = [{name = "Alvaro Duran", email = "alvaro.duranb@hotmail.com"}]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Office/Business :: Financial :: Point-Of-Sale",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dynamic = ["version", "description"]
+license = {file = "LICENSE"}
+long_description = {file = "README.md"}
+name = "acquiring"
+readme = "README.md"
+
+[project.urls]
+Home = "https://github.com/acquiringlabs/acquiring"
 
 [tool.bandit]
 exclude_dirs = ["tests"]
-tests = ["B201", "B301"]
 skips = ["B101", "B601"]
+tests = ["B201", "B301"]
+
+[tool.coverage.run]
+omit = ["tests/*", "manage.py", "setup.py"]
+
+[tool.mypy]
+exclude = ".*/migrations/"
+
+[tool.pytest.ini_options]
+addopts = [
+    "-vv",
+    "--doctest-modules",
+    "--capture=no",
+    "--cov=.",
+    "--cov-report=html:/app/coverage/htmlcov",
+    "--cov-report=term-missing"
+]
+junit_family = "legacy"
+markers = [
+    "django_db: mark a test function as requiring the Django database if Django is installed",
+]
+testpaths = ["tests"]

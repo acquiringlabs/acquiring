@@ -1,6 +1,6 @@
 # Acquiring
 
-Payment Orchestration Library for Django.
+Payment Orchestration Library for Python.
 
 ## Overview
 
@@ -17,7 +17,6 @@ Some reasons you might want to check it out:
 ## Requirements
 
 - One of the supported versions of Python
-- One of the supported versions of Django
 - A spirit of adventure
 
 ## Installation
