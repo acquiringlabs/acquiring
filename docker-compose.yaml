@@ -7,15 +7,9 @@ services:
       args:
         ENVIRONMENT: development
         DJANGO_VERSION: 5.0.4  # TODO verify that it's a supported Django version programmatically
-    command: python manage.py runserver 0.0.0.0:8000
+    command: pytest
     volumes:
       - .:/code
-    ports:
-      - 8000:8000
-    environment:
-      - DEBUG=True
-      - ENV=development
-      # - DJANGO_SETTINGS_MODULE=acquiring.settings
   docs:
     build:
       context: .
@@ -25,6 +19,3 @@ services:
       - ./docs:/app/docs
     ports:
       - 8008:8008
-
-volumes:
-  postgres_data:
