@@ -1,0 +1,6 @@
+
+# MkDocs to serve documentation
+mkdocs
+
+# Material theme to make it look professional
+mkdocs-material

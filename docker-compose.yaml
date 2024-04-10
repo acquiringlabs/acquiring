@@ -16,6 +16,15 @@ services:
       - DEBUG=True
       - ENV=development
       # - DJANGO_SETTINGS_MODULE=acquiring.settings
+  docs:
+    build:
+      context: .
+      dockerfile: docs/Dockerfile
+    command: mkdocs serve --dev-addr 0.0.0.0:8008
+    volumes:
+      - ./docs:/app/docs
+    ports:
+      - 8008:8008
 
 volumes:
   postgres_data:
