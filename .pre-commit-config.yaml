@@ -1,4 +1,4 @@
-exclude: '(migrations|docs)/'
+exclude: '(migrations|decisions)/'
 repos:
 -   repo: https://github.com/hija/clean-dotenv
     rev: v0.0.6
