@@ -7,7 +7,7 @@ from acquiring.utils import is_django_installed
 from tests.django.utils import skip_if_django_not_installed
 
 if is_django_installed():
-    from acquiring import domain, models, repositories
+    from acquiring import domain, models, storage
     from tests.django.factories import BlockEventFactory, PaymentAttemptFactory, PaymentMethodFactory
 
 
@@ -25,7 +25,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
         block_name="test",
     )
 
-    result = repositories.django.BlockEventRepository().add(block_event)
+    result = storage.django.BlockEventRepository().add(block_event)
 
     db_block_events = models.BlockEvent.objects.all()
     assert len(db_block_events) == 1
@@ -49,7 +49,7 @@ def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
         block_name=block_name,
     )
 
-    result = repositories.django.BlockEventRepository().add(block_event)
+    result = storage.django.BlockEventRepository().add(block_event)
 
     db_block_event = models.BlockEvent.objects.get(
         block_name=block_name, payment_method_id=db_payment_method.id, status=status
@@ -74,4 +74,4 @@ def test_givenExistingBlockEventRow_whenCallingRepositoryAdd_thenthenDuplicateEr
     )
 
     with pytest.raises(domain.BlockEvent.DuplicateError):
-        repositories.django.BlockEventRepository().add(block_event)
+        storage.django.BlockEventRepository().add(block_event)

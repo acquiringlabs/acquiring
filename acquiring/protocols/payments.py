@@ -12,7 +12,7 @@ from uuid import UUID
 
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
-from .repositories import Repository
+from .storage import Repository
 
 
 class PaymentOperation(Protocol):

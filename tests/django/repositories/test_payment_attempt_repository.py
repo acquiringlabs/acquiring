@@ -14,7 +14,7 @@ fake = Faker()
 if is_django_installed():
     from django.utils import timezone
 
-    from acquiring import domain, models, repositories
+    from acquiring import domain, models, storage
     from tests.django.factories import ItemFactory, PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
@@ -49,7 +49,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
 
     # When calling PaymentAttemptRepository.add
     with django_assert_num_queries(6):
-        result = repositories.django.PaymentAttemptRepository().add(data)
+        result = storage.django.PaymentAttemptRepository().add(data)
 
     # Then PaymentAttempt gets created
 
@@ -96,7 +96,7 @@ def test_givenInvalidAmount_whenCallingRepositoryAdd_thenItemRaisesError(
 
     # When calling PaymentAttemptRepository.add
     with django_assert_num_queries(4), pytest.raises(domain.Item.InvalidTotalAmount):
-        repositories.django.PaymentAttemptRepository().add(data)
+        storage.django.PaymentAttemptRepository().add(data)
 
     # Then PaymentAttempt gets created
 
@@ -118,7 +118,7 @@ def test_givenInCorrectCurrencyData_whenCallingRepositoryAdd_thenPaymentAttemptR
 
     # When calling PaymentAttemptRepository.add
     with django_assert_num_queries(5):  # , pytest.raises(domain.CurrencyField.DoesNotExist):
-        result = repositories.django.PaymentAttemptRepository().add(data)
+        result = storage.django.PaymentAttemptRepository().add(data)
 
     # Then PaymentAttempt raises an error
 
@@ -153,7 +153,7 @@ def test_givenExistingPaymentAttemptRow_whenCallingRepositoryGet_thenPaymentAtte
 
     # When calling PaymentAttemptRepository.get
     with django_assert_num_queries(4):
-        result = repositories.django.PaymentAttemptRepository().get(id=db_payment_attempt.id)
+        result = storage.django.PaymentAttemptRepository().get(id=db_payment_attempt.id)
 
     # Then PaymentAttempt gets retrieved
     assert result == db_payment_attempt.to_domain()
@@ -173,4 +173,4 @@ def test_givenNonExistingPaymentAttemptRow_whenCallingRepositoryGet_thenDoesNotE
     )
 
     with django_assert_num_queries(2), pytest.raises(domain.PaymentAttempt.DoesNotExist):
-        repositories.django.PaymentAttemptRepository().get(id=payment_method.id)
+        storage.django.PaymentAttemptRepository().get(id=payment_method.id)

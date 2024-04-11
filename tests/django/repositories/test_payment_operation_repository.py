@@ -7,7 +7,7 @@ from acquiring.utils import is_django_installed
 from tests.django.utils import skip_if_django_not_installed
 
 if is_django_installed():
-    from acquiring import domain, models, repositories
+    from acquiring import domain, models, storage
     from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
@@ -28,7 +28,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOpera
     payment_method = db_payment_method.to_domain()
 
     # When calling PaymentOperationRepository.add_payment_operation
-    repositories.django.PaymentOperationRepository().add(
+    storage.django.PaymentOperationRepository().add(
         payment_method=payment_method,
         type=payment_operation_type,
         status=payment_operation_status,
@@ -62,7 +62,7 @@ def test_givenExistingPaymentOperationRow_whenCallingRepositoryAdd_thenthenDupli
     )
 
     with pytest.raises(domain.PaymentOperation.DuplicateError):
-        repositories.django.PaymentOperationRepository().add(
+        storage.django.PaymentOperationRepository().add(
             payment_method=payment_method,
             type=OperationTypeEnum.INITIALIZE,
             status=OperationStatusEnum.STARTED,

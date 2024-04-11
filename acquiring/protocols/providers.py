@@ -4,7 +4,7 @@ from enum import StrEnum
 from typing import Generic, Optional, Protocol, TypeVar
 from uuid import UUID
 
-from acquiring.protocols import repositories
+from acquiring.protocols import storage
 
 Status = TypeVar("Status", bound=StrEnum)
 
@@ -21,7 +21,7 @@ class AdapterResponse(Generic[Status], Protocol):
 class Adapter(Protocol):
     base_url: str
     provider_name: str
-    transaction_repository: repositories.Repository
+    transaction_repository: storage.Repository
 
 
 @dataclass

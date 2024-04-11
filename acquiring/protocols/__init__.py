@@ -15,7 +15,7 @@ from .payments import (
     Token,
 )
 from .providers import Adapter, AdapterResponse, Transaction
-from .repositories import Repository
+from .storage import Repository, UnitOfWork
 
 
 class PaymentFlow(Protocol):
@@ -62,6 +62,7 @@ __all__ = [
     "Repository",
     "Token",
     "Transaction",
+    "UnitOfWork",
 ]
 
 assert __all__ == sorted(__all__), sorted(__all__)
