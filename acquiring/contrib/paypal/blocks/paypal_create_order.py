@@ -11,12 +11,12 @@ from ..domain import Amount, Order, OrderIntentEnum, PayPalStatusEnum, PurchaseU
 @dataclass
 class PayPalCreateOrder:
     adapter: PayPalAdapter
-    block_event_repository: protocols.AbstractRepository
+    block_event_repository: protocols.Repository
 
     @domain.wrapped_by_block_events
     def run(
-        self, payment_method: "protocols.AbstractPaymentMethod", *args: Sequence, **kwargs: dict
-    ) -> "protocols.AbstractBlockResponse":
+        self, payment_method: "protocols.PaymentMethod", *args: Sequence, **kwargs: dict
+    ) -> "protocols.BlockResponse":
         external_id = uuid.uuid4()
 
         items = payment_method.payment_attempt.items

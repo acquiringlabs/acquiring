@@ -14,7 +14,7 @@ fake = Faker()
 def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransactionGetsCorrectlyCreated(  # type:ignore[misc]
     fake_transaction_repository: Callable[
         ...,
-        protocols.AbstractRepository,
+        protocols.Repository,
     ],
 ) -> None:
 
@@ -34,15 +34,15 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
     class FakeAdapter:
         base_url: str
         provider_name: str
-        transaction_repository: protocols.AbstractRepository
+        transaction_repository: protocols.Repository
 
         @domain.wrapped_by_transaction
         def do_something(
-            self: protocols.AbstractAdapter,
-            payment_method: protocols.AbstractPaymentMethod,
+            self: protocols.Adapter,
+            payment_method: protocols.PaymentMethod,
             *args: Sequence,
             **kwargs: dict,
-        ) -> protocols.AbstractAdapterResponse:
+        ) -> protocols.AdapterResponse:
 
             return FakeAdapterResponse(
                 external_id=external_id,
@@ -67,7 +67,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
         transaction_repository=transaction_repository,
     ).do_something(payment_method)
 
-    transactions: list[protocols.AbstractTransaction] = transaction_repository.units  # type:ignore[attr-defined]
+    transactions: list[protocols.Transaction] = transaction_repository.units  # type:ignore[attr-defined]
     assert len(transactions) == 1
 
     assert transactions[0] == domain.Transaction(
@@ -92,15 +92,15 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenNameAndD
     class FakeAdapter:
         base_url: str
         provider_name: str
-        transaction_repository: protocols.AbstractRepository
+        transaction_repository: protocols.Repository
 
         @domain.wrapped_by_transaction
         def do_something(
-            self: protocols.AbstractAdapter,
-            payment_method: protocols.AbstractPaymentMethod,
+            self: protocols.Adapter,
+            payment_method: protocols.PaymentMethod,
             *args: Sequence,
             **kwargs: dict,
-        ) -> protocols.AbstractAdapterResponse:
+        ) -> protocols.AdapterResponse:
             """This is the expected doc"""
 
             return FakeAdapterResponse(

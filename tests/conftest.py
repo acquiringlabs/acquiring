@@ -48,15 +48,15 @@ def fake_os_environ() -> Generator:
 
 @pytest.fixture(scope="module")
 def fake_payment_method_repository() -> Callable[
-    [Optional[List[protocols.AbstractPaymentMethod]]],
-    protocols.AbstractRepository,
+    [Optional[List[protocols.PaymentMethod]]],
+    protocols.Repository,
 ]:
 
     @dataclass
     class FakePaymentMethodRepository:
-        units: List[protocols.AbstractPaymentMethod]
+        units: List[protocols.PaymentMethod]
 
-        def add(self, data: protocols.AbstractDraftPaymentMethod) -> protocols.AbstractPaymentMethod:
+        def add(self, data: protocols.DraftPaymentMethod) -> protocols.PaymentMethod:
             payment_method = domain.PaymentMethod(
                 id=uuid.uuid4(),
                 created_at=datetime.now(),
@@ -68,15 +68,15 @@ def fake_payment_method_repository() -> Callable[
             self.units.append(payment_method)
             return payment_method
 
-        def get(self, id: uuid.UUID) -> protocols.AbstractPaymentMethod:
+        def get(self, id: uuid.UUID) -> protocols.PaymentMethod:
             for unit in self.units:
                 if unit.id == id:
                     return unit
             raise domain.PaymentMethod.DoesNotExist
 
     def build_repository(
-        units: Optional[list[protocols.AbstractPaymentMethod]] = None,
-    ) -> protocols.AbstractRepository:
+        units: Optional[list[protocols.PaymentMethod]] = None,
+    ) -> protocols.Repository:
         return FakePaymentMethodRepository(units=units if units else [])
 
     return build_repository
@@ -84,20 +84,20 @@ def fake_payment_method_repository() -> Callable[
 
 @pytest.fixture(scope="module")
 def fake_payment_operation_repository() -> Callable[
-    [Optional[list[protocols.AbstractPaymentOperation]]],
-    protocols.AbstractRepository,
+    [Optional[list[protocols.PaymentOperation]]],
+    protocols.Repository,
 ]:
 
     @dataclass
     class FakePaymentOperationRepository:
-        units: list[protocols.AbstractPaymentOperation]
+        units: list[protocols.PaymentOperation]
 
         def add(
             self,
-            payment_method: protocols.AbstractPaymentMethod,
+            payment_method: protocols.PaymentMethod,
             type: enums.OperationTypeEnum,
             status: enums.OperationStatusEnum,
-        ) -> protocols.AbstractPaymentOperation:
+        ) -> protocols.PaymentOperation:
             payment_operation = domain.PaymentOperation(
                 type=type,
                 status=status,
@@ -108,11 +108,11 @@ def fake_payment_operation_repository() -> Callable[
 
         def get(  # type:ignore[empty-body]
             self, id: uuid.UUID
-        ) -> protocols.AbstractPaymentOperation: ...
+        ) -> protocols.PaymentOperation: ...
 
     def build_repository(
-        units: Optional[list[protocols.AbstractPaymentOperation]] = None,
-    ) -> protocols.AbstractRepository:
+        units: Optional[list[protocols.PaymentOperation]] = None,
+    ) -> protocols.Repository:
         return FakePaymentOperationRepository(units=units if units else [])
 
     return build_repository
@@ -120,15 +120,15 @@ def fake_payment_operation_repository() -> Callable[
 
 @pytest.fixture(scope="module")
 def fake_transaction_repository() -> Callable[
-    [Optional[List[protocols.AbstractTransaction]]],
-    protocols.AbstractRepository,
+    [Optional[List[protocols.Transaction]]],
+    protocols.Repository,
 ]:
 
     @dataclass
-    class FakeAbstractTransactionRepository:
-        units: List[protocols.AbstractTransaction]
+    class FakeTransactionRepository:
+        units: List[protocols.Transaction]
 
-        def add(self, transaction: protocols.AbstractTransaction) -> protocols.AbstractTransaction:
+        def add(self, transaction: protocols.Transaction) -> protocols.Transaction:
             transaction = domain.Transaction(
                 external_id=transaction.external_id,
                 timestamp=transaction.timestamp,
@@ -142,26 +142,24 @@ def fake_transaction_repository() -> Callable[
         def get(  # type:ignore[empty-body]
             self,
             id: uuid.UUID,
-        ) -> protocols.AbstractTransaction: ...
+        ) -> protocols.Transaction: ...
 
     def build_repository(
-        units: Optional[list[protocols.AbstractTransaction]] = None,
-    ) -> protocols.AbstractRepository:
-        return FakeAbstractTransactionRepository(units=units if units else [])
+        units: Optional[list[protocols.Transaction]] = None,
+    ) -> protocols.Repository:
+        return FakeTransactionRepository(units=units if units else [])
 
     return build_repository
 
 
 @pytest.fixture(scope="module")
-def fake_block_event_repository() -> (
-    Callable[[Optional[list[protocols.AbstractBlockEvent]]], protocols.AbstractRepository]
-):
+def fake_block_event_repository() -> Callable[[Optional[list[protocols.BlockEvent]]], protocols.Repository]:
 
     @dataclass
     class FakeBlockEventRepository:
-        units: list[protocols.AbstractBlockEvent]
+        units: list[protocols.BlockEvent]
 
-        def add(self, block_event: protocols.AbstractBlockEvent) -> protocols.AbstractBlockEvent:
+        def add(self, block_event: protocols.BlockEvent) -> protocols.BlockEvent:
             block_event = domain.BlockEvent(
                 status=block_event.status,
                 payment_method_id=block_event.payment_method_id,
@@ -172,13 +170,13 @@ def fake_block_event_repository() -> (
 
         def get(  # type:ignore[empty-body]
             self, id: uuid.UUID
-        ) -> protocols.AbstractBlockEvent: ...
+        ) -> protocols.BlockEvent: ...
 
-    assert issubclass(FakeBlockEventRepository, protocols.AbstractRepository)
+    assert issubclass(FakeBlockEventRepository, protocols.Repository)
 
     def build_repository(
-        units: Optional[list[protocols.AbstractBlockEvent]] = None,
-    ) -> protocols.AbstractRepository:
+        units: Optional[list[protocols.BlockEvent]] = None,
+    ) -> protocols.Repository:
         return FakeBlockEventRepository(units=units if units else [])
 
     return build_repository

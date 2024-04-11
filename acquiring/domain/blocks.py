@@ -17,19 +17,19 @@ class BlockResponse:
 
 
 def wrapped_by_block_events(  # type:ignore[misc]
-    function: Callable[..., "protocols.AbstractBlockResponse"]
-) -> Callable[..., "protocols.AbstractBlockResponse"]:
+    function: Callable[..., "protocols.BlockResponse"]
+) -> Callable[..., "protocols.BlockResponse"]:
     """
     This decorator ensures that the starting and finishing block events get created.
     """
 
     @functools.wraps(function)
     def wrapper(
-        self: "protocols.AbstractBlock",
-        payment_method: "protocols.AbstractPaymentMethod",
+        self: "protocols.Block",
+        payment_method: "protocols.PaymentMethod",
         *args: Sequence,
         **kwargs: dict,
-    ) -> "protocols.AbstractBlockResponse":
+    ) -> "protocols.BlockResponse":
         block_name = self.__class__.__name__
 
         self.block_event_repository.add(

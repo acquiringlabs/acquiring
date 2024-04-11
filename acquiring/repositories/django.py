@@ -17,7 +17,7 @@ class PaymentAttemptRepository:
         domain.Item.InvalidTotalAmount,
         lambda _, data: sum(i.quantity * i.unit_price for i in data.items) != data.amount,
     )
-    def add(self, data: "protocols.AbstractDraftPaymentAttempt") -> "protocols.AbstractPaymentAttempt":
+    def add(self, data: "protocols.DraftPaymentAttempt") -> "protocols.PaymentAttempt":
         with django.db.transaction.atomic():
 
             payment_attempt = models.PaymentAttempt(
@@ -48,7 +48,7 @@ class PaymentAttemptRepository:
         domain.PaymentAttempt.DoesNotExist,
         lambda _, id: models.PaymentAttempt.objects.filter(id=id).count() == 0,
     )
-    def get(self, id: UUID) -> "protocols.AbstractPaymentAttempt":
+    def get(self, id: UUID) -> "protocols.PaymentAttempt":
         try:
             payment_attempt = models.PaymentAttempt.objects.prefetch_related(
                 "payment_methods",
@@ -62,7 +62,7 @@ class PaymentAttemptRepository:
 class PaymentMethodRepository:
 
     @deal.safe()
-    def add(self, data: "protocols.AbstractDraftPaymentMethod") -> "protocols.AbstractPaymentMethod":
+    def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
         with django.db.transaction.atomic():
             db_payment_method = models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
@@ -87,7 +87,7 @@ class PaymentMethodRepository:
         domain.PaymentMethod.DoesNotExist,
         lambda _, id: models.PaymentMethod.objects.filter(id=id).count() == 0,
     )
-    def get(self, id: UUID) -> "protocols.AbstractPaymentMethod":
+    def get(self, id: UUID) -> "protocols.PaymentMethod":
         try:
             payment_method = (
                 models.PaymentMethod.objects.prefetch_related("payment_operations")
@@ -103,8 +103,8 @@ class PaymentMethodRepository:
         lambda _, payment_method, token: models.PaymentMethod.objects.filter(id=payment_method.id).count() == 0,
     )
     def add_token(
-        self, payment_method: "protocols.AbstractPaymentMethod", token: "protocols.AbstractToken"
-    ) -> "protocols.AbstractPaymentMethod":
+        self, payment_method: "protocols.PaymentMethod", token: "protocols.Token"
+    ) -> "protocols.PaymentMethod":
         try:
             db_payment_method = models.PaymentMethod.objects.get(id=payment_method.id)
         except models.PaymentMethod.DoesNotExist:
@@ -132,10 +132,10 @@ class PaymentOperationRepository:
     @deal.raises(domain.PaymentOperation.DuplicateError)  # TODO Turn this into deal.reason
     def add(
         self,
-        payment_method: "protocols.AbstractPaymentMethod",
+        payment_method: "protocols.PaymentMethod",
         type: OperationTypeEnum,
         status: OperationStatusEnum,
-    ) -> "protocols.AbstractPaymentOperation":
+    ) -> "protocols.PaymentOperation":
         db_payment_operation = models.PaymentOperation(
             payment_method_id=payment_method.id,
             type=type,
@@ -149,7 +149,7 @@ class PaymentOperationRepository:
         except django.db.utils.IntegrityError:
             raise domain.PaymentOperation.DuplicateError
 
-    def get(self, id: UUID) -> "protocols.AbstractPaymentOperation": ...  # type: ignore[empty-body]
+    def get(self, id: UUID) -> "protocols.PaymentOperation": ...  # type: ignore[empty-body]
 
 
 # TODO Append block event to payment_method.block_events?
@@ -157,7 +157,7 @@ class PaymentOperationRepository:
 class BlockEventRepository:
 
     @deal.raises(domain.BlockEvent.DuplicateError)  # TODO Turn this into deal.reason
-    def add(self, block_event: "protocols.AbstractBlockEvent") -> "protocols.AbstractBlockEvent":
+    def add(self, block_event: "protocols.BlockEvent") -> "protocols.BlockEvent":
         try:
             db_block_event = models.BlockEvent(
                 status=block_event.status,
@@ -169,7 +169,7 @@ class BlockEventRepository:
         except django.db.utils.IntegrityError:
             raise domain.BlockEvent.DuplicateError
 
-    def get(self, id: UUID) -> "protocols.AbstractBlockEvent": ...  # type: ignore[empty-body]
+    def get(self, id: UUID) -> "protocols.BlockEvent": ...  # type: ignore[empty-body]
 
 
 # TODO Append transaction to payment_method.transactions?
@@ -179,8 +179,8 @@ class TransactionRepository:
     @deal.safe()
     def add(
         self,
-        transaction: "protocols.AbstractTransaction",
-    ) -> "protocols.AbstractTransaction":
+        transaction: "protocols.Transaction",
+    ) -> "protocols.Transaction":
         db_transaction = models.Transaction(
             external_id=transaction.external_id,
             timestamp=transaction.timestamp,
@@ -191,4 +191,4 @@ class TransactionRepository:
         db_transaction.save()
         return db_transaction.to_domain()
 
-    def get(self, id: UUID) -> "protocols.AbstractTransaction": ...  # type: ignore[empty-body]
+    def get(self, id: UUID) -> "protocols.Transaction": ...  # type: ignore[empty-body]

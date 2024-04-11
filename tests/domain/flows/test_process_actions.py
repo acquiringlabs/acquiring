@@ -9,15 +9,15 @@ from tests.domain import factories
 
 
 def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowReturnsTheCorrectOperationResponse(
-    fake_block: Type[protocols.AbstractBlock],
-    fake_process_action_block: Type[protocols.AbstractBlock],
+    fake_block: Type[protocols.Block],
+    fake_process_action_block: Type[protocols.Block],
     fake_payment_method_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentMethod]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentMethod]]],
+        protocols.Repository,
     ],
     fake_payment_operation_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentOperation]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentOperation]]],
+        protocols.Repository,
     ],
 ) -> None:
     # given a valid payment attempt
@@ -79,15 +79,15 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
 
 
 def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
-    fake_block: Type[protocols.AbstractBlock],
-    fake_process_action_block: Type[protocols.AbstractBlock],
+    fake_block: Type[protocols.Block],
+    fake_process_action_block: Type[protocols.Block],
     fake_payment_method_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentMethod]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentMethod]]],
+        protocols.Repository,
     ],
     fake_payment_operation_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentOperation]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentOperation]]],
+        protocols.Repository,
     ],
 ) -> None:
     # given a valid payment attempt
@@ -155,15 +155,15 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
 
 
 def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenPaymentFlowReturnsFailedOperationResponse(
-    fake_block: Type[protocols.AbstractBlock],
-    fake_process_action_block: Type[protocols.AbstractBlock],
+    fake_block: Type[protocols.Block],
+    fake_process_action_block: Type[protocols.Block],
     fake_payment_method_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentMethod]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentMethod]]],
+        protocols.Repository,
     ],
     fake_payment_operation_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentOperation]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentOperation]]],
+        protocols.Repository,
     ],
 ) -> None:
     # given a valid payment attempt
@@ -223,15 +223,15 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
 
 
 def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.AbstractBlock],
-    fake_process_action_block: Type[protocols.AbstractBlock],
+    fake_block: Type[protocols.Block],
+    fake_process_action_block: Type[protocols.Block],
     fake_payment_method_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentMethod]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentMethod]]],
+        protocols.Repository,
     ],
     fake_payment_operation_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentOperation]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentOperation]]],
+        protocols.Repository,
     ],
 ) -> None:
     # Given a payment method that cannot initialize
@@ -273,15 +273,15 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
 
 # TODO Move this into wrapper refresh
 def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.AbstractBlock],
-    fake_process_action_block: Type[protocols.AbstractBlock],
+    fake_block: Type[protocols.Block],
+    fake_process_action_block: Type[protocols.Block],
     fake_payment_method_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentMethod]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentMethod]]],
+        protocols.Repository,
     ],
     fake_payment_operation_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentOperation]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentOperation]]],
+        protocols.Repository,
     ],
 ) -> None:
 

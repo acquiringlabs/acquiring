@@ -30,15 +30,15 @@ def test_statusListsAreComplete() -> None:
     + [(OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
 def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorrectOperationResponse(
-    fake_block: Type[protocols.AbstractBlock],
-    fake_process_action_block: Type[protocols.AbstractBlock],
+    fake_block: Type[protocols.Block],
+    fake_process_action_block: Type[protocols.Block],
     fake_payment_method_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentMethod]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentMethod]]],
+        protocols.Repository,
     ],
     fake_payment_operation_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentOperation]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentOperation]]],
+        protocols.Repository,
     ],
     result_status: OperationStatusEnum,
     payment_operation_status: OperationStatusEnum,
@@ -118,15 +118,15 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
 
 
 def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.AbstractBlock],
-    fake_process_action_block: Type[protocols.AbstractBlock],
+    fake_block: Type[protocols.Block],
+    fake_process_action_block: Type[protocols.Block],
     fake_payment_method_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentMethod]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentMethod]]],
+        protocols.Repository,
     ],
     fake_payment_operation_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentOperation]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentOperation]]],
+        protocols.Repository,
     ],
 ) -> None:
     # Given a payment method that cannot initialize
@@ -165,15 +165,15 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowRe
 
 
 def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.AbstractBlock],
-    fake_process_action_block: Type[protocols.AbstractBlock],
+    fake_block: Type[protocols.Block],
+    fake_process_action_block: Type[protocols.Block],
     fake_payment_method_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentMethod]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentMethod]]],
+        protocols.Repository,
     ],
     fake_payment_operation_repository: Callable[
-        [Optional[list[protocols.AbstractPaymentOperation]]],
-        protocols.AbstractRepository,
+        [Optional[list[protocols.PaymentOperation]]],
+        protocols.Repository,
     ],
 ) -> None:
 

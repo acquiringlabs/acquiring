@@ -6,15 +6,15 @@ from acquiring.contrib import paypal
 
 @dataclass
 class PayPalAfterCreatingOrder:
-    block_event_repository: protocols.AbstractRepository
-    transaction_repository: protocols.AbstractRepository
+    block_event_repository: protocols.Repository
+    transaction_repository: protocols.Repository
 
     @domain.wrapped_by_block_events
     def run(
         self,
-        payment_method: "protocols.AbstractPaymentMethod",
+        payment_method: "protocols.PaymentMethod",
         webhook_data: paypal.domain.PayPalWebhookData,
-    ) -> "protocols.AbstractBlockResponse":
+    ) -> "protocols.BlockResponse":
         self.transaction_repository.add(
             domain.Transaction(
                 external_id=webhook_data.id,

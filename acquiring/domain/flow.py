@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 
 def payment_operation_type(  # type:ignore[misc]
-    function: Callable[..., "protocols.AbstractOperationResponse"]
-) -> Callable[..., "protocols.AbstractOperationResponse"]:
+    function: Callable[..., "protocols.OperationResponse"]
+) -> Callable[..., "protocols.OperationResponse"]:
     """
     This decorator verifies that the name of this function belongs to one of the OperationTypeEnums
 
@@ -40,7 +40,7 @@ def payment_operation_type(  # type:ignore[misc]
     def wrapper(
         *args: Sequence,
         **kwargs: dict,
-    ) -> "protocols.AbstractOperationResponse":
+    ) -> "protocols.OperationResponse":
         if function.__name__ not in OperationTypeEnum:
 
             # Private methods that start with double _ and have a name that belongs to enum are also allowed
@@ -55,19 +55,19 @@ def payment_operation_type(  # type:ignore[misc]
 
 
 def refresh_payment_method(  # type:ignore[misc]
-    function: Callable[..., "protocols.AbstractOperationResponse"]
-) -> Callable[..., "protocols.AbstractOperationResponse"]:
+    function: Callable[..., "protocols.OperationResponse"]
+) -> Callable[..., "protocols.OperationResponse"]:
     """
     Refresh the payment from the database, or force an early failed OperationResponse otherwise.
     """
 
     @functools.wraps(function)
     def wrapper(
-        self: "protocols.AbstractPaymentFlow",
-        payment_method: "protocols.AbstractPaymentMethod",
+        self: "protocols.PaymentFlow",
+        payment_method: "protocols.PaymentMethod",
         *args: Sequence,
         **kwargs: dict,
-    ) -> "protocols.AbstractOperationResponse":
+    ) -> "protocols.OperationResponse":
         try:
             payment_method = self.payment_method_repository.get(id=payment_method.id)
         except domain.PaymentMethod.DoesNotExist:
@@ -85,7 +85,7 @@ def refresh_payment_method(  # type:ignore[misc]
 @dataclass
 class OperationResponse:
     status: OperationStatusEnum
-    payment_method: Optional["protocols.AbstractPaymentMethod"]
+    payment_method: Optional["protocols.PaymentMethod"]
     type: OperationTypeEnum
     error_message: Optional[str] = None
     actions: list[dict] = field(default_factory=list)
@@ -94,21 +94,21 @@ class OperationResponse:
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
 @dataclass
 class PaymentFlow:
-    payment_method_repository: "protocols.AbstractRepository"
-    payment_operation_repository: "protocols.AbstractRepository"
+    payment_method_repository: "protocols.Repository"
+    payment_operation_repository: "protocols.Repository"
 
-    initialize_block: Optional["protocols.AbstractBlock"]
-    process_action_block: Optional["protocols.AbstractBlock"]
+    initialize_block: Optional["protocols.Block"]
+    process_action_block: Optional["protocols.Block"]
 
-    pay_blocks: list["protocols.AbstractBlock"]
-    after_pay_blocks: list["protocols.AbstractBlock"]
+    pay_blocks: list["protocols.Block"]
+    after_pay_blocks: list["protocols.Block"]
 
-    confirm_block: Optional["protocols.AbstractBlock"]
-    after_confirm_blocks: list["protocols.AbstractBlock"]
+    confirm_block: Optional["protocols.Block"]
+    after_confirm_blocks: list["protocols.Block"]
 
     @payment_operation_type
     @refresh_payment_method
-    def initialize(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
+    def initialize(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
         if not dl.can_initialize(payment_method):
             return OperationResponse(
@@ -187,8 +187,8 @@ class PaymentFlow:
     @payment_operation_type
     @refresh_payment_method
     def process_action(
-        self, payment_method: "protocols.AbstractPaymentMethod", action_data: dict
-    ) -> "protocols.AbstractOperationResponse":
+        self, payment_method: "protocols.PaymentMethod", action_data: dict
+    ) -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
 
         if not dl.can_process_action(payment_method):
@@ -258,7 +258,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
-    def __pay(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
+    def __pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # No need to refresh from DB
 
         # No need to verify if payment can go through a private method
@@ -310,7 +310,7 @@ class PaymentFlow:
 
     @payment_operation_type
     @refresh_payment_method
-    def after_pay(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
+    def after_pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
         if not dl.can_after_pay(payment_method):
             return OperationResponse(
@@ -362,7 +362,7 @@ class PaymentFlow:
 
     @payment_operation_type
     @refresh_payment_method
-    def confirm(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
+    def confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
         if not dl.can_confirm(payment_method):
             return OperationResponse(
@@ -431,7 +431,7 @@ class PaymentFlow:
 
     @payment_operation_type
     @refresh_payment_method
-    def after_confirm(self, payment_method: "protocols.AbstractPaymentMethod") -> "protocols.AbstractOperationResponse":
+    def after_confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
         if not dl.can_after_confirm(payment_method):
             return OperationResponse(

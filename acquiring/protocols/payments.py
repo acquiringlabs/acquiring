@@ -12,10 +12,10 @@ from uuid import UUID
 
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
-from .repositories import AbstractRepository
+from .repositories import Repository
 
 
-class AbstractPaymentOperation(Protocol):
+class PaymentOperation(Protocol):
     payment_method_id: UUID
     type: OperationTypeEnum
     status: OperationStatusEnum
@@ -23,7 +23,7 @@ class AbstractPaymentOperation(Protocol):
     def __repr__(self) -> str: ...
 
 
-class AbstractToken(Protocol):
+class Token(Protocol):
     created_at: datetime
     token: str
     metadata: Optional[dict[str, str | int]]
@@ -33,7 +33,7 @@ class AbstractToken(Protocol):
     def __repr__(self) -> str: ...
 
 
-class AbstractDraftItem(Protocol):
+class DraftItem(Protocol):
     reference: str
     name: str
     quantity: int
@@ -41,7 +41,7 @@ class AbstractDraftItem(Protocol):
     quantity_unit: Optional[str]
 
 
-class AbstractItem(Protocol):
+class Item(Protocol):
     id: UUID
     created_at: datetime
     payment_attempt_id: UUID
@@ -53,63 +53,63 @@ class AbstractItem(Protocol):
 
 
 # TODO Have this class the DoesNotExist internal class
-class AbstractPaymentAttempt(Protocol):
+class PaymentAttempt(Protocol):
     id: UUID
     created_at: datetime
     amount: int
     currency: str
     payment_method_ids: list[UUID]
-    items: Sequence[AbstractItem] = field(default_factory=list)
+    items: Sequence[Item] = field(default_factory=list)
 
     def __repr__(self) -> str: ...
 
 
 # TODO Have this class the DoesNotExist internal class
-class AbstractPaymentMethod(Protocol):
+class PaymentMethod(Protocol):
     id: UUID
     created_at: datetime
-    token: AbstractToken | None
-    payment_attempt: AbstractPaymentAttempt
+    token: Token | None
+    payment_attempt: PaymentAttempt
     confirmable: bool
-    payment_operations: list[AbstractPaymentOperation]
+    payment_operations: list[PaymentOperation]
 
     def __repr__(self) -> str: ...
 
     def has_payment_operation(
-        self: "AbstractPaymentMethod",
+        self: "PaymentMethod",
         type: OperationTypeEnum,
         status: OperationStatusEnum,
     ) -> bool: ...
 
 
-class AbstractDraftPaymentMethod(Protocol):
-    payment_attempt: AbstractPaymentAttempt
+class DraftPaymentMethod(Protocol):
+    payment_attempt: PaymentAttempt
     confirmable: bool
-    token: AbstractToken | None = None
+    token: Token | None = None
 
 
-class AbstractDraftPaymentAttempt(Protocol):
+class DraftPaymentAttempt(Protocol):
     amount: int
     currency: str
-    items: Sequence[AbstractDraftItem] = field(default_factory=list)
+    items: Sequence[DraftItem] = field(default_factory=list)
 
 
-class AbstractOperationResponse(Protocol):
+class OperationResponse(Protocol):
     status: OperationStatusEnum
-    payment_method: Optional["AbstractPaymentMethod"]
+    payment_method: Optional["PaymentMethod"]
     type: OperationTypeEnum
     error_message: Optional[str]
     actions: list[dict]
 
 
-class AbstractBlockResponse(Protocol):
+class BlockResponse(Protocol):
     status: OperationStatusEnum
     actions: list[dict] = field(default_factory=list)
     error_message: Optional[str] = None
 
 
 @runtime_checkable
-class AbstractBlock(Protocol):
-    block_event_repository: AbstractRepository
+class Block(Protocol):
+    block_event_repository: Repository
 
-    def run(self, payment_method: AbstractPaymentMethod, *args: Sequence, **kwargs: dict) -> AbstractBlockResponse: ...
+    def run(self, payment_method: PaymentMethod, *args: Sequence, **kwargs: dict) -> BlockResponse: ...

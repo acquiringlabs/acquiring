@@ -10,7 +10,7 @@ Status = TypeVar("Status", bound=StrEnum)
 
 
 @dataclass(match_args=False)
-class AbstractAdapterResponse(Generic[Status], Protocol):
+class AdapterResponse(Generic[Status], Protocol):
     external_id: Optional[str]  # UUID cannot be imposed across all adapters
     timestamp: Optional[datetime]
     raw_data: dict
@@ -18,14 +18,14 @@ class AbstractAdapterResponse(Generic[Status], Protocol):
 
 
 @dataclass
-class AbstractAdapter(Protocol):
+class Adapter(Protocol):
     base_url: str
     provider_name: str
-    transaction_repository: repositories.AbstractRepository
+    transaction_repository: repositories.Repository
 
 
 @dataclass
-class AbstractTransaction(Protocol):
+class Transaction(Protocol):
     external_id: str
     timestamp: datetime
     raw_data: dict

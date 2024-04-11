@@ -1,70 +1,67 @@
 from typing import Optional, Protocol
 
-from .events import AbstractBlockEvent
+from .events import BlockEvent
 from .payments import (
-    AbstractBlock,
-    AbstractBlockResponse,
-    AbstractDraftItem,
-    AbstractDraftPaymentAttempt,
-    AbstractDraftPaymentMethod,
-    AbstractItem,
-    AbstractOperationResponse,
-    AbstractPaymentAttempt,
-    AbstractPaymentMethod,
-    AbstractPaymentOperation,
-    AbstractToken,
+    Block,
+    BlockResponse,
+    DraftItem,
+    DraftPaymentAttempt,
+    DraftPaymentMethod,
+    Item,
+    OperationResponse,
+    PaymentAttempt,
+    PaymentMethod,
+    PaymentOperation,
+    Token,
 )
-from .providers import AbstractAdapter, AbstractAdapterResponse, AbstractTransaction
-from .repositories import AbstractRepository
+from .providers import Adapter, AdapterResponse, Transaction
+from .repositories import Repository
 
 
-class AbstractPaymentFlow(Protocol):
-    payment_method_repository: "AbstractRepository"
-    payment_operation_repository: "AbstractRepository"
+class PaymentFlow(Protocol):
+    payment_method_repository: "Repository"
+    payment_operation_repository: "Repository"
 
-    initialize_block: Optional["AbstractBlock"]
-    process_action_block: Optional["AbstractBlock"]
+    initialize_block: Optional["Block"]
+    process_action_block: Optional["Block"]
 
-    pay_blocks: list["AbstractBlock"]
-    after_pay_blocks: list["AbstractBlock"]
+    pay_blocks: list["Block"]
+    after_pay_blocks: list["Block"]
 
-    confirm_block: Optional["AbstractBlock"]
-    after_confirm_blocks: list["AbstractBlock"]
+    confirm_block: Optional["Block"]
+    after_confirm_blocks: list["Block"]
 
-    def initialize(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+    def initialize(self, payment_method: "PaymentMethod") -> "OperationResponse": ...
 
-    def process_action(
-        self, payment_method: "AbstractPaymentMethod", action_data: dict
-    ) -> "AbstractOperationResponse": ...
+    def process_action(self, payment_method: "PaymentMethod", action_data: dict) -> "OperationResponse": ...
 
-    def __pay(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+    def __pay(self, payment_method: "PaymentMethod") -> "OperationResponse": ...
 
-    def after_pay(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+    def after_pay(self, payment_method: "PaymentMethod") -> "OperationResponse": ...
 
-    def confirm(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+    def confirm(self, payment_method: "PaymentMethod") -> "OperationResponse": ...
 
-    def after_confirm(self, payment_method: "AbstractPaymentMethod") -> "AbstractOperationResponse": ...
+    def after_confirm(self, payment_method: "PaymentMethod") -> "OperationResponse": ...
 
 
 __all__ = [
-    "AbstractAdapter",
-    "AbstractAdapterResponse",
-    "AbstractBlock",
-    "AbstractBlockEvent",
-    "AbstractBlockResponse",
-    "AbstractDraftItem",
-    "AbstractDraftPaymentAttempt",
-    "AbstractDraftPaymentMethod",
-    "AbstractItem",
-    "AbstractOperationResponse",
-    "AbstractPaymentAttempt",
-    "AbstractPaymentFlow",
-    "AbstractPaymentMethod",
-    "AbstractPaymentOperation",
-    "AbstractRepository",
-    "AbstractToken",
-    "AbstractTransaction",
+    "Adapter",
+    "AdapterResponse",
+    "Block",
+    "BlockEvent",
+    "BlockResponse",
+    "DraftItem",
+    "DraftPaymentAttempt",
+    "DraftPaymentMethod",
+    "Item",
+    "OperationResponse",
+    "PaymentAttempt",
+    "PaymentFlow",
+    "PaymentMethod",
+    "PaymentOperation",
+    "Repository",
+    "Token",
+    "Transaction",
 ]
 
 assert __all__ == sorted(__all__), sorted(__all__)
-assert all(protocol.startswith("Abstract") for protocol in __all__)

@@ -22,17 +22,17 @@ class Transaction:
 
 
 def wrapped_by_transaction(  # type:ignore[misc]
-    function: Callable[..., "protocols.AbstractAdapterResponse"]
-) -> Callable[..., "protocols.AbstractAdapterResponse"]:
+    function: Callable[..., "protocols.AdapterResponse"]
+) -> Callable[..., "protocols.AdapterResponse"]:
     """This decorator ensures that a Transaction gets created after interacting with the Provider via its adapter"""
 
     @functools.wraps(function)
     def wrapper(
-        self: "protocols.AbstractAdapter",
-        payment_method: "protocols.AbstractPaymentMethod",
+        self: "protocols.Adapter",
+        payment_method: "protocols.PaymentMethod",
         *args: Sequence,
         **kwargs: dict,
-    ) -> "protocols.AbstractAdapterResponse":
+    ) -> "protocols.AdapterResponse":
         result = function(self, payment_method, *args, **kwargs)
 
         # A transaction is created only when the Adapter Response is successful

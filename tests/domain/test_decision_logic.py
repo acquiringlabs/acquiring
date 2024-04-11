@@ -27,7 +27,7 @@ class TestCanInitialize:
 
     def test_paymentMethodWithStartedInitializePOCannotInitialize(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already started initialized cannot go through initialize."""
         assert (
@@ -55,8 +55,8 @@ class TestCanInitialize:
     )
     def test_paymentMethodAlreadyInitializedCannotInitialize(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        status: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        status: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already completed initialized cannot go through initialize."""
         assert (
@@ -84,8 +84,8 @@ class TestCanProcessAction:
 
     def test_paymentMethodRequiringActionCanProcessAction(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_requires_action: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_requires_action: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already started initialization and ended requiring actions can go through,"""
         assert (
@@ -106,9 +106,9 @@ class TestCanProcessAction:
 
     def test_paymentMethodAlreadyStartedProcessActionCannotProcessAction(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_requires_action: protocols.AbstractPaymentOperation,
-        payment_operation_process_action_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_requires_action: protocols.PaymentOperation,
+        payment_operation_process_action_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already started process_action cannot go through process_action."""
         assert (
@@ -130,7 +130,7 @@ class TestCanProcessAction:
 
     def test_paymentMethodNotInitializedCannotProcessAction(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has not performed initialize cannot go through process_action."""
         assert (
@@ -158,7 +158,7 @@ class TestCanProcessAction:
     )
     def test_paymentMethodInitializedWithoutRequiresActionCannotProcessAction(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
         not_requires_action_status: enums.OperationStatusEnum,
     ) -> None:
         """A Payment Method that has not performed initialize cannot go through process_action."""
@@ -187,10 +187,10 @@ class TestCanAfterPay:
 
     def test_paymentMethodInitializedViaCompleteAndPaidCanAfterPay(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_completed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_completed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already initialized and has already pay can go through."""
         assert (
@@ -213,12 +213,12 @@ class TestCanAfterPay:
 
     def test_paymentMethodInitializedViaRequiresActionAndPaidCanAfterPay(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_requires_action: protocols.AbstractPaymentOperation,
-        payment_operation_process_action_started: protocols.AbstractPaymentOperation,
-        payment_operation_process_action_completed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_requires_action: protocols.PaymentOperation,
+        payment_operation_process_action_started: protocols.PaymentOperation,
+        payment_operation_process_action_completed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already initialized via process action and has already pay can go through."""
         assert (
@@ -243,10 +243,10 @@ class TestCanAfterPay:
 
     def test_paymentMethodInitializedViaNotPerformedAndPaidCanAfterPay(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has not performed initialized and has already pay can go through."""
         assert (
@@ -269,7 +269,7 @@ class TestCanAfterPay:
 
     def test_paymentMethodNotInitializedCannotAfterPay(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has not completed initialization cannot go through"""
         assert (
@@ -289,8 +289,8 @@ class TestCanAfterPay:
 
     def test_paymentMethodInitializeFailedCannotAfterPay(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_failed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_failed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has not completed initialization cannot go through"""
         assert (
@@ -311,9 +311,9 @@ class TestCanAfterPay:
 
     def test_paymentMethodInitializedButNotPaidCannotAfterPay(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has not completed pay cannot go through."""
         assert (
@@ -335,10 +335,10 @@ class TestCanAfterPay:
 
     def test_paymentMethodInitializedButNotFailedPaidCannotAfterPay(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_failed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_failed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has not completed pay cannot go through."""
         assert (
@@ -361,11 +361,11 @@ class TestCanAfterPay:
 
     def test_paymentMethodAlreadyStartedAfterPayCannotAfterPay(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already started after pay cannot go through"""
         assert (
@@ -392,12 +392,12 @@ class TestCanConfirm:
 
     def test_paymentMethodConfirmableAndAfterPayCompletedCanConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that is confirmable and has completed pay can go through."""
         assert (
@@ -426,11 +426,11 @@ class TestCanConfirm:
     )
     def test_paymentMethodConfirmableAndAfterPayFinishedWithNonCompletedStatusCanConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
         non_completed_after_pay_status: enums.OperationStatusEnum,
     ) -> None:
         """A Payment Method that is confirmable and has completed pay can go through."""
@@ -460,12 +460,12 @@ class TestCanConfirm:
 
     def test_paymentMethodNonConfirmableAndAfterPayCompletedCannotConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that is NOT confirmable and has completed pay cannot go through."""
         assert (
@@ -490,13 +490,13 @@ class TestCanConfirm:
 
     def test_paymentMethodConfirmableAndConfirmStartedCannotConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+        payment_operation_confirm_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that is confirmable and has completed pay can go through."""
         assert (
@@ -522,11 +522,11 @@ class TestCanConfirm:
 
     def test_paymentMethodConfirmableAndAfterPayNotCompletedCannotConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that is confirmable and has not completed after pay, then cannot go through."""
         assert (
@@ -550,10 +550,10 @@ class TestCanConfirm:
 
     def test_paymentMethodConfirmableAndPayCompletedCannotConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that is confirmable and has not completed after pay, then cannot go through."""
         assert (
@@ -576,9 +576,9 @@ class TestCanConfirm:
 
     def test_paymentMethodConfirmableAndPayNotCompletedCannotConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that is confirmable and has not completed pay, then cannot go through."""
         assert (
@@ -600,8 +600,8 @@ class TestCanConfirm:
 
     def test_paymentMethodConfirmableAndPayNotStartedCannotConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_completed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_completed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that is confirmable and has not completed initialize, then cannot go through."""
         assert (
@@ -625,14 +625,14 @@ class TestCanAfterConfirm:
 
     def test_paymentMethodConfirmableAndConfirmCompletedCanAfterConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
-        payment_operation_confirm_completed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+        payment_operation_confirm_started: protocols.PaymentOperation,
+        payment_operation_confirm_completed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has already confirmed can go through."""
         assert (
@@ -659,14 +659,14 @@ class TestCanAfterConfirm:
 
     def test_paymentMethodNotConfirmableCannotAfterConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
-        payment_operation_confirm_completed: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+        payment_operation_confirm_started: protocols.PaymentOperation,
+        payment_operation_confirm_completed: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that is not confirmable cannot go through."""
         assert (
@@ -697,13 +697,13 @@ class TestCanAfterConfirm:
     )
     def test_paymentMethodConfirmableAndConfirmHasNotCompletedCannotAfterConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+        payment_operation_confirm_started: protocols.PaymentOperation,
         non_completed_confirm_status: enums.OperationStatusEnum,
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has already confirmed can go through."""
@@ -735,15 +735,15 @@ class TestCanAfterConfirm:
 
     def test_paymentMethodConfirmableAndAfterConfirmStartedCannotAfterConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
-        payment_operation_confirm_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_confirm_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+        payment_operation_confirm_started: protocols.PaymentOperation,
+        payment_operation_confirm_completed: protocols.PaymentOperation,
+        payment_operation_after_confirm_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has already confirmed can go through."""
         assert (
@@ -771,13 +771,13 @@ class TestCanAfterConfirm:
 
     def test_paymentMethodConfirmableAndConfirmNotCompletedCannotAfterConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+        payment_operation_confirm_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has not confirmed cannot go through."""
         assert (
@@ -803,11 +803,11 @@ class TestCanAfterConfirm:
 
     def test_paymentMethodConfirmableAndAfterPayNotCompletedCannotAfterConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
-        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
-        payment_operation_pay_started: protocols.AbstractPaymentOperation,
-        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
-        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_not_performed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has not after paid cannot go through."""
         assert (
@@ -831,7 +831,7 @@ class TestCanAfterConfirm:
 
     def test_paymentMethodConfirmableAndInitializeNotCompletedCannotAfterConfirm(
         self,
-        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_started: protocols.PaymentOperation,
     ) -> None:
         """A Payment Method that has not initialized cannot go through."""
         assert (
@@ -854,7 +854,7 @@ class TestCanAfterConfirm:
 
 
 @pytest.fixture(scope="module")
-def payment_operation_initialize_started() -> protocols.AbstractPaymentOperation:
+def payment_operation_initialize_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
@@ -863,7 +863,7 @@ def payment_operation_initialize_started() -> protocols.AbstractPaymentOperation
 
 
 @pytest.fixture(scope="module")
-def payment_operation_initialize_completed() -> protocols.AbstractPaymentOperation:
+def payment_operation_initialize_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
@@ -872,7 +872,7 @@ def payment_operation_initialize_completed() -> protocols.AbstractPaymentOperati
 
 
 @pytest.fixture(scope="module")
-def payment_operation_initialize_failed() -> protocols.AbstractPaymentOperation:
+def payment_operation_initialize_failed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
@@ -881,7 +881,7 @@ def payment_operation_initialize_failed() -> protocols.AbstractPaymentOperation:
 
 
 @pytest.fixture(scope="module")
-def payment_operation_initialize_requires_action() -> protocols.AbstractPaymentOperation:
+def payment_operation_initialize_requires_action() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
@@ -890,7 +890,7 @@ def payment_operation_initialize_requires_action() -> protocols.AbstractPaymentO
 
 
 @pytest.fixture(scope="module")
-def payment_operation_initialize_not_performed() -> protocols.AbstractPaymentOperation:
+def payment_operation_initialize_not_performed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
@@ -899,7 +899,7 @@ def payment_operation_initialize_not_performed() -> protocols.AbstractPaymentOpe
 
 
 @pytest.fixture(scope="module")
-def payment_operation_process_action_started() -> protocols.AbstractPaymentOperation:
+def payment_operation_process_action_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PROCESS_ACTION,
@@ -908,7 +908,7 @@ def payment_operation_process_action_started() -> protocols.AbstractPaymentOpera
 
 
 @pytest.fixture(scope="module")
-def payment_operation_process_action_completed() -> protocols.AbstractPaymentOperation:
+def payment_operation_process_action_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PROCESS_ACTION,
@@ -917,7 +917,7 @@ def payment_operation_process_action_completed() -> protocols.AbstractPaymentOpe
 
 
 @pytest.fixture(scope="module")
-def payment_operation_pay_started() -> protocols.AbstractPaymentOperation:
+def payment_operation_pay_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PAY,
@@ -926,7 +926,7 @@ def payment_operation_pay_started() -> protocols.AbstractPaymentOperation:
 
 
 @pytest.fixture(scope="module")
-def payment_operation_pay_completed() -> protocols.AbstractPaymentOperation:
+def payment_operation_pay_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PAY,
@@ -935,7 +935,7 @@ def payment_operation_pay_completed() -> protocols.AbstractPaymentOperation:
 
 
 @pytest.fixture(scope="module")
-def payment_operation_pay_failed() -> protocols.AbstractPaymentOperation:
+def payment_operation_pay_failed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PAY,
@@ -944,7 +944,7 @@ def payment_operation_pay_failed() -> protocols.AbstractPaymentOperation:
 
 
 @pytest.fixture(scope="module")
-def payment_operation_after_pay_started() -> protocols.AbstractPaymentOperation:
+def payment_operation_after_pay_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_PAY,
@@ -953,7 +953,7 @@ def payment_operation_after_pay_started() -> protocols.AbstractPaymentOperation:
 
 
 @pytest.fixture(scope="module")
-def payment_operation_after_pay_completed() -> protocols.AbstractPaymentOperation:
+def payment_operation_after_pay_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_PAY,
@@ -962,7 +962,7 @@ def payment_operation_after_pay_completed() -> protocols.AbstractPaymentOperatio
 
 
 @pytest.fixture(scope="module")
-def payment_operation_confirm_started() -> protocols.AbstractPaymentOperation:
+def payment_operation_confirm_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.CONFIRM,
@@ -971,7 +971,7 @@ def payment_operation_confirm_started() -> protocols.AbstractPaymentOperation:
 
 
 @pytest.fixture(scope="module")
-def payment_operation_confirm_completed() -> protocols.AbstractPaymentOperation:
+def payment_operation_confirm_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.CONFIRM,
@@ -980,7 +980,7 @@ def payment_operation_confirm_completed() -> protocols.AbstractPaymentOperation:
 
 
 @pytest.fixture(scope="module")
-def payment_operation_after_confirm_started() -> protocols.AbstractPaymentOperation:
+def payment_operation_after_confirm_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_CONFIRM,

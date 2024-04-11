@@ -14,11 +14,11 @@ fake = Faker()
 def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCompletesPayment(  # type:ignore[misc]
     fake_transaction_repository: Callable[
         ...,
-        protocols.AbstractRepository,
+        protocols.Repository,
     ],
     fake_block_event_repository: Callable[
         ...,
-        protocols.AbstractRepository,
+        protocols.Repository,
     ],
 ) -> None:
 

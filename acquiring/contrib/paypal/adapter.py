@@ -104,7 +104,7 @@ class PayPalAdapter:
     callback_url: str
     client_id: str
     client_secret: str
-    transaction_repository: protocols.AbstractRepository
+    transaction_repository: protocols.Repository
     provider_name: str = "paypal"
     webhook_id: Optional[str] = None
 
@@ -136,10 +136,10 @@ class PayPalAdapter:
     @domain.wrapped_by_transaction
     def create_order(
         self,
-        payment_method: "protocols.AbstractPaymentMethod",
+        payment_method: "protocols.PaymentMethod",
         request_id: UUID,
         order: Order,
-    ) -> "protocols.AbstractAdapterResponse":
+    ) -> "protocols.AdapterResponse":
         url = urljoin(self.base_url, CREATE_ORDER)
 
         headers = {

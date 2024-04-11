@@ -3,7 +3,7 @@ from uuid import UUID
 from acquiring.enums import OperationStatusEnum
 
 
-class AbstractBlockEvent(Protocol):
+class BlockEvent(Protocol):
     status: OperationStatusEnum
     payment_method_id: UUID
     block_name: str

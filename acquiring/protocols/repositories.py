@@ -3,7 +3,7 @@ from uuid import UUID
 
 
 @runtime_checkable
-class AbstractRepository(Protocol):
+class Repository(Protocol):
 
     def add(self, *args, **kwargs): ...  # type:ignore[no-untyped-def]
 

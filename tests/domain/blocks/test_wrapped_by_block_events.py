@@ -8,18 +8,16 @@ from tests.domain import factories
 
 @dataclass
 class FooBlock:
-    block_event_repository: protocols.AbstractRepository
+    block_event_repository: protocols.Repository
 
     @domain.wrapped_by_block_events
-    def run(
-        self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
-    ) -> protocols.AbstractBlockResponse:
+    def run(self, payment_method: protocols.PaymentMethod, *args: Sequence, **kwargs: dict) -> protocols.BlockResponse:
         """This is the expected doc"""
         return domain.BlockResponse(status=enums.OperationStatusEnum.COMPLETED)
 
 
 def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStartedAndCompletedBlockEventsGetsCreated(  # type:ignore[misc]
-    fake_block_event_repository: Callable[..., protocols.AbstractRepository],
+    fake_block_event_repository: Callable[..., protocols.Repository],
 ) -> None:
 
     repository = fake_block_event_repository()

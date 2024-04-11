@@ -28,7 +28,7 @@ def test_allProtocolFilesContainSubclassesOfDecoratorProtocolOrEnum() -> None:
                         assert hasattr(obj, "__call__"), f"function {name} is not a decorator"
 
 
-def test_allRepositoryFilesContainSubclassesOfAbstractRepository() -> None:
+def test_allRepositoryFilesContainSubclassesOfRepository() -> None:
     project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     acquiring_dir = os.path.join(project_dir, "acquiring")
     for root, dirs, files in os.walk(acquiring_dir):
@@ -41,4 +41,4 @@ def test_allRepositoryFilesContainSubclassesOfAbstractRepository() -> None:
                 spec.loader.exec_module(module)  # type:ignore[union-attr]
                 for name, obj in inspect.getmembers(module):
                     if inspect.isclass(obj) and obj.__module__ == module_name:  # A non-imported class
-                        assert issubclass(obj, protocols.AbstractRepository), f"class {name} is not a repository"
+                        assert issubclass(obj, protocols.Repository), f"class {name} is not a repository"

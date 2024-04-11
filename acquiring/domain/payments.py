@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from acquiring import enums, protocols
 
 
-# TODO frozen=True compatible with protocols.AbstractPaymentOperation (expected settable variable, got read-only attribute)
+# TODO frozen=True compatible with protocols.PaymentOperation (expected settable variable, got read-only attribute)
 @dataclass
 class PaymentOperation:
     type: "enums.OperationTypeEnum"
@@ -25,10 +25,10 @@ class PaymentOperation:
 class PaymentMethod:
     id: UUID
     created_at: datetime
-    payment_attempt: "protocols.AbstractPaymentAttempt"
+    payment_attempt: "protocols.PaymentAttempt"
     confirmable: bool
-    token: Optional["protocols.AbstractToken"] = None
-    payment_operations: list["protocols.AbstractPaymentOperation"] = field(default_factory=list, repr=True)
+    token: Optional["protocols.Token"] = None
+    payment_operations: list["protocols.PaymentOperation"] = field(default_factory=list, repr=True)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}"
@@ -42,9 +42,9 @@ class PaymentMethod:
 
 @dataclass
 class DraftPaymentMethod:
-    payment_attempt: "protocols.AbstractPaymentAttempt"
+    payment_attempt: "protocols.PaymentAttempt"
     confirmable: bool
-    token: Optional["protocols.AbstractToken"] = None
+    token: Optional["protocols.Token"] = None
 
 
 @dataclass
@@ -78,7 +78,7 @@ class PaymentAttempt:
     amount: int
     currency: str
     payment_method_ids: list[UUID] = field(default_factory=list)
-    items: Sequence["protocols.AbstractItem"] = field(default_factory=list)
+    items: Sequence["protocols.Item"] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}|{self.amount}{self.currency}"
@@ -91,7 +91,7 @@ class PaymentAttempt:
 class DraftPaymentAttempt:
     amount: int
     currency: str
-    items: Sequence["protocols.AbstractDraftItem"] = field(default_factory=list)
+    items: Sequence["protocols.DraftItem"] = field(default_factory=list)
 
 
 @dataclass

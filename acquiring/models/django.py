@@ -47,7 +47,7 @@ class PaymentAttempt(Identifiable, django.db.models.Model):
     def __str__(self) -> str:
         return f"[id={self.id}, {self.currency}{self.amount}]"
 
-    def to_domain(self) -> "protocols.AbstractPaymentAttempt":
+    def to_domain(self) -> "protocols.PaymentAttempt":
         return domain.PaymentAttempt(
             id=self.id,
             created_at=self.created_at,
@@ -95,7 +95,7 @@ class Item(Identifiable, django.db.models.Model):
     def __str__(self) -> str:
         return f"[reference={self.reference}, quantity={self.quantity}{str(' ' + self.quantity_unit) if self.quantity_unit else ''}]"
 
-    def to_domain(self) -> "protocols.AbstractItem":
+    def to_domain(self) -> "protocols.Item":
         return domain.Item(
             id=self.id,
             created_at=self.created_at,
@@ -132,7 +132,7 @@ class PaymentMethod(Identifiable, django.db.models.Model):
     def __str__(self) -> str:
         return f"[id={self.id}]"
 
-    def to_domain(self) -> "protocols.AbstractPaymentMethod":
+    def to_domain(self) -> "protocols.PaymentMethod":
         return domain.PaymentMethod(
             id=self.id,
             created_at=self.created_at,
@@ -165,7 +165,7 @@ class Token(django.db.models.Model):
     def __str__(self) -> str:
         return f"[{self.token}]"
 
-    def to_domain(self) -> "protocols.AbstractToken":
+    def to_domain(self) -> "protocols.Token":
         return domain.Token(
             created_at=self.created_at,
             expires_at=self.expires_at,
@@ -213,7 +213,7 @@ class PaymentOperation(django.db.models.Model):
     def __str__(self) -> str:
         return f"[type={self.type}, status={self.status}]"
 
-    def to_domain(self) -> "protocols.AbstractPaymentOperation":
+    def to_domain(self) -> "protocols.PaymentOperation":
         return domain.PaymentOperation(
             type=self.type,
             status=self.status,
@@ -233,7 +233,7 @@ class BlockEvent(django.db.models.Model):
     def __str__(self) -> str:
         return f"[{self.block_name}|status={self.status}]"
 
-    def to_domain(self) -> "protocols.AbstractBlockEvent":
+    def to_domain(self) -> "protocols.BlockEvent":
         return domain.BlockEvent(
             status=self.status,
             payment_method_id=self.payment_method.id,
@@ -261,7 +261,7 @@ class Transaction(django.db.models.Model):
     def __str__(self) -> str:
         return f"[provider={self.provider_name}|payment_method={self.payment_method_id}|{self.external_id}]"
 
-    def to_domain(self) -> "protocols.AbstractTransaction":
+    def to_domain(self) -> "protocols.Transaction":
         return domain.Transaction(
             external_id=self.external_id,
             timestamp=self.timestamp,

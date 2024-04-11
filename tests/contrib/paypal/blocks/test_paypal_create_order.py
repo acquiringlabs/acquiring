@@ -17,11 +17,11 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
     fake_os_environ: Generator,
     fake_transaction_repository: Callable[
         ...,
-        protocols.AbstractRepository,
+        protocols.Repository,
     ],
     fake_block_event_repository: Callable[
         ...,
-        protocols.AbstractRepository,
+        protocols.Repository,
     ],
 ) -> None:
     payment_method = domain.PaymentMethod(

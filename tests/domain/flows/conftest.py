@@ -11,10 +11,10 @@ from acquiring.enums import OperationStatusEnum
 
 @pytest.fixture(scope="module")
 def fake_block(  # type:ignore[misc]
-    fake_block_event_repository: Callable[..., protocols.AbstractRepository]
-) -> Type[protocols.AbstractBlock]:
+    fake_block_event_repository: Callable[..., protocols.Repository]
+) -> Type[protocols.Block]:
     class FakeBlock:
-        block_event_repository: protocols.AbstractRepository = fake_block_event_repository()
+        block_event_repository: protocols.Repository = fake_block_event_repository()
 
         def __init__(
             self,
@@ -31,8 +31,8 @@ def fake_block(  # type:ignore[misc]
             self.response_actions = fake_response_actions or []
 
         def run(
-            self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
-        ) -> protocols.AbstractBlockResponse:
+            self, payment_method: protocols.PaymentMethod, *args: Sequence, **kwargs: dict
+        ) -> protocols.BlockResponse:
             return domain.BlockResponse(
                 status=self.response_status,
                 actions=self.response_actions,
@@ -43,11 +43,11 @@ def fake_block(  # type:ignore[misc]
 
 @pytest.fixture(scope="module")
 def fake_process_action_block(  # type:ignore[misc]
-    fake_block_event_repository: Callable[..., protocols.AbstractRepository]
-) -> Type[protocols.AbstractBlock]:
+    fake_block_event_repository: Callable[..., protocols.Repository]
+) -> Type[protocols.Block]:
 
     class FakeProcessActionsBlock:
-        block_event_repository: protocols.AbstractRepository = fake_block_event_repository()
+        block_event_repository: protocols.Repository = fake_block_event_repository()
 
         def __init__(
             self,
@@ -56,8 +56,8 @@ def fake_process_action_block(  # type:ignore[misc]
             self.response_status = fake_response_status
 
         def run(
-            self, payment_method: protocols.AbstractPaymentMethod, *args: Sequence, **kwargs: dict
-        ) -> protocols.AbstractBlockResponse:
+            self, payment_method: protocols.PaymentMethod, *args: Sequence, **kwargs: dict
+        ) -> protocols.BlockResponse:
             return domain.BlockResponse(status=self.response_status)
 
     return FakeProcessActionsBlock

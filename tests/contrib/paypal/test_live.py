@@ -30,7 +30,7 @@ class TestLiveSandbox:
         self,
         fake_transaction_repository: Callable[
             ...,
-            protocols.AbstractRepository,
+            protocols.Repository,
         ],
     ) -> None:
         adapter = paypal.PayPalAdapter(
