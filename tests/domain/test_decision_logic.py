@@ -183,6 +183,211 @@ class TestCanProcessAction:
         )
 
 
+class TestCanAfterPay:
+
+    def test_paymentMethodInitializedViaCompleteAndPaidCanAfterPay(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_completed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has already initialized and has already pay can go through."""
+        assert (
+            domain.flow.dl.can_after_pay(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_completed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                    ],
+                )
+            )
+            is True
+        )
+
+    def test_paymentMethodInitializedViaRequiresActionAndPaidCanAfterPay(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_requires_action: protocols.AbstractPaymentOperation,
+        payment_operation_process_action_started: protocols.AbstractPaymentOperation,
+        payment_operation_process_action_completed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has already initialized via process action and has already pay can go through."""
+        assert (
+            domain.flow.dl.can_after_pay(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_requires_action,
+                        payment_operation_process_action_started,
+                        payment_operation_process_action_completed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                    ],
+                )
+            )
+            is True
+        )
+
+    def test_paymentMethodInitializedViaNotPerformedAndPaidCanAfterPay(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has not performed initialized and has already pay can go through."""
+        assert (
+            domain.flow.dl.can_after_pay(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                    ],
+                )
+            )
+            is True
+        )
+
+    def test_paymentMethodNotInitializedCannotAfterPay(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has not completed initialization cannot go through"""
+        assert (
+            domain.flow.dl.can_after_pay(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodInitializeFailedCannotAfterPay(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_failed: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has not completed initialization cannot go through"""
+        assert (
+            domain.flow.dl.can_after_pay(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_failed,
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodInitializedButNotPaidCannotAfterPay(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has not completed pay cannot go through."""
+        assert (
+            domain.flow.dl.can_after_pay(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodInitializedButNotFailedPaidCannotAfterPay(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_failed: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has not completed pay cannot go through."""
+        assert (
+            domain.flow.dl.can_after_pay(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_failed,
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodAlreadyStartedAfterPayCannotAfterPay(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has already started after pay cannot go through"""
+        assert (
+            domain.flow.dl.can_after_pay(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                    ],
+                )
+            )
+            is False
+        )
+
+
 ### DECISION LOGIC SPECIFIC FIXTURES
 
 
@@ -236,5 +441,50 @@ def payment_operation_process_action_started() -> protocols.AbstractPaymentOpera
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PROCESS_ACTION,
+        status=enums.OperationStatusEnum.STARTED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_process_action_completed() -> protocols.AbstractPaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.PROCESS_ACTION,
+        status=enums.OperationStatusEnum.COMPLETED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_pay_started() -> protocols.AbstractPaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.PAY,
+        status=enums.OperationStatusEnum.STARTED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_pay_completed() -> protocols.AbstractPaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.PAY,
+        status=enums.OperationStatusEnum.COMPLETED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_pay_failed() -> protocols.AbstractPaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.PAY,
+        status=enums.OperationStatusEnum.FAILED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_after_pay_started() -> protocols.AbstractPaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.AFTER_PAY,
         status=enums.OperationStatusEnum.STARTED,
     )
