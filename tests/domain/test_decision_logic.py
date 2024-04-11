@@ -449,7 +449,7 @@ class TestCanConfirm:
                         payment_operation_after_pay_started,
                         factories.PaymentOperationFactory(
                             payment_method_id=uuid.uuid4(),
-                            type=enums.OperationTypeEnum.INITIALIZE,
+                            type=enums.OperationTypeEnum.AFTER_PAY,
                             status=non_completed_after_pay_status,
                         ),
                     ],
@@ -621,6 +621,235 @@ class TestCanConfirm:
         )
 
 
+class TestCanAfterConfirm:
+
+    def test_paymentMethodConfirmableAndConfirmCompletedCanAfterConfirm(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
+        payment_operation_confirm_completed: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has already initialized and has already pay and has already confirmed can go through."""
+        assert (
+            domain.flow.dl.can_after_confirm(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=True,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                        payment_operation_confirm_started,
+                        payment_operation_confirm_completed,
+                    ],
+                )
+            )
+            is True
+        )
+
+    def test_paymentMethodNotConfirmableCannotAfterConfirm(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
+        payment_operation_confirm_completed: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that is not confirmable cannot go through."""
+        assert (
+            domain.flow.dl.can_after_confirm(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                        payment_operation_confirm_started,
+                        payment_operation_confirm_completed,
+                    ],
+                )
+            )
+            is False
+        )
+
+    @pytest.mark.parametrize(
+        "non_completed_confirm_status",
+        [status for status in enums.OperationStatusEnum if status != enums.OperationStatusEnum.COMPLETED],
+    )
+    def test_paymentMethodConfirmableAndConfirmHasNotCompletedCannotAfterConfirm(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
+        non_completed_confirm_status: enums.OperationStatusEnum,
+    ) -> None:
+        """A Payment Method that has already initialized and has already pay and has already confirmed can go through."""
+        assert (
+            domain.flow.dl.can_after_confirm(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=True,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                        payment_operation_confirm_started,
+                        factories.PaymentOperationFactory(
+                            payment_method_id=uuid.uuid4(),
+                            type=enums.OperationTypeEnum.CONFIRM,
+                            status=non_completed_confirm_status,
+                        ),
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodConfirmableAndAfterConfirmStartedCannotAfterConfirm(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
+        payment_operation_confirm_completed: protocols.AbstractPaymentOperation,
+        payment_operation_after_confirm_started: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has already initialized and has already pay and has already confirmed can go through."""
+        assert (
+            domain.flow.dl.can_after_confirm(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=True,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                        payment_operation_confirm_started,
+                        payment_operation_confirm_completed,
+                        payment_operation_after_confirm_started,
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodConfirmableAndConfirmNotCompletedCannotAfterConfirm(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_confirm_started: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has already initialized and has already pay and has not confirmed cannot go through."""
+        assert (
+            domain.flow.dl.can_after_confirm(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=True,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                        payment_operation_confirm_started,
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodConfirmableAndAfterPayNotCompletedCannotAfterConfirm(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+        payment_operation_initialize_not_performed: protocols.AbstractPaymentOperation,
+        payment_operation_pay_started: protocols.AbstractPaymentOperation,
+        payment_operation_pay_completed: protocols.AbstractPaymentOperation,
+        payment_operation_after_pay_started: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has already initialized and has already pay and has not after paid cannot go through."""
+        assert (
+            domain.flow.dl.can_after_confirm(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=True,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_not_performed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodConfirmableAndInitializeNotCompletedCannotAfterConfirm(
+        self,
+        payment_operation_initialize_started: protocols.AbstractPaymentOperation,
+    ) -> None:
+        """A Payment Method that has not initialized cannot go through."""
+        assert (
+            domain.flow.dl.can_after_confirm(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=True,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                    ],
+                )
+            )
+            is False
+        )
+
+
 ### DECISION LOGIC SPECIFIC FIXTURES
 
 
@@ -737,5 +966,23 @@ def payment_operation_confirm_started() -> protocols.AbstractPaymentOperation:
     return factories.PaymentOperationFactory(
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.CONFIRM,
+        status=enums.OperationStatusEnum.STARTED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_confirm_completed() -> protocols.AbstractPaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.CONFIRM,
+        status=enums.OperationStatusEnum.COMPLETED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_after_confirm_started() -> protocols.AbstractPaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.AFTER_CONFIRM,
         status=enums.OperationStatusEnum.STARTED,
     )
