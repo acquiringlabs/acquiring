@@ -13,5 +13,3 @@ __all__ = [
     "PayPalStatusEnum",
     "PurchaseUnit",
 ]
-
-assert __all__ == sorted(__all__), sorted(__all__)

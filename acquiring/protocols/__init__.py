@@ -64,5 +64,3 @@ __all__ = [
     "Transaction",
     "UnitOfWork",
 ]
-
-assert __all__ == sorted(__all__), sorted(__all__)

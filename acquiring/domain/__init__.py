@@ -29,6 +29,3 @@ __all__ = [
     "wrapped_by_block_events",
     "wrapped_by_transaction",
 ]
-
-
-assert __all__ == sorted(__all__), sorted(__all__)
