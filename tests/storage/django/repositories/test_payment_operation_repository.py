@@ -4,11 +4,11 @@ from hypothesis import strategies as st
 
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 from acquiring.utils import is_django_installed
-from tests.django.utils import skip_if_django_not_installed
+from tests.storage.django.utils import skip_if_django_not_installed
 
 if is_django_installed():
     from acquiring import domain, models, storage
-    from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+    from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
 @skip_if_django_not_installed

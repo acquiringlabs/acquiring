@@ -1,7 +1,7 @@
 """TODO Figure out a way to ensure that these two enums match at compile time/initialization time"""
 
 from acquiring.utils import is_django_installed
-from tests.django.utils import skip_if_django_not_installed
+from tests.storage.django.utils import skip_if_django_not_installed
 
 if is_django_installed():
     from acquiring import enums, models

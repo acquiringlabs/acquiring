@@ -4,7 +4,7 @@ import pytest
 from faker import Faker
 
 from acquiring.utils import is_django_installed
-from tests.django.utils import skip_if_django_not_installed
+from tests.storage.django.utils import skip_if_django_not_installed
 
 fake = Faker()
 
@@ -13,7 +13,7 @@ if is_django_installed():
     from django.utils import timezone
 
     from acquiring import domain, models, storage
-    from tests.django.factories import PaymentAttemptFactory, PaymentMethodFactory
+    from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 
 @skip_if_django_not_installed

@@ -7,7 +7,7 @@ from faker import Faker
 
 from acquiring import enums
 from acquiring.utils import is_django_installed
-from tests.django.utils import skip_if_django_not_installed
+from tests.storage.django.utils import skip_if_django_not_installed
 
 fake = Faker()
 
@@ -15,7 +15,7 @@ if is_django_installed():
     from django.utils import timezone  # TODO replace with native aware Python datetime object
 
     from acquiring import domain, models, storage
-    from tests.django.factories import (
+    from tests.storage.django.factories import (
         PaymentAttemptFactory,
         PaymentMethodFactory,
         PaymentOperationFactory,
