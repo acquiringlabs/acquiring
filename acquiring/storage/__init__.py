@@ -1,9 +1,12 @@
-from acquiring.utils import is_django_installed
+from acquiring import utils
 
 
-if is_django_installed():
-    from . import django as django
+if utils.is_django_installed():
+    from . import django
 
     __all__ = ["django"]
 
-    assert __all__ == sorted(__all__), sorted(__all__)
+elif utils.is_sqlalchemy_installed():
+    from . import sqlalchemy
+
+    __all__ = ["sqlalchemy"]

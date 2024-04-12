@@ -1,4 +1,9 @@
 
 # Deal to implement contract driven development
 deal
+
+# Dotenv to manage environment variables
+python-dotenv
+
+# Requests to make external API calls
 requests

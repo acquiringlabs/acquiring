@@ -26,9 +26,6 @@ pytest
 # pytest-cov to measure code coverage
 pytest-cov
 
-# python-dotenv to manage environment variables
-python-dotenv
-
 # Responses to mock requests
 responses
 
