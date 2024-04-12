@@ -6,7 +6,7 @@ services:
       context: .
       args:
         ENVIRONMENT: development
-        DJANGO_VERSION: 5.0.4
+        DJANGO_VERSION: 4.2.0
     command: pytest
     volumes:
       - .:/code
@@ -16,7 +16,7 @@ services:
       context: .
       args:
         ENVIRONMENT: development
-        SQLALCHEMY_VERSION: 2.0.29
+        SQLALCHEMY_VERSION: 1.3.0
     command: pytest
     volumes:
       - .:/code
