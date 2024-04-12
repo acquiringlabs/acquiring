@@ -6,10 +6,21 @@ services:
       context: .
       args:
         ENVIRONMENT: development
-        DJANGO_VERSION: 5.0.4  # TODO verify that it's a supported Django version programmatically
+        DJANGO_VERSION: 5.0.4
     command: pytest
     volumes:
       - .:/code
+
+  sqlalchemy:
+    build:
+      context: .
+      args:
+        ENVIRONMENT: development
+        SQLALCHEMY_VERSION: 2.0.29
+    command: pytest
+    volumes:
+      - .:/code
+
   docs:
     build:
       context: .

@@ -13,8 +13,23 @@ COPY requirements/ /code/requirements/
 # And install Django, the shared dependencies and requirements/$ENVIRONMENT-django.txt
 # Otherwise install just the shared dependencies
 ARG DJANGO_VERSION=""
+ARG SQLALCHEMY_VERSION=""
 ARG ENVIRONMENT
-RUN if [ ! -z "$DJANGO_VERSION" ]; then pip install Django==$DJANGO_VERSION && pip install -r requirements/${ENVIRONMENT}-django.txt; else pip install -r requirements/$ENVIRONMENT.txt; fi
+
+# Install Django, SQLAlchemy, and other dependencies
+RUN INSTALL_CMD=""; \
+    if [ ! -z "$DJANGO_VERSION" ]; then \
+        INSTALL_CMD="${INSTALL_CMD} Django==$DJANGO_VERSION -r requirements/${ENVIRONMENT}-django.txt "; \
+    fi; \
+    if [ ! -z "$SQLALCHEMY_VERSION" ]; then \
+        INSTALL_CMD="${INSTALL_CMD} SQLAlchemy==$SQLALCHEMY_VERSION -r requirements/${ENVIRONMENT}-sqlalchemy.txt "; \
+    fi; \
+    if [ ! -z "$INSTALL_CMD" ]; then \
+        pip install $INSTALL_CMD; \
+    else \
+        pip install -r requirements/$ENVIRONMENT.txt; \
+    fi;
+
 
 # Copy the acquiring package and the test project into the container
 COPY . /code/
