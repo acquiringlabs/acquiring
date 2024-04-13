@@ -52,9 +52,11 @@ class PaymentAttempt(Identifiable, Model):
 class PaymentMethod(Identifiable, Model):
     __tablename__ = "acquiring_paymentmethods"
 
-    confirmable = sqlalchemy.Column(sqlalchemy.Boolean)
+    confirmable = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False, server_default="False")
 
-    payment_attempt_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey("acquiring_paymentattempts.id"))
+    payment_attempt_id = sqlalchemy.Column(
+        sqlalchemy.String, sqlalchemy.ForeignKey("acquiring_paymentattempts.id"), nullable=False
+    )
     payment_attempt = orm.relationship("PaymentAttempt", back_populates="payment_methods", cascade="all, delete")
 
     def to_domain(self) -> "protocols.PaymentMethod":
