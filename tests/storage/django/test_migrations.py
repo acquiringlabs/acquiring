@@ -1,7 +1,7 @@
 import pytest
 
 from acquiring.utils import is_django_installed
-from tests.storage.django.utils import skip_if_django_not_installed
+from tests.storage.utils import skip_if_django_not_installed
 
 if is_django_installed():
     from django_test_migrations.plan import all_migrations, nodes_to_tuples

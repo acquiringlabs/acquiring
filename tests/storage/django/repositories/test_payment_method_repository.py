@@ -7,7 +7,7 @@ from faker import Faker
 
 from acquiring import enums
 from acquiring.utils import is_django_installed
-from tests.storage.django.utils import skip_if_django_not_installed
+from tests.storage.utils import skip_if_django_not_installed
 
 fake = Faker()
 

@@ -14,5 +14,13 @@ if utils.is_sqlalchemy_installed():
 
         class Meta:
             model = models.PaymentAttempt
-            sqlalchemy_session = models.sessionmaker()
+            sqlalchemy_session = models.session
+            sqlalchemy_session_persistence = "commit"
+
+    class PaymentMethodFactory(factory.alchemy.SQLAlchemyModelFactory):
+        confirmable = factory.LazyAttribute(lambda _: fake.boolean())
+
+        class Meta:
+            model = models.PaymentMethod
+            sqlalchemy_session = models.session
             sqlalchemy_session_persistence = "commit"

@@ -1,16 +1,15 @@
-from datetime import datetime, timezone
-
-import pytest
 from faker import Faker
 
 from acquiring import utils
+from tests.storage.utils import skip_if_sqlalchemy_not_installed
 
 fake = Faker()
 
 if utils.is_sqlalchemy_installed():
-    from tests.storage.sqlalchemy.factories import PaymentAttemptFactory
+    from tests.storage.sqlalchemy import factories
 
 
-@pytest.mark.skip(reason="Work in progress")
+@skip_if_sqlalchemy_not_installed
 def test_sqlalchemyFactoriesWorkProperly() -> None:
-    PaymentAttemptFactory(created_at=datetime.now(timezone.utc))
+    payment_attempt = factories.PaymentAttemptFactory()
+    factories.PaymentMethodFactory(payment_attempt=payment_attempt)

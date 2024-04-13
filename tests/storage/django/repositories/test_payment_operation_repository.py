@@ -4,7 +4,7 @@ from hypothesis import strategies as st
 
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 from acquiring.utils import is_django_installed
-from tests.storage.django.utils import skip_if_django_not_installed
+from tests.storage.utils import skip_if_django_not_installed
 
 if is_django_installed():
     from acquiring import domain, models, storage

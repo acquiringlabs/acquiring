@@ -16,11 +16,11 @@ if utils.is_django_installed():
 
 elif utils.is_sqlalchemy_installed():
 
-    from .sqlalchemy import Model, PaymentAttempt, PaymentMethod, sessionmaker
+    from .sqlalchemy import Model, PaymentAttempt, PaymentMethod, session
 
     __all__ += [
         "Model",
         "PaymentAttempt",
         "PaymentMethod",
-        "sessionmaker",
+        "session",
     ]

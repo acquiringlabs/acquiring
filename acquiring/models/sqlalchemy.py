@@ -1,10 +1,11 @@
 import os
 import uuid
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Type
 
 import sqlalchemy
 from dotenv import load_dotenv
-from sqlalchemy import orm, sql
+from sqlalchemy import orm
 from sqlalchemy.ext.declarative import declarative_base
 
 from acquiring import domain
@@ -18,19 +19,28 @@ if TYPE_CHECKING:
 SQLALCHEMY_DATABASE_URL = os.environ.get("SQLALCHEMY_DATABASE_URL")
 
 engine = sqlalchemy.create_engine(SQLALCHEMY_DATABASE_URL)
-sessionmaker = orm.sessionmaker(autocommit=False, autoflush=False, bind=engine)
+session = orm.sessionmaker(autocommit=False, autoflush=False, bind=engine)()
 Model: Type = declarative_base()  # TODO Remove Type hint (by using sqlalchemy stubs?)
+
+
+def u() -> str:
+    """Turn UUID to string for Identifiable to pass an uuid value to id"""
+    return str(uuid.uuid4())
+
+
+def now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class Identifiable:
     """Mixin for models that can be identified"""
 
     # https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.Uuid
-    id = sqlalchemy.Column(sqlalchemy.String, primary_key=True, default=uuid.uuid4)
+    id = sqlalchemy.Column(sqlalchemy.String, primary_key=True, default=u)
 
     # https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.TIMESTAMP
     created_at = sqlalchemy.Column(
-        sqlalchemy.TIMESTAMP(timezone=True), default=sql.func.now, server_onupdate=None, nullable=False
+        sqlalchemy.TIMESTAMP(timezone=True), default=now, server_onupdate=None, nullable=False
     )
 
 
