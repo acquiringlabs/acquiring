@@ -55,7 +55,7 @@ class PaymentAttempt(Identifiable, Model):
             amount=0,  # TODO Fill
             currency="FAKE",  # TODO Fill
             items=[],
-            payment_method_ids=[payment_method.id for payment_method in self.payment_methods.all()],
+            payment_method_ids=[payment_method.id for payment_method in self.payment_methods],
         )
 
 
