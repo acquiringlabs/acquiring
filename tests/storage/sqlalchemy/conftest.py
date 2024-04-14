@@ -1,6 +1,9 @@
 from acquiring import utils
 
 if utils.is_sqlalchemy_installed():
+    import contextlib
+    from typing import Callable, Generator
+
     import alembic
     import pytest
     import sqlalchemy
@@ -35,3 +38,25 @@ if utils.is_sqlalchemy_installed():
             else:
                 # When Ctrl + D, session somehow does not have attr teardown
                 session.close()
+
+    @pytest.fixture
+    def sqlalchemy_assert_num_queries() -> Callable:
+        """TODO implement django_assert_num_queries functionality for sqlalchemy
+
+        It must be some version of this:
+
+        from sqlalchemy.testing import assertions
+        with assertions.AssertsExecutionResults.assert_execution(
+        assertions.assertsql.CountStatements(count=1),
+        db=session,
+        )
+
+        For now, it is an empty context manager that can be place where we want
+        to eventually check for the number of queries.
+        """
+
+        @contextlib.contextmanager
+        def context(num: int) -> Generator:
+            yield
+
+        return context
