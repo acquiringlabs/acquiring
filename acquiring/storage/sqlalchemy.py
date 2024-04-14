@@ -16,7 +16,15 @@ class PaymentMethodRepository:
 
     session: orm.Session
 
-    def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod": ...  # type:ignore[empty-body]
+    @deal.safe()
+    def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
+        db_payment_method = models.PaymentMethod(
+            payment_attempt_id=data.payment_attempt.id,
+            confirmable=data.confirmable,
+        )
+        self.session.add(db_payment_method)
+        self.session.commit()
+        return db_payment_method.to_domain()
 
     @deal.reason(
         domain.PaymentMethod.DoesNotExist,

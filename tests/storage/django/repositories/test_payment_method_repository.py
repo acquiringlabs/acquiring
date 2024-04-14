@@ -164,7 +164,6 @@ def test_givenCorrectTokenDataAndExistingPaymentMethod_whenCallingRepositoryAddT
     assert result == payment_method
 
 
-# TODO Turn pytest.mark.django_db into skip if when pytest-django is not installed
 @skip_if_django_not_installed
 @pytest.mark.django_db
 def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAddToken_thenDoesNotExistGetsRaise(

@@ -3,7 +3,7 @@ from typing import Callable
 import pytest
 from faker import Faker
 
-from acquiring import domain, storage, utils
+from acquiring import domain, models, storage, utils
 from tests.storage.utils import skip_if_sqlalchemy_not_installed
 
 fake = Faker()
@@ -46,3 +46,28 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
         storage.sqlalchemy.PaymentMethodRepository(
             session=session,
         ).get(id=payment_method.id)
+
+
+@skip_if_sqlalchemy_not_installed
+@pytest.mark.django_db
+def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
+    session: "orm.Session",
+    sqlalchemy_assert_num_queries: Callable,
+) -> None:
+
+    payment_attempt = factories.PaymentAttemptFactory()
+    data = domain.DraftPaymentMethod(
+        payment_attempt=payment_attempt.to_domain(),
+        confirmable=True,
+    )
+
+    with sqlalchemy_assert_num_queries(7):
+        result = storage.sqlalchemy.PaymentMethodRepository(session=session).add(data)
+
+    db_payment_methods = session.query(models.PaymentMethod).all()
+    assert len(db_payment_methods) == 1
+    db_payment_method = db_payment_methods[0]
+
+    assert db_payment_method.id == result.id
+    assert db_payment_method.created_at == result.created_at
+    assert db_payment_method.to_domain() == result
