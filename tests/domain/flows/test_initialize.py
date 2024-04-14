@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Callable, Optional, Type
+from typing import Callable, Optional
 
 import pytest
 
@@ -35,8 +35,8 @@ VALID_RESPONSE_STATUS = [
     ],
 )
 def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturnsTheCorrectOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,
@@ -100,8 +100,8 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
     ],
 )
 def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,
@@ -163,8 +163,8 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
 
 
 def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,
@@ -210,8 +210,8 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
 
 # TODO Move this test to wrapper refresh_payment_method
 def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,

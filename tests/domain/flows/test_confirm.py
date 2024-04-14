@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Callable, Optional, Type
+from typing import Callable, Optional
 
 import pytest
 
@@ -32,8 +32,8 @@ def test_statusListsAreComplete() -> None:
     + [(OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
 def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,
@@ -137,8 +137,8 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
 
 
 def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,
@@ -175,8 +175,8 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentFlowRetu
 
 
 def test_givenANonExistingPaymentMethod_whenConfirming_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,

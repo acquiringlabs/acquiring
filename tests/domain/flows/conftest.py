@@ -1,4 +1,4 @@
-from typing import Callable, Sequence, Type
+from typing import Callable, Sequence
 
 import pytest
 
@@ -12,7 +12,7 @@ from acquiring.enums import OperationStatusEnum
 @pytest.fixture(scope="module")
 def fake_block(  # type:ignore[misc]
     fake_block_event_repository: Callable[..., protocols.Repository]
-) -> Type[protocols.Block]:
+) -> type[protocols.Block]:
     class FakeBlock:
         block_event_repository: protocols.Repository = fake_block_event_repository()
 
@@ -44,7 +44,7 @@ def fake_block(  # type:ignore[misc]
 @pytest.fixture(scope="module")
 def fake_process_action_block(  # type:ignore[misc]
     fake_block_event_repository: Callable[..., protocols.Repository]
-) -> Type[protocols.Block]:
+) -> type[protocols.Block]:
 
     class FakeProcessActionsBlock:
         block_event_repository: protocols.Repository = fake_block_event_repository()

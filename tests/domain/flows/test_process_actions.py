@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Callable, Optional, Type
+from typing import Callable, Optional
 
 from acquiring import domain, protocols
 from acquiring.domain import decision_logic as dl
@@ -9,8 +9,8 @@ from tests.domain import factories
 
 
 def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowReturnsTheCorrectOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,
@@ -79,8 +79,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
 
 
 def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,
@@ -155,8 +155,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
 
 
 def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenPaymentFlowReturnsFailedOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,
@@ -223,8 +223,8 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
 
 
 def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,
@@ -273,8 +273,8 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
 
 # TODO Move this into wrapper refresh
 def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: Type[protocols.Block],
-    fake_process_action_block: Type[protocols.Block],
+    fake_block: type[protocols.Block],
+    fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         protocols.Repository,

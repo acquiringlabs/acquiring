@@ -1,4 +1,5 @@
-from typing import Protocol, runtime_checkable
+from types import TracebackType
+from typing import Optional, Protocol, Self, runtime_checkable
 from uuid import UUID
 
 
@@ -12,10 +13,15 @@ class Repository(Protocol):
 
 class UnitOfWork(Protocol):
 
-    def __enter__(self): ...  # type:ignore[no-untyped-def]
+    def __enter__(self) -> Self: ...
 
-    def __exit__(self, exc_type, exc_value, exc_tb): ...  # type:ignore[no-untyped-def]
+    def __exit__(
+        self,
+        exc_type: Optional[type[Exception]],
+        exc_value: Optional[type[Exception]],
+        exc_tb: Optional[TracebackType],
+    ) -> None: ...
 
-    def commit(self): ...  # type:ignore[no-untyped-def]
+    def commit(self) -> None: ...
 
-    def rollback(self): ...  # type:ignore[no-untyped-def]
+    def rollback(self) -> None: ...

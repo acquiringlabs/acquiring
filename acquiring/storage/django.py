@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from types import TracebackType
+from typing import TYPE_CHECKING, Self
 from uuid import UUID
 
 import deal
@@ -9,6 +11,41 @@ from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 if TYPE_CHECKING:
     from acquiring import protocols
+
+
+@dataclass
+class DjangoUnitOfWork:
+    """
+    Despite Cosmic Python's suggestion, a better approach is to delegate
+    to transaction.atomic instead of setting autocommit to False, then revert to True.
+
+    I trust that this code is better than anything I could build myself.
+    """
+
+    def __enter__(self) -> Self:
+        """
+        See django.db.transaction Atomic.__enter__ here
+        https://github.com/django/django/blob/main/django/db/transaction.py#L182
+        """
+        return django.db.transaction.atomic.__enter__()
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        """
+        See django.db.transaction Atomic.__exit__ here
+        https://github.com/django/django/blob/main/django/db/transaction.py#L224
+        """
+        return django.db.transaction.atomic.__exit__(exc_type, exc_value, exc_tb)
+
+    def commit(self) -> None:
+        django.db.transaction.commit()
+
+    def rollback(self) -> None:
+        django.db.transaction.rollback()
 
 
 class PaymentAttemptRepository:
