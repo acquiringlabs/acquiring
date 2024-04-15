@@ -56,3 +56,10 @@ markers = [
     "django_db: mark a test function as requiring the Django database if Django is installed",
 ]
 testpaths = ["tests"]
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = true
+fail-under = 20
+verbose = 1
+exclude = ["*conftest.py", "*factories.py"]

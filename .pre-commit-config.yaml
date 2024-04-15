@@ -66,7 +66,12 @@ repos:
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
     hooks:
-    -  id: codespell
+    -   id: codespell
+-   repo: https://github.com/econchick/interrogate
+    rev: 1.7.0  # or master if you're bold
+    hooks:
+    -   id: interrogate
+        pass_filenames: false  # needed if excluding files with pyproject.toml or setup.cfg
 # -   repo: https://github.com/Yelp/detect-secrets
 #     rev: v1.4.0
 #     hooks:

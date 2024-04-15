@@ -1,3 +1,7 @@
+"""Django settings required to test the application"""
+
+# TODO Remove this file once the testing is possible without it.
+
 INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.auth",

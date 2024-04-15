@@ -10,6 +10,9 @@ flit
 # Hypothesis to find edge cases
 hypothesis[pytz]
 
+# interrogate to check for missing docstrings
+interrogate
+
 # ipdb to access the IPython debugger as if it were the pdb module
 ipdb
 
