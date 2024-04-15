@@ -44,6 +44,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
     ],
     result_status: OperationStatusEnum,
     payment_operation_status: OperationStatusEnum,
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # given a valid payment attempt
     payment_attempt = factories.PaymentAttemptFactory()
@@ -88,6 +89,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
 
     # when Confirming
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(  # type:ignore[call-arg]
@@ -147,6 +149,7 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentFlowRetu
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # Given a payment method that cannot initialize
     payment_attempt = factories.PaymentAttemptFactory()
@@ -158,6 +161,7 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentFlowRetu
 
     # When Initializing
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
@@ -185,6 +189,7 @@ def test_givenANonExistingPaymentMethod_whenConfirming_thenPaymentFlowReturnsAFa
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
 
     payment_attempt = domain.PaymentAttempt(
@@ -204,6 +209,7 @@ def test_givenANonExistingPaymentMethod_whenConfirming_thenPaymentFlowReturnsAFa
 
     # When Confirming
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),

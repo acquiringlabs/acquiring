@@ -32,6 +32,7 @@ def test_statusListsAreComplete() -> None:
     + [(OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
 def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponse(
+    fake_unit_of_work: type[protocols.UnitOfWork],
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository: Callable[
@@ -98,6 +99,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
 
     # when Confirming
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(  # type:ignore[call-arg]
@@ -167,6 +169,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # Given a payment method that cannot initialize
     payment_attempt = factories.PaymentAttemptFactory()
@@ -180,6 +183,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
 
     # When Initializing
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
@@ -207,6 +211,7 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
 
     payment_attempt = domain.PaymentAttempt(
@@ -226,6 +231,7 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
 
     # When Confirming
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),

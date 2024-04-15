@@ -40,6 +40,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
     result_status: OperationStatusEnum,
     payment_operation_status: OperationStatusEnum,
 ) -> None:
@@ -53,6 +54,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
 
     # when Initializing
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(  # type:ignore[call-arg]
@@ -102,6 +104,7 @@ def test_givenAValidPaymentMethod_whenPayCompletesWithActions_thenPaymentFlowRet
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # given a valid payment attempt
     payment_attempt = factories.PaymentAttemptFactory()
@@ -114,6 +117,7 @@ def test_givenAValidPaymentMethod_whenPayCompletesWithActions_thenPaymentFlowRet
 
     # when Initializing
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(  # type:ignore[call-arg]

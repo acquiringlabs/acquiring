@@ -47,6 +47,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
     ],
     block_response_actions: list[dict],
     payment_operations_status: OperationStatusEnum,
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # given a valid payment attempt
     payment_attempt = factories.PaymentAttemptFactory()
@@ -58,6 +59,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
 
     # when Initializing
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(  # type:ignore[call-arg]
@@ -110,6 +112,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
     payment_operations_status: OperationStatusEnum,
 ) -> None:
     # given a valid payment attempt
@@ -122,6 +125,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
 
     # when Initializing
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=(
@@ -173,6 +177,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # Given a payment method that cannot initialize
     payment_attempt = factories.PaymentAttemptFactory()
@@ -192,6 +197,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
 
     # When Initializing
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
@@ -220,6 +226,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
 
     payment_attempt = domain.PaymentAttempt(
@@ -239,6 +246,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
 
     # When Initializing
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([]),  # doesn't exist
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),

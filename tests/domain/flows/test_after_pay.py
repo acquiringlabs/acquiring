@@ -40,8 +40,9 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
-    result_status: OperationStatusEnum,
+    fake_unit_of_work: type[protocols.UnitOfWork],
     payment_operation_status: OperationStatusEnum,
+    result_status: OperationStatusEnum,
 ) -> None:
     # given a valid payment attempt
     payment_attempt = factories.PaymentAttemptFactory()
@@ -76,6 +77,7 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
 
     # when after paying
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
@@ -128,6 +130,7 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowRe
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # Given a payment method that cannot initialize
     payment_attempt = factories.PaymentAttemptFactory()
@@ -148,6 +151,7 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowRe
 
     # When After Paying
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
@@ -175,6 +179,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         [Optional[list[protocols.PaymentOperation]]],
         protocols.Repository,
     ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
 
     payment_attempt = domain.PaymentAttempt(
@@ -194,6 +199,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
 
     # When After Paying
     result = domain.PaymentFlow(
+        uow=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),

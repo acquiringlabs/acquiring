@@ -1,10 +1,10 @@
-from typing import Callable, Sequence
+from types import TracebackType
+from typing import Callable, Optional, Self, Sequence
 
 import pytest
 
 from acquiring import domain, protocols
 from acquiring.enums import OperationStatusEnum
-
 
 # TODO Define these two to accept block_event_repository as an optional argument
 
@@ -61,3 +61,28 @@ def fake_process_action_block(  # type:ignore[misc]
             return domain.BlockResponse(status=self.response_status)
 
     return FakeProcessActionsBlock
+
+
+@pytest.fixture(scope="module")
+def fake_unit_of_work() -> type[protocols.UnitOfWork]:
+
+    class FakeUnitOfWork:
+
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(
+            self,
+            exc_type: Optional[type[Exception]],
+            exc_value: Optional[type[Exception]],
+            exc_tb: Optional[TracebackType],
+        ) -> None:
+            pass
+
+        def commit(self) -> None:
+            pass
+
+        def rollback(self) -> None:
+            pass
+
+    return FakeUnitOfWork
