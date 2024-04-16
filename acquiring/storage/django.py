@@ -27,7 +27,9 @@ class DjangoUnitOfWork:
         See django.db.transaction Atomic.__enter__ here
         https://github.com/django/django/blob/main/django/db/transaction.py#L182
         """
-        return django.db.transaction.atomic.__enter__()
+        self.transaction = django.db.transaction.atomic()
+        self.transaction.__enter__()
+        return self
 
     def __exit__(
         self,
@@ -39,7 +41,7 @@ class DjangoUnitOfWork:
         See django.db.transaction Atomic.__exit__ here
         https://github.com/django/django/blob/main/django/db/transaction.py#L224
         """
-        return django.db.transaction.atomic.__exit__(exc_type, exc_value, exc_tb)
+        return self.transaction.__exit__(exc_type, exc_value, exc_tb)
 
     def commit(self) -> None:
         django.db.transaction.commit()

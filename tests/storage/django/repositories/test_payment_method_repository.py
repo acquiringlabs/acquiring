@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime, timedelta
 from typing import Callable
+
 import django
 import pytest
 from faker import Faker
@@ -14,7 +15,7 @@ fake = Faker()
 if is_django_installed():
     from django.utils import timezone  # TODO replace with native aware Python datetime object
 
-    from acquiring import domain, models, storage
+    from acquiring import domain, models, protocols, storage
     from tests.storage.django.factories import (
         PaymentAttemptFactory,
         PaymentMethodFactory,
@@ -194,7 +195,10 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAddToken_thenDoes
 
 
 @skip_if_django_not_installed
-def test_canCreateTemporaryModels(django_db_blocker: type) -> None:
+def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexDataSavesCorrectly(
+    django_db_blocker: type,
+    django_assert_num_queries: Callable,
+) -> None:
     """This test should not be wrapped inside mark.django_db"""
 
     # https://pytest-django.readthedocs.io/en/latest/database.html#django-db-blocker
@@ -202,6 +206,11 @@ def test_canCreateTemporaryModels(django_db_blocker: type) -> None:
 
         class ExtraTemporaryModel(django.db.models.Model):
             name = django.db.models.CharField(max_length=100)
+            payment_method = django.db.models.ForeignKey(
+                models.PaymentMethod,
+                on_delete=django.db.models.CASCADE,
+                related_name="extra_models",
+            )
 
             class Meta:
                 app_label = "acquiring"
@@ -212,7 +221,34 @@ def test_canCreateTemporaryModels(django_db_blocker: type) -> None:
         with django.db.connection.schema_editor() as schema_editor:
             schema_editor.create_model(ExtraTemporaryModel)
 
-        ExtraTemporaryModel.objects.create(name="test")
+        class TemporaryRepository:
+
+            def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
+                db_payment_method = models.PaymentMethod(
+                    payment_attempt_id=data.payment_attempt.id,
+                    confirmable=data.confirmable,
+                )
+                db_payment_method.save()
+
+                db_extra = ExtraTemporaryModel(name="test", payment_method=db_payment_method)
+                db_extra.save()
+                return db_payment_method.to_domain()
+
+            def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
+                return PaymentMethodFactory(payment_attempt=PaymentAttemptFactory()).to_domain()
+
+        draft_payment_method = domain.DraftPaymentMethod(
+            payment_attempt=PaymentAttemptFactory().to_domain(),
+            confirmable=False,
+        )
+
+        with django_assert_num_queries(8), storage.django.DjangoUnitOfWork():
+            TemporaryRepository().add(draft_payment_method)
+
+        assert models.PaymentMethod.objects.count() == 1
+        db_payment_method = models.PaymentMethod.objects.get()
+
+        assert ExtraTemporaryModel.objects.filter(payment_method=db_payment_method).count() == 1
 
         with django.db.connection.schema_editor() as schema_editor:
             schema_editor.delete_model(ExtraTemporaryModel)
