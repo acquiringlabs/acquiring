@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timedelta
 from typing import Callable
-
+import django
 import pytest
 from faker import Faker
 
@@ -191,3 +191,30 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAddToken_thenDoes
             payment_method=payment_method,
             token=token,
         )
+
+
+@skip_if_django_not_installed
+def test_canCreateTemporaryModels(django_db_blocker: type) -> None:
+    """This test should not be wrapped inside mark.django_db"""
+
+    # https://pytest-django.readthedocs.io/en/latest/database.html#django-db-blocker
+    with django_db_blocker.unblock():  # type:ignore[attr-defined]
+
+        class ExtraTemporaryModel(django.db.models.Model):
+            name = django.db.models.CharField(max_length=100)
+
+            class Meta:
+                app_label = "acquiring"
+
+        cursor = django.db.connection.cursor()
+        cursor.execute("PRAGMA foreign_keys = OFF")
+
+        with django.db.connection.schema_editor() as schema_editor:
+            schema_editor.create_model(ExtraTemporaryModel)
+
+        ExtraTemporaryModel.objects.create(name="test")
+
+        with django.db.connection.schema_editor() as schema_editor:
+            schema_editor.delete_model(ExtraTemporaryModel)
+
+        cursor.execute("PRAGMA foreign_keys = ON")
