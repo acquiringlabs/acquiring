@@ -44,10 +44,14 @@ class DjangoUnitOfWork:
         return self.transaction.__exit__(exc_type, exc_value, exc_tb)
 
     def commit(self) -> None:
-        django.db.transaction.commit()
+        """
+        In Django, savepoints can be implemented by exiting the transaction and initiating a new one.
+        """
+        self.transaction.__exit__(None, None, None)
+        self.__enter__()
 
     def rollback(self) -> None:
-        django.db.transaction.rollback()
+        django.db.transaction.set_rollback(True)
 
 
 class PaymentAttemptRepository:

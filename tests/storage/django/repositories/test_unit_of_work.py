@@ -158,3 +158,100 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
 
     assert models.PaymentMethod.objects.count() == 0
     assert FakeModel.objects.count() == 0
+
+
+@skip_if_django_not_installed
+@with_fake_model
+def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithCommitInbetween_thenComplexDataCommits(
+    transactional_db: type,
+    django_db_blocker: type,
+    FakeModel: type[django.db.models.Model],
+    django_assert_num_queries: Callable,
+) -> None:
+    """This test should not be wrapped inside mark.django_db"""
+
+    class TemporaryPaymentMethodRepository:
+
+        def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
+            db_payment_method = models.PaymentMethod(
+                payment_attempt_id=data.payment_attempt.id,
+                confirmable=data.confirmable,
+            )
+            db_payment_method.save()
+            return db_payment_method.to_domain()
+
+        def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
+            return PaymentMethodFactory(payment_attempt=PaymentAttemptFactory()).to_domain()
+
+    class TestException(Exception):
+        pass
+
+    class TemporaryFakeModelRepository:
+
+        def add(self) -> "protocols.PaymentMethod":
+            raise TestException
+
+        def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
+            return PaymentMethodFactory(payment_attempt=PaymentAttemptFactory()).to_domain()
+
+    payment_attempt = PaymentAttemptFactory().to_domain()
+
+    with django_assert_num_queries(9), pytest.raises(TestException):
+        with storage.django.DjangoUnitOfWork() as uow:
+            TemporaryPaymentMethodRepository().add(
+                domain.DraftPaymentMethod(
+                    payment_attempt=payment_attempt,
+                    confirmable=False,
+                )
+            )
+            uow.commit()
+            TemporaryFakeModelRepository().add()
+
+    assert models.PaymentMethod.objects.count() == 1
+
+
+@skip_if_django_not_installed
+@with_fake_model
+def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRollbackInbetween_thenComplexDataRollsback(
+    transactional_db: type,
+    django_db_blocker: type,
+    FakeModel: type[django.db.models.Model],
+    django_assert_num_queries: Callable,
+) -> None:
+    """This test should not be wrapped inside mark.django_db"""
+
+    class TemporaryPaymentMethodRepository:
+
+        def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
+            db_payment_method = models.PaymentMethod(
+                payment_attempt_id=data.payment_attempt.id,
+                confirmable=data.confirmable,
+            )
+            db_payment_method.save()
+            return db_payment_method.to_domain()
+
+        def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
+            return PaymentMethodFactory(payment_attempt=PaymentAttemptFactory()).to_domain()
+
+    class TemporaryFakeModelRepository:
+
+        def add(self) -> None:
+            pass
+
+        def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
+            return PaymentMethodFactory(payment_attempt=PaymentAttemptFactory()).to_domain()
+
+    payment_attempt = PaymentAttemptFactory().to_domain()
+
+    with django_assert_num_queries(7):
+        with storage.django.DjangoUnitOfWork() as uow:
+            TemporaryPaymentMethodRepository().add(
+                domain.DraftPaymentMethod(
+                    payment_attempt=payment_attempt,
+                    confirmable=False,
+                )
+            )
+            uow.rollback()
+            TemporaryFakeModelRepository().add()
+
+    assert models.PaymentMethod.objects.count() == 0
