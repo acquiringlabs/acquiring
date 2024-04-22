@@ -5,7 +5,8 @@ from uuid import UUID
 import deal
 from sqlalchemy import orm
 
-from acquiring import domain, models
+from acquiring import domain
+from . import models
 
 if TYPE_CHECKING:
     from acquiring import protocols

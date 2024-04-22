@@ -1,12 +1,13 @@
 import factory
 from faker import Faker
 
-from acquiring import models, utils
+from acquiring import utils
 
 fake = Faker()
 
 
 if utils.is_sqlalchemy_installed():
+    from acquiring.storage.sqlalchemy import models
 
     class PaymentAttemptFactory(factory.alchemy.SQLAlchemyModelFactory):
         # currency = factory.LazyAttribute(lambda _: fake.currency_code())

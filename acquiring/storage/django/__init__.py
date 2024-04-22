@@ -1,3 +1,4 @@
+from . import models
 from .repositories import (
     BlockEventRepository,
     PaymentAttemptRepository,
@@ -10,6 +11,7 @@ from .unit_of_work import DjangoUnitOfWork
 __all__ = [
     "BlockEventRepository",
     "DjangoUnitOfWork",
+    "models",
     "PaymentAttemptRepository",
     "PaymentMethodRepository",
     "PaymentOperationRepository",

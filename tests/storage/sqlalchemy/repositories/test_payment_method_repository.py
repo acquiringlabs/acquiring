@@ -3,7 +3,7 @@ from typing import Callable
 import pytest
 from faker import Faker
 
-from acquiring import domain, models, storage, utils
+from acquiring import domain, storage, utils
 from tests.storage.utils import skip_if_sqlalchemy_not_installed
 
 fake = Faker()
@@ -64,7 +64,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     with sqlalchemy_assert_num_queries(7):
         result = storage.sqlalchemy.PaymentMethodRepository(session=session).add(data)
 
-    db_payment_methods = session.query(models.PaymentMethod).all()
+    db_payment_methods = session.query(storage.sqlalchemy.models.PaymentMethod).all()
     assert len(db_payment_methods) == 1
     db_payment_method = db_payment_methods[0]
 
