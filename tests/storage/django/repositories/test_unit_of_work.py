@@ -2,7 +2,6 @@ import functools
 import uuid
 from typing import Callable, Sequence
 
-import django
 import pytest
 from faker import Faker
 
@@ -12,27 +11,27 @@ from tests.storage.utils import skip_if_django_not_installed
 fake = Faker()
 
 if is_django_installed():
+    import django
     from acquiring import domain, models, protocols, storage
     from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory
 
+    @pytest.fixture()
+    def FakeModel() -> type[django.db.models.Model]:
+        """
+        Implements a model specifically to test more complex relations in the database, beyond defaults
+        """
 
-@pytest.fixture()
-def FakeModel() -> type[django.db.models.Model]:
-    """
-    Implements a model specifically to test more complex relations in the database, beyond defaults
-    """
+        class Klass(django.db.models.Model):
+            name = django.db.models.CharField(max_length=100)
+            payment_method = django.db.models.ForeignKey(
+                models.PaymentMethod,
+                on_delete=django.db.models.CASCADE,
+            )
 
-    class Klass(django.db.models.Model):
-        name = django.db.models.CharField(max_length=100)
-        payment_method = django.db.models.ForeignKey(
-            models.PaymentMethod,
-            on_delete=django.db.models.CASCADE,
-        )
+            class Meta:
+                app_label = "acquiring"
 
-        class Meta:
-            app_label = "acquiring"
-
-    return Klass
+        return Klass
 
 
 def with_fake_model(function: Callable) -> Callable:
@@ -47,10 +46,12 @@ def with_fake_model(function: Callable) -> Callable:
     def wrapper(
         transactional_db: type,
         django_db_blocker: type,
-        FakeModel: type[django.db.models.Model],
+        FakeModel: "type[django.db.models.Model]",
         *args: Sequence,
         **kwargs: dict,
     ) -> None:
+        if not is_django_installed():
+            return function(transactional_db, django_db_blocker, FakeModel, *args, **kwargs)
 
         # https://pytest-django.readthedocs.io/en/latest/database.html#django-db-blocker
         with django_db_blocker.unblock():  # type:ignore[attr-defined]
@@ -78,7 +79,7 @@ def with_fake_model(function: Callable) -> Callable:
 def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexDataCommits(
     transactional_db: type,
     django_db_blocker: type,
-    FakeModel: type[django.db.models.Model],
+    FakeModel: "type[django.db.models.Model]",
     django_assert_num_queries: Callable,
 ) -> None:
     """This test should not be wrapped inside mark.django_db"""
@@ -121,7 +122,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
 def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenComplexDataRollsBack(
     transactional_db: type,
     django_db_blocker: type,
-    FakeModel: type[django.db.models.Model],
+    FakeModel: "type[django.db.models.Model]",
     django_assert_num_queries: Callable,
 ) -> None:
     """This test should not be wrapped inside mark.django_db"""
@@ -165,7 +166,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
 def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithCommitInbetween_thenComplexDataCommits(
     transactional_db: type,
     django_db_blocker: type,
-    FakeModel: type[django.db.models.Model],
+    FakeModel: "type[django.db.models.Model]",
     django_assert_num_queries: Callable,
 ) -> None:
     """This test should not be wrapped inside mark.django_db"""
@@ -215,7 +216,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
 def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRollbackInbetween_thenComplexDataRollsback(
     transactional_db: type,
     django_db_blocker: type,
-    FakeModel: type[django.db.models.Model],
+    FakeModel: "type[django.db.models.Model]",
     django_assert_num_queries: Callable,
 ) -> None:
     """This test should not be wrapped inside mark.django_db"""
