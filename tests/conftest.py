@@ -19,12 +19,9 @@ def pytest_configure(config: Callable) -> None:
         from acquiring import settings as project_settings
 
         settings.configure(
-            DATABASES={
-                "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"},
-                "secondary": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"},
-            },
+            DATABASES=project_settings.DATABASES,
             INSTALLED_APPS=project_settings.INSTALLED_APPS,
-            MIGRATION_MODULES={"acquiring": "acquiring.storage.django.migrations"},
+            MIGRATION_MODULES=project_settings.MIGRATION_MODULES,
         )
 
         django.setup()
