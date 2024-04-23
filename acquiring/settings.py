@@ -39,4 +39,4 @@ MIDDLEWARE = (
 )
 
 
-MIGRATION_MODULES = {"acquiring": "acquiring.migrations.django"}
+MIGRATION_MODULES = {"acquiring": "acquiring.storage.django.migrations"}

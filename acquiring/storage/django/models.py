@@ -199,8 +199,8 @@ class StatusChoices(django.db.models.TextChoices):
 class PaymentOperation(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
 
-    type = django.db.models.CharField(max_length=16, choices=PaymentOperationTypeChoices)
-    status = django.db.models.CharField(max_length=15, choices=StatusChoices, db_index=True)
+    type = django.db.models.CharField(max_length=16, choices=PaymentOperationTypeChoices.choices)
+    status = django.db.models.CharField(max_length=15, choices=StatusChoices.choices, db_index=True)
     payment_method = django.db.models.ForeignKey(
         PaymentMethod,
         on_delete=django.db.models.CASCADE,
@@ -223,7 +223,7 @@ class PaymentOperation(django.db.models.Model):
 
 class BlockEvent(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
-    status = django.db.models.CharField(max_length=15, choices=StatusChoices)
+    status = django.db.models.CharField(max_length=15, choices=StatusChoices.choices)
     payment_method = django.db.models.ForeignKey(PaymentMethod, on_delete=django.db.models.CASCADE)
     block_name = django.db.models.CharField(max_length=20)
 
