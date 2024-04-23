@@ -12,7 +12,7 @@ fake = Faker()
 if is_django_installed():
     from django.utils import timezone
 
-    from acquiring import domain, models, storage
+    from acquiring import domain, storage
     from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 
@@ -36,7 +36,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreat
             transaction=transaction,
         )
 
-    assert models.Transaction.objects.count() == 1
-    db_transaction = models.Transaction.objects.first()
+    assert storage.django.models.Transaction.objects.count() == 1
+    db_transaction = storage.django.models.Transaction.objects.first()
 
     assert transaction == db_transaction.to_domain()

@@ -14,7 +14,7 @@ fake = Faker()
 if is_django_installed():
     from django.utils import timezone  # TODO replace with native aware Python datetime object
 
-    from acquiring import domain, models, storage
+    from acquiring import domain, storage
     from tests.storage.django.factories import (
         PaymentAttemptFactory,
         PaymentMethodFactory,
@@ -38,7 +38,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     with django_assert_num_queries(7):
         result = storage.django.PaymentMethodRepository().add(data)
 
-    db_payment_methods = models.PaymentMethod.objects.all()
+    db_payment_methods = storage.django.models.PaymentMethod.objects.all()
     assert len(db_payment_methods) == 1
     db_payment_method = db_payment_methods[0]
 
@@ -70,11 +70,11 @@ def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(
     with django_assert_num_queries(8):
         result = storage.django.PaymentMethodRepository().add(data)
 
-    db_tokens = models.Token.objects.all()
+    db_tokens = storage.django.models.Token.objects.all()
     assert len(db_tokens) == 1
     db_token = db_tokens[0]
 
-    db_payment_methods = models.PaymentMethod.objects.all()
+    db_payment_methods = storage.django.models.PaymentMethod.objects.all()
     assert len(db_payment_methods) == 1
     db_payment_method = db_payment_methods[0]
 
@@ -154,7 +154,7 @@ def test_givenCorrectTokenDataAndExistingPaymentMethod_whenCallingRepositoryAddT
             token=token,
         )
 
-    db_tokens = models.Token.objects.all()
+    db_tokens = storage.django.models.Token.objects.all()
     assert len(db_tokens) == 1
     db_token = db_tokens[0]
 

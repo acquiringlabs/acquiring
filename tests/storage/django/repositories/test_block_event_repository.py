@@ -7,7 +7,7 @@ from acquiring.utils import is_django_installed
 from tests.storage.utils import skip_if_django_not_installed
 
 if is_django_installed():
-    from acquiring import domain, models, storage
+    from acquiring import domain, storage
     from tests.storage.django.factories import BlockEventFactory, PaymentAttemptFactory, PaymentMethodFactory
 
 
@@ -27,7 +27,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
 
     result = storage.django.BlockEventRepository().add(block_event)
 
-    db_block_events = models.BlockEvent.objects.all()
+    db_block_events = storage.django.models.BlockEvent.objects.all()
     assert len(db_block_events) == 1
     db_block_event = db_block_events[0]
 
@@ -51,7 +51,7 @@ def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
 
     result = storage.django.BlockEventRepository().add(block_event)
 
-    db_block_event = models.BlockEvent.objects.get(
+    db_block_event = storage.django.models.BlockEvent.objects.get(
         block_name=block_name, payment_method_id=db_payment_method.id, status=status
     )
     assert db_block_event.to_domain() == result

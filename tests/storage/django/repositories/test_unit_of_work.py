@@ -12,7 +12,7 @@ fake = Faker()
 
 if is_django_installed():
     import django
-    from acquiring import domain, models, protocols, storage
+    from acquiring import domain, protocols, storage
     from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory
 
     @pytest.fixture()
@@ -24,7 +24,7 @@ if is_django_installed():
         class Klass(django.db.models.Model):
             name = django.db.models.CharField(max_length=100)
             payment_method = django.db.models.ForeignKey(
-                models.PaymentMethod,
+                storage.django.models.PaymentMethod,
                 on_delete=django.db.models.CASCADE,
             )
 
@@ -87,7 +87,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
     class TemporaryRepository:
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
-            db_payment_method = models.PaymentMethod(
+            db_payment_method = storage.django.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
             )
@@ -111,8 +111,8 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
                 )
             )
 
-    assert models.PaymentMethod.objects.count() == 1
-    db_payment_method = models.PaymentMethod.objects.get()
+    assert storage.django.models.PaymentMethod.objects.count() == 1
+    db_payment_method = storage.django.models.PaymentMethod.objects.get()
 
     assert FakeModel.objects.filter(payment_method=db_payment_method).count() == 1
 
@@ -133,7 +133,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
     class TemporaryRepository:
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
-            db_payment_method = models.PaymentMethod(
+            db_payment_method = storage.django.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
             )
@@ -157,7 +157,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
                 )
             )
 
-    assert models.PaymentMethod.objects.count() == 0
+    assert storage.django.models.PaymentMethod.objects.count() == 0
     assert FakeModel.objects.count() == 0
 
 
@@ -174,7 +174,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
     class TemporaryPaymentMethodRepository:
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
-            db_payment_method = models.PaymentMethod(
+            db_payment_method = storage.django.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
             )
@@ -208,7 +208,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
             uow.commit()
             TemporaryFakeModelRepository().add()
 
-    assert models.PaymentMethod.objects.count() == 1
+    assert storage.django.models.PaymentMethod.objects.count() == 1
 
 
 @skip_if_django_not_installed
@@ -224,7 +224,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
     class TemporaryPaymentMethodRepository:
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
-            db_payment_method = models.PaymentMethod(
+            db_payment_method = storage.django.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
             )
@@ -255,4 +255,4 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
             uow.rollback()
             TemporaryFakeModelRepository().add()
 
-    assert models.PaymentMethod.objects.count() == 0
+    assert storage.django.models.PaymentMethod.objects.count() == 0

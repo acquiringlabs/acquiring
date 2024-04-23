@@ -14,7 +14,7 @@ fake = Faker()
 if is_django_installed():
     from django.utils import timezone
 
-    from acquiring import domain, models, storage
+    from acquiring import domain, storage
     from tests.storage.django.factories import (
         ItemFactory,
         PaymentAttemptFactory,
@@ -58,7 +58,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
 
     # Then PaymentAttempt gets created
 
-    db_payments = models.PaymentAttempt.objects.all()
+    db_payments = storage.django.models.PaymentAttempt.objects.all()
     assert len(db_payments) == 1
     db_payment = db_payments[0]
 
@@ -66,7 +66,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentAttemptGetsCreated
     assert db_payment.created_at == result.created_at
     assert db_payment.to_domain() == result
 
-    db_items = models.Item.objects.all()
+    db_items = storage.django.models.Item.objects.all()
     assert len(db_items) == len(items)
 
 
@@ -105,10 +105,10 @@ def test_givenInvalidAmount_whenCallingRepositoryAdd_thenItemRaisesError(
 
     # Then PaymentAttempt gets created
 
-    db_payments = models.PaymentAttempt.objects.all()
+    db_payments = storage.django.models.PaymentAttempt.objects.all()
     assert len(db_payments) == 0
 
-    db_items = models.Item.objects.all()
+    db_items = storage.django.models.Item.objects.all()
     assert len(db_items) == 0
 
 
@@ -127,7 +127,7 @@ def test_givenInCorrectCurrencyData_whenCallingRepositoryAdd_thenPaymentAttemptR
 
     # Then PaymentAttempt raises an error
 
-    db_payments = models.PaymentAttempt.objects.all()
+    db_payments = storage.django.models.PaymentAttempt.objects.all()
     assert len(db_payments) == 1
     db_payment = db_payments[0]
 

@@ -7,7 +7,7 @@ from acquiring.utils import is_django_installed
 from tests.storage.utils import skip_if_django_not_installed
 
 if is_django_installed():
-    from acquiring import domain, models, storage
+    from acquiring import domain, storage
     from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
 
 
@@ -35,7 +35,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOpera
     )
 
     # Then PaymentOperation gets created
-    payment_operation = models.PaymentOperation.objects.get(
+    payment_operation = storage.django.models.PaymentOperation.objects.get(
         payment_method_id=db_payment_method.id,
         status=payment_operation_status,
         type=payment_operation_type,
