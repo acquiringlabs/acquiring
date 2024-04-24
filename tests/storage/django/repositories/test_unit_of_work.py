@@ -62,14 +62,13 @@ def with_fake_model(function: Callable) -> Callable:
             with django.db.connection.schema_editor() as schema_editor:
                 schema_editor.create_model(FakeModel)
 
-            result = function(transactional_db, django_db_blocker, FakeModel, *args, **kwargs)
+            try:
+                return function(transactional_db, django_db_blocker, FakeModel, *args, **kwargs)
+            finally:
+                with django.db.connection.schema_editor() as schema_editor:
+                    schema_editor.delete_model(FakeModel)
 
-            with django.db.connection.schema_editor() as schema_editor:
-                schema_editor.delete_model(FakeModel)
-
-            cursor.execute("PRAGMA foreign_keys = ON")
-
-            return result
+                cursor.execute("PRAGMA foreign_keys = ON")
 
     return wrapper
 
