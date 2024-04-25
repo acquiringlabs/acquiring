@@ -12,7 +12,7 @@ def test_givenCorrectInformation_paymentFlowGetsDefined(
     def fake_payment_flow() -> protocols.PaymentFlow:
 
         return domain.PaymentFlow(
-            uow=fake_unit_of_work(),
+            unit_of_work=fake_unit_of_work(),
             payment_method_repository=fake_payment_method_repository(),
             payment_operation_repository=fake_payment_operation_repository(),
             initialize_block=fake_block(),

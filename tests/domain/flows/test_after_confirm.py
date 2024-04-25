@@ -99,7 +99,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
 
     # when Confirming
     result = domain.PaymentFlow(
-        uow=fake_unit_of_work(),
+        unit_of_work=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(  # type:ignore[call-arg]
@@ -183,7 +183,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
 
     # When Initializing
     result = domain.PaymentFlow(
-        uow=fake_unit_of_work(),
+        unit_of_work=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
@@ -231,7 +231,7 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
 
     # When Confirming
     result = domain.PaymentFlow(
-        uow=fake_unit_of_work(),
+        unit_of_work=fake_unit_of_work(),
         payment_method_repository=fake_payment_method_repository([payment_method]),
         payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),

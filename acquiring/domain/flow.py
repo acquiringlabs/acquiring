@@ -94,7 +94,7 @@ class OperationResponse:
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
 @dataclass
 class PaymentFlow:
-    uow: "protocols.UnitOfWork"
+    unit_of_work: "protocols.UnitOfWork"
     payment_method_repository: "protocols.Repository"
     payment_operation_repository: "protocols.Repository"
 
@@ -120,12 +120,11 @@ class PaymentFlow:
             )
 
         # Create Started PaymentOperation
-        with self.uow:
-            self.payment_operation_repository.add(
-                payment_method=payment_method,
-                type=OperationTypeEnum.INITIALIZE,
-                status=OperationStatusEnum.STARTED,
-            )
+        self.payment_operation_repository.add(
+            payment_method=payment_method,
+            type=OperationTypeEnum.INITIALIZE,
+            status=OperationStatusEnum.STARTED,
+        )
 
         # Run Operation Block if it exists
         if self.initialize_block is None:
