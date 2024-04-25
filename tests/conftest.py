@@ -38,6 +38,7 @@ def fake_os_environ() -> Generator:
             "PAYPAL_CLIENT_ID": "long-client-id",
             "PAYPAL_CLIENT_SECRET": "long-client-secret",
             "PAYPAL_BASE_URL": "https://api-m.sandbox.paypal.com/",
+            "SQLALCHEMY_DATABASE_URL": "sqlite:///./db.sqlite3",
         },
     ):
         yield

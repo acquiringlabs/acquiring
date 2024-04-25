@@ -170,7 +170,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
 ) -> None:
     """This test should not be wrapped inside mark.django_db"""
 
-    class TemporaryPaymentMethodRepository:
+    class TemporaryRepository:
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.django.models.PaymentMethod(
@@ -198,7 +198,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
 
     with django_assert_num_queries(9), pytest.raises(TestException):
         with storage.django.DjangoUnitOfWork() as uow:
-            TemporaryPaymentMethodRepository().add(
+            TemporaryRepository().add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,
                     confirmable=False,
@@ -220,7 +220,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
 ) -> None:
     """This test should not be wrapped inside mark.django_db"""
 
-    class TemporaryPaymentMethodRepository:
+    class TemporaryRepository:
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.django.models.PaymentMethod(
@@ -245,7 +245,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
 
     with django_assert_num_queries(7):
         with storage.django.DjangoUnitOfWork() as uow:
-            TemporaryPaymentMethodRepository().add(
+            TemporaryRepository().add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,
                     confirmable=False,
