@@ -1,10 +1,8 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional, Sequence
+from typing import Optional, Sequence
 from uuid import UUID
-
-if TYPE_CHECKING:
-    from acquiring import enums, protocols
+from acquiring import enums, protocols
 
 
 # TODO frozen=True compatible with protocols.PaymentOperation (expected settable variable, got read-only attribute)

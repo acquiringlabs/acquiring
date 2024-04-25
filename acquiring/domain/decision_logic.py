@@ -1,10 +1,5 @@
-from typing import TYPE_CHECKING
-
+from acquiring import protocols
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
-
-if TYPE_CHECKING:
-    from acquiring import protocols
-
 
 # TODO Test these functions with hypothesis
 

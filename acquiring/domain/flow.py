@@ -1,13 +1,10 @@
 import functools
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable, Optional, Sequence
+from typing import Callable, Optional, Sequence
 
 import acquiring.domain.decision_logic as dl
-from acquiring import domain
+from acquiring import domain, protocols
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
-
-if TYPE_CHECKING:
-    from acquiring import protocols
 
 
 def payment_operation_type(  # type:ignore[misc]

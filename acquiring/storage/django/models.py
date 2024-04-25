@@ -1,13 +1,9 @@
-from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import django.db.models
 from django.core import validators as django_validators
 
-from acquiring import domain
-
-if TYPE_CHECKING:
-    from acquiring import protocols
+from acquiring import domain, protocols
 
 
 CURRENCY_CODE_MAX_LENGTH = 3

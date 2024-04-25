@@ -1,12 +1,9 @@
 import functools
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Callable, Optional, Sequence
+from typing import Callable, Optional, Sequence
 
-from acquiring import domain
+from acquiring import domain, protocols
 from acquiring.enums import OperationStatusEnum
-
-if TYPE_CHECKING:
-    from acquiring import protocols
 
 
 @dataclass

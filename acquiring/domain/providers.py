@@ -1,12 +1,9 @@
 import functools
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING, Callable, Sequence
+from typing import Callable, Sequence
 from uuid import UUID
-from acquiring import domain
-
-if TYPE_CHECKING:
-    from acquiring import protocols
+from acquiring import domain, protocols
 
 
 @dataclass

@@ -1,15 +1,11 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 from uuid import UUID
 
 import deal
 from sqlalchemy import orm
 
-from acquiring import domain
+from acquiring import domain, protocols
 from . import models
-
-if TYPE_CHECKING:
-    from acquiring import protocols
 
 
 @dataclass

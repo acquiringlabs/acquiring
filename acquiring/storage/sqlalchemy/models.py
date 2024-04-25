@@ -1,19 +1,16 @@
 import os
 import uuid
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Type
+from typing import Type
 
 import sqlalchemy
 from dotenv import load_dotenv
 from sqlalchemy import orm
 from sqlalchemy.ext.declarative import declarative_base
 
-from acquiring import domain
+from acquiring import domain, protocols
 
 load_dotenv()  # take environment variables from .env.
-
-if TYPE_CHECKING:
-    from acquiring import protocols
 
 
 SQLALCHEMY_DATABASE_URL = os.environ.get("SQLALCHEMY_DATABASE_URL")

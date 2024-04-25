@@ -1,9 +1,6 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 from uuid import UUID
-
-if TYPE_CHECKING:
-    from acquiring.enums import OperationStatusEnum
+from acquiring.enums import OperationStatusEnum
 
 
 @dataclass
