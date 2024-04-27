@@ -1,6 +1,5 @@
-import functools
 import uuid
-from typing import Callable, Sequence
+from typing import Callable, Generator
 
 import pytest
 from faker import Faker
@@ -15,7 +14,7 @@ if is_django_installed():
     from acquiring import domain, protocols, storage
     from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory
 
-    @pytest.fixture()
+    @pytest.fixture
     def FakeModel() -> type[django.db.models.Model]:
         """
         Implements a model specifically to test more complex relations in the database, beyond defaults
@@ -33,25 +32,19 @@ if is_django_installed():
 
         return Klass
 
+    @pytest.fixture
+    def db_with_fake_model(
+        transactional_db: type, django_db_blocker: type, FakeModel: "type[django.db.models.Model]"
+    ) -> Generator:
+        """
+        Introduces a Fake Model into the database schema and removes it after the test is complete.
 
-def with_fake_model(function: Callable) -> Callable:
-    """
-    Introduces a Fake Model into the database schema and removes it after the test is complete.
+        This wrapper assumes that the database is SQLite. If needed, it can be split into two decorators
+        (one for the schema_editor, another for he PRAGMA execution) to accommodate other database engines.
+        """
 
-    This wrapper assumes that the database is SQLite. If needed, it can be split into two decorators
-    (one for the schema_editor, another for he PRAGMA execution) to accommodate other database engines.
-    """
-
-    @functools.wraps(function)
-    def wrapper(
-        transactional_db: type,
-        django_db_blocker: type,
-        FakeModel: "type[django.db.models.Model]",
-        *args: Sequence,
-        **kwargs: dict,
-    ) -> None:
         if not is_django_installed():
-            return function(transactional_db, django_db_blocker, FakeModel, *args, **kwargs)
+            yield
 
         # https://pytest-django.readthedocs.io/en/latest/database.html#django-db-blocker
         with django_db_blocker.unblock():  # type:ignore[attr-defined]
@@ -63,21 +56,17 @@ def with_fake_model(function: Callable) -> Callable:
                 schema_editor.create_model(FakeModel)
 
             try:
-                return function(transactional_db, django_db_blocker, FakeModel, *args, **kwargs)
+                yield
             finally:
                 with django.db.connection.schema_editor() as schema_editor:
                     schema_editor.delete_model(FakeModel)
 
                 cursor.execute("PRAGMA foreign_keys = ON")
 
-    return wrapper
-
 
 @skip_if_django_not_installed
-@with_fake_model
 def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexDataCommits(
-    transactional_db: type,
-    django_db_blocker: type,
+    db_with_fake_model: Generator,
     FakeModel: "type[django.db.models.Model]",
     django_assert_num_queries: Callable,
 ) -> None:
@@ -117,10 +106,8 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
 
 
 @skip_if_django_not_installed
-@with_fake_model
 def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenComplexDataRollsBack(
-    transactional_db: type,
-    django_db_blocker: type,
+    db_with_fake_model: Generator,
     FakeModel: "type[django.db.models.Model]",
     django_assert_num_queries: Callable,
 ) -> None:
@@ -161,11 +148,8 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
 
 
 @skip_if_django_not_installed
-@with_fake_model
 def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithCommitInbetween_thenComplexDataCommits(
-    transactional_db: type,
-    django_db_blocker: type,
-    FakeModel: "type[django.db.models.Model]",
+    db_with_fake_model: Generator,
     django_assert_num_queries: Callable,
 ) -> None:
     """This test should not be wrapped inside mark.django_db"""
@@ -211,11 +195,8 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
 
 
 @skip_if_django_not_installed
-@with_fake_model
 def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRollbackInbetween_thenComplexDataRollsback(
-    transactional_db: type,
-    django_db_blocker: type,
-    FakeModel: "type[django.db.models.Model]",
+    db_with_fake_model: Generator,
     django_assert_num_queries: Callable,
 ) -> None:
     """This test should not be wrapped inside mark.django_db"""

@@ -1,7 +1,6 @@
-import functools
 import uuid
 from dataclasses import dataclass
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Generator
 
 import pytest
 from faker import Faker
@@ -38,25 +37,17 @@ if is_sqlalchemy_installed():
 
         return Klass
 
+    @pytest.fixture
+    def db_with_fake_model(FakeModel: Any, session: "orm.Session") -> Generator:  # type:ignore[misc]
+        """
+        Introduces a Fake Model into the database schema and removes it after the test is complete.
 
-def with_fake_model(function: Callable) -> Callable:
-    """
-    Introduces a Fake Model into the database schema and removes it after the test is complete.
+        This wrapper assumes that the database is SQLite. If needed, it can be split into two decorators
+        (one for the schema_editor, another for he PRAGMA execution) to accommodate other database engines.
+        """
 
-    This wrapper assumes that the database is SQLite. If needed, it can be split into two decorators
-    (one for the schema_editor, another for he PRAGMA execution) to accommodate other database engines.
-    """
-
-    @functools.wraps(function)
-    def wrapper(  # type:ignore[misc]
-        session: "orm.Session",
-        sqlalchemy_assert_num_queries: Callable,
-        FakeModel: Any,
-        *args: Sequence,
-        **kwargs: dict,
-    ) -> None:
         if not is_sqlalchemy_installed():
-            return function(session, sqlalchemy_assert_num_queries, FakeModel, *args, **kwargs)
+            yield
 
         connection = session.connection()
 
@@ -64,7 +55,7 @@ def with_fake_model(function: Callable) -> Callable:
         FakeModel.__table__.create(connection)
 
         try:
-            return function(session, sqlalchemy_assert_num_queries, FakeModel, *args, **kwargs)
+            yield
         finally:
             FakeModel.__table__.drop(connection)
 
@@ -75,12 +66,10 @@ def with_fake_model(function: Callable) -> Callable:
             metadata.reflect(bind=connection)
             connection.execute("PRAGMA foreign_keys = ON")
 
-    return wrapper
-
 
 @skip_if_sqlalchemy_not_installed
-@with_fake_model
 def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexDataCommits(  # type:ignore[misc]
+    db_with_fake_model: Generator,
     session: "orm.Session",
     sqlalchemy_assert_num_queries: Callable,
     FakeModel: Any,
@@ -127,8 +116,8 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
 
 
 @skip_if_sqlalchemy_not_installed
-@with_fake_model
 def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenComplexDataRollsBack(  # type:ignore[misc]
+    db_with_fake_model: Generator,
     session: "orm.Session",
     sqlalchemy_assert_num_queries: Callable,
     FakeModel: Any,
@@ -172,8 +161,8 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
 
 
 @skip_if_sqlalchemy_not_installed
-@with_fake_model
 def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithCommitInbetween_thenComplexDataCommits(  # type:ignore[misc]
+    db_with_fake_model: Generator,
     session: "orm.Session",
     sqlalchemy_assert_num_queries: Callable,
     FakeModel: Any,
@@ -227,8 +216,8 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
 
 
 @skip_if_sqlalchemy_not_installed
-@with_fake_model
 def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRollbackInbetween_thenComplexDataRollsback(  # type:ignore[misc]
+    db_with_fake_model: Generator,
     session: "orm.Session",
     sqlalchemy_assert_num_queries: Callable,
     FakeModel: Any,
