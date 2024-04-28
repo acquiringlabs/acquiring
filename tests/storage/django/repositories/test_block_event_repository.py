@@ -59,7 +59,7 @@ def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
 
 @skip_if_django_not_installed
 @pytest.mark.django_db
-def test_givenExistingBlockEventRow_whenCallingRepositoryAdd_thenthenDuplicateErrorGetsRaised() -> None:
+def test_givenExistingBlockEventRow_whenCallingRepositoryAdd_thenthenDuplicatedErrorGetsRaised() -> None:
 
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
     db_block_event = BlockEventFactory(
@@ -73,5 +73,5 @@ def test_givenExistingBlockEventRow_whenCallingRepositoryAdd_thenthenDuplicateEr
         block_name=db_block_event.block_name,
     )
 
-    with pytest.raises(domain.BlockEvent.DuplicateError):
+    with pytest.raises(domain.BlockEvent.Duplicated):
         storage.django.BlockEventRepository().add(block_event)

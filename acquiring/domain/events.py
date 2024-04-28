@@ -26,7 +26,7 @@ class BlockEvent:
 
         pass
 
-    class DuplicateError(Exception):
+    class Duplicated(Exception):
         """This exception gets raised as a result of an Integrity error that has to do with a UNIQUE constraint"""
 
         pass

@@ -46,7 +46,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOpera
 
 @skip_if_django_not_installed
 @pytest.mark.django_db
-def test_givenExistingPaymentOperationRow_whenCallingRepositoryAdd_thenthenDuplicateErrorGetsRaised() -> None:
+def test_givenExistingPaymentOperationRow_whenCallingRepositoryAdd_thenthenDuplicatedErrorGetsRaised() -> None:
 
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
@@ -59,7 +59,7 @@ def test_givenExistingPaymentOperationRow_whenCallingRepositoryAdd_thenthenDupli
         status=OperationStatusEnum.STARTED,
     )
 
-    with pytest.raises(domain.PaymentOperation.DuplicateError):
+    with pytest.raises(domain.PaymentOperation.Duplicated):
         storage.django.PaymentOperationRepository().add(
             payment_method=payment_method,
             type=OperationTypeEnum.INITIALIZE,

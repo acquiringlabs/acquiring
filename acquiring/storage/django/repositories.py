@@ -127,7 +127,7 @@ class PaymentMethodRepository:
 
 class PaymentOperationRepository:
 
-    @deal.raises(domain.PaymentOperation.DuplicateError)  # TODO Turn this into deal.reason
+    @deal.raises(domain.PaymentOperation.Duplicated)  # TODO Turn this into deal.reason
     def add(
         self,
         payment_method: "protocols.PaymentMethod",
@@ -145,7 +145,7 @@ class PaymentOperationRepository:
             payment_method.payment_operations.append(payment_operation)
             return payment_operation
         except django.db.utils.IntegrityError:
-            raise domain.PaymentOperation.DuplicateError
+            raise domain.PaymentOperation.Duplicated
 
     def get(self, id: UUID) -> "protocols.PaymentOperation": ...  # type: ignore[empty-body]
 
@@ -154,7 +154,7 @@ class PaymentOperationRepository:
 # TODO Test when payment method id does not correspond to any existing payment method
 class BlockEventRepository:
 
-    @deal.raises(domain.BlockEvent.DuplicateError)  # TODO Turn this into deal.reason
+    @deal.raises(domain.BlockEvent.Duplicated)  # TODO Turn this into deal.reason
     def add(self, block_event: "protocols.BlockEvent") -> "protocols.BlockEvent":
         try:
             db_block_event = models.BlockEvent(
@@ -165,7 +165,7 @@ class BlockEventRepository:
             db_block_event.save()
             return db_block_event.to_domain()
         except django.db.utils.IntegrityError:
-            raise domain.BlockEvent.DuplicateError
+            raise domain.BlockEvent.Duplicated
 
     def get(self, id: UUID) -> "protocols.BlockEvent": ...  # type: ignore[empty-body]
 

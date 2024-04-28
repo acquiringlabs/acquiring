@@ -16,7 +16,7 @@ class PaymentOperation:
         """String representation of the class"""
         return f"{self.__class__.__name__}:{self.type}|{self.status}"
 
-    class DuplicateError(Exception):
+    class Duplicated(Exception):
         """This exception gets raised as a result of an Integrity error that has to do with a UNIQUE constraint"""
 
         pass
