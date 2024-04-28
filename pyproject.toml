@@ -60,6 +60,6 @@ testpaths = ["tests"]
 [tool.interrogate]
 ignore-init-method = true
 ignore-init-module = true
-fail-under = 20
+fail-under = 24
 verbose = 1
-exclude = ["*conftest.py", "*factories.py"]
+exclude = ["*conftest.py", "*factories.py", "*migrations*"]

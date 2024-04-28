@@ -15,6 +15,7 @@ class Transaction:
     payment_method_id: UUID
 
     def __repr__(self) -> str:
+        """String representation of the class"""
         return f"{self.__class__.__name__}:{self.provider_name}|{self.external_id}"
 
 

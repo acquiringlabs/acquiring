@@ -113,6 +113,7 @@ class PayPalAdapter:
     expires_in: int = field(init=False)
 
     def __repr__(self) -> str:
+        """String representation of the class"""
         return f"PayPalAdapter:base_url={self.base_url}|access_token={self.access_token}|expires in {self.expires_in} seconds"
 
     def __post_init__(self) -> None:

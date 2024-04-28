@@ -13,9 +13,12 @@ class PaymentOperation:
     payment_method_id: UUID
 
     def __repr__(self) -> str:
+        """String representation of the class"""
         return f"{self.__class__.__name__}:{self.type}|{self.status}"
 
     class DuplicateError(Exception):
+        """This exception gets raised as a result of an Integrity error that has to do with a UNIQUE constraint"""
+
         pass
 
 
@@ -29,12 +32,19 @@ class PaymentMethod:
     payment_operations: list["protocols.PaymentOperation"] = field(default_factory=list)
 
     def __repr__(self) -> str:
+        """String representation of the class"""
         return f"{self.__class__.__name__}:{self.id}"
 
     def has_payment_operation(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> bool:
         return any(operation.type == type and operation.status == status for operation in self.payment_operations)
 
     class DoesNotExist(Exception):
+        """
+        This exception gets raised when the database representation could not be found.
+
+        Most often, you'll see this raised when a database NotFound exception is raised on a Repository class
+        """
+
         pass
 
 
@@ -79,9 +89,16 @@ class PaymentAttempt:
     items: Sequence["protocols.Item"] = field(default_factory=list)
 
     def __repr__(self) -> str:
+        """String representation of the class"""
         return f"{self.__class__.__name__}:{self.id}|{self.amount}{self.currency}"
 
     class DoesNotExist(Exception):
+        """
+        This exception gets raised when the database representation could not be found.
+
+        Most often, you'll see this raised when a database NotFound exception is raised on a Repository class
+        """
+
         pass
 
 
@@ -101,6 +118,7 @@ class DraftToken:
     fingerprint: Optional[str] = None
 
     def __repr__(self) -> str:
+        """String representation of the class"""
         return f"{self.__class__.__name__}:{self.token}"
 
 
@@ -114,7 +132,14 @@ class Token:
     fingerprint: Optional[str] = None
 
     class DoesNotExist(Exception):
+        """
+        This exception gets raised when the database representation could not be found.
+
+        Most often, you'll see this raised when a database NotFound exception is raised on a Repository class
+        """
+
         pass
 
     def __repr__(self) -> str:
+        """String representation of the class"""
         return f"{self.__class__.__name__}:{self.token}"

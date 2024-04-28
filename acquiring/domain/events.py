@@ -5,15 +5,28 @@ from acquiring.enums import OperationStatusEnum
 
 @dataclass
 class BlockEvent:
+    """
+    Represents a wide event related to executing the code inside a Block class.
+    """
+
     status: "OperationStatusEnum"
     payment_method_id: UUID
     block_name: str
 
     def __repr__(self) -> str:
+        """String representation of the class"""
         return f"{self.__class__.__name__}:{self.block_name}|{self.status}"
 
     class DoesNotExist(Exception):
+        """
+        This exception gets raised when the database representation could not be found.
+
+        Most often, you'll see this raised when a database NotFound exception is raised on a Repository class
+        """
+
         pass
 
     class DuplicateError(Exception):
+        """This exception gets raised as a result of an Integrity error that has to do with a UNIQUE constraint"""
+
         pass

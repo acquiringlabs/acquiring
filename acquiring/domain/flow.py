@@ -81,6 +81,8 @@ def refresh_payment_method(  # type:ignore[misc]
 
 @dataclass
 class OperationResponse:
+    """Represents the outcome of a PaymentFlow operation type method execution"""
+
     status: OperationStatusEnum
     payment_method: Optional["protocols.PaymentMethod"]
     type: OperationTypeEnum
@@ -91,6 +93,12 @@ class OperationResponse:
 # TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
 @dataclass
 class PaymentFlow:
+    """
+    Context class that defines what's common across all Payment Methods and their execution.
+
+    What's specific to each payment method is implemented inside each one of the block(s).
+    """
+
     unit_of_work: "protocols.UnitOfWork"
     payment_method_repository: "protocols.Repository"
     payment_operation_repository: "protocols.Repository"
