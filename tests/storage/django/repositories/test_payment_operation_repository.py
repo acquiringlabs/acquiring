@@ -1,6 +1,6 @@
+from itertools import product
+
 import pytest
-from hypothesis import given, settings
-from hypothesis import strategies as st
 
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 from acquiring.utils import is_django_installed
@@ -13,11 +13,9 @@ if is_django_installed():
 
 @skip_if_django_not_installed
 @pytest.mark.django_db
-@given(
-    payment_operation_type=st.sampled_from(OperationTypeEnum),
-    payment_operation_status=st.sampled_from(OperationStatusEnum),
+@pytest.mark.parametrize(
+    "payment_operation_type, payment_operation_status", product(OperationTypeEnum, OperationStatusEnum)
 )
-@settings(max_examples=100)
 def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
     payment_operation_type: OperationTypeEnum,
     payment_operation_status: OperationStatusEnum,

@@ -1,7 +1,5 @@
 import pytest
-from hypothesis import given, settings
-from hypothesis import strategies as st
-
+from faker import Faker
 from acquiring.enums import OperationStatusEnum
 from acquiring.utils import is_django_installed
 from tests.storage.utils import skip_if_django_not_installed
@@ -9,6 +7,8 @@ from tests.storage.utils import skip_if_django_not_installed
 if is_django_installed():
     from acquiring import domain, storage
     from tests.storage.django.factories import BlockEventFactory, PaymentAttemptFactory, PaymentMethodFactory
+
+fake = Faker()
 
 
 @skip_if_django_not_installed
@@ -36,11 +36,11 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
 
 @skip_if_django_not_installed
 @pytest.mark.django_db
-@given(block_name=st.text(), status=st.sampled_from(OperationStatusEnum))
-@settings(max_examples=100)
+@pytest.mark.parametrize("status", OperationStatusEnum)
 def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
-    block_name: str, status: OperationStatusEnum
+    status: OperationStatusEnum,
 ) -> None:
+    block_name = fake.name()
 
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
     block_event = domain.BlockEvent(
