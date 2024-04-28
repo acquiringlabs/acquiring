@@ -113,5 +113,8 @@ class Token:
     expires_at: Optional[datetime] = None
     fingerprint: Optional[str] = None
 
+    class DoesNotExist(Exception):
+        pass
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.token}"

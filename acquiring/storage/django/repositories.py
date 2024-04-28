@@ -190,3 +190,40 @@ class TransactionRepository:
         return db_transaction.to_domain()
 
     def get(self, id: UUID) -> "protocols.Transaction": ...  # type: ignore[empty-body]
+
+
+class TokenRepository:
+
+    @deal.reason(
+        domain.Token.DoesNotExist,
+        lambda _, token: models.Token.objects.filter(token=token).count() == 0,
+    )
+    def get(self, token: str) -> "protocols.PaymentMethod":
+        try:
+            instance = models.Token.objects.select_related("token").get(token=token)
+            return instance.to_domain()
+        except models.Token.DoesNotExist:
+            raise domain.Token.DoesNotExist
+
+    @deal.reason(
+        domain.PaymentMethod.DoesNotExist,
+        lambda _, payment_method, token: models.PaymentMethod.objects.filter(id=payment_method.id).count() == 0,
+    )
+    def add(self, payment_method: "protocols.PaymentMethod", token: "protocols.Token") -> "protocols.PaymentMethod":
+        try:
+            db_payment_method = models.PaymentMethod.objects.get(id=payment_method.id)
+        except models.PaymentMethod.DoesNotExist:
+            raise domain.PaymentMethod.DoesNotExist
+
+        db_token = models.Token(
+            payment_method=db_payment_method,
+            created_at=token.created_at,  # TODO Ensure via type that datetime is timezone aware
+            token=token.token,
+            expires_at=token.expires_at,  # TODO Ensure via type that datetime is timezone aware
+            fingerprint=token.fingerprint,
+            metadata=token.metadata,
+        )
+        db_token.save()
+
+        payment_method.tokens.append(db_token.to_domain())
+        return payment_method

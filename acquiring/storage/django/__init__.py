@@ -4,6 +4,7 @@ from .repositories import (
     PaymentAttemptRepository,
     PaymentMethodRepository,
     PaymentOperationRepository,
+    TokenRepository,
     TransactionRepository,
 )
 from .unit_of_work import DjangoUnitOfWork
@@ -16,4 +17,5 @@ __all__ = [
     "PaymentMethodRepository",
     "PaymentOperationRepository",
     "TransactionRepository",
+    "TokenRepository",
 ]
