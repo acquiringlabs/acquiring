@@ -25,8 +25,8 @@ class PaymentMethod:
     created_at: datetime
     payment_attempt: "protocols.PaymentAttempt"
     confirmable: bool
-    token: Optional["protocols.Token"] = None
-    payment_operations: list["protocols.PaymentOperation"] = field(default_factory=list, repr=True)
+    tokens: list["protocols.Token"] = field(default_factory=list)
+    payment_operations: list["protocols.PaymentOperation"] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}:{self.id}"
@@ -42,7 +42,7 @@ class PaymentMethod:
 class DraftPaymentMethod:
     payment_attempt: "protocols.PaymentAttempt"
     confirmable: bool
-    token: Optional["protocols.Token"] = None
+    tokens: list["protocols.DraftToken"] = field(default_factory=list)
 
 
 @dataclass
@@ -93,9 +93,22 @@ class DraftPaymentAttempt:
 
 
 @dataclass
+class DraftToken:
+    created_at: datetime
+    token: str
+    metadata: Optional[dict[str, str | int]] = field(default_factory=dict)
+    expires_at: Optional[datetime] = None
+    fingerprint: Optional[str] = None
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}:{self.token}"
+
+
+@dataclass
 class Token:
     created_at: datetime
     token: str
+    payment_method_id: UUID
     metadata: Optional[dict[str, str | int]] = field(default_factory=dict)
     expires_at: Optional[datetime] = None
     fingerprint: Optional[str] = None

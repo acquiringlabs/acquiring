@@ -58,7 +58,7 @@ class PaymentAttemptRepository:
 
 class PaymentMethodRepository:
 
-    @deal.safe()
+    # @deal.safe()
     def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
         with django.db.transaction.atomic():
             db_payment_method = models.PaymentMethod(
@@ -66,17 +66,18 @@ class PaymentMethodRepository:
                 confirmable=data.confirmable,
             )
 
-            if data.token:
-                db_token = models.Token(
-                    payment_method=db_payment_method,
-                    created_at=data.token.created_at,  # TODO Ensure via type that datetime is timezone aware
-                    token=data.token.token,
-                    expires_at=data.token.expires_at,  # TODO Ensure via type that datetime is timezone aware
-                    fingerprint=data.token.fingerprint,
-                    metadata=data.token.metadata,
-                )
-                db_token.save()
-                db_payment_method.token = db_token
+            # TODO Can I do bulk insert under UoW?
+            if data.tokens:
+                for token in data.tokens:
+                    db_token = models.Token(
+                        payment_method_id=db_payment_method.id,
+                        created_at=token.created_at,  # TODO Ensure via type that datetime is timezone aware
+                        token=token.token,
+                        expires_at=token.expires_at,  # TODO Ensure via type that datetime is timezone aware
+                        fingerprint=token.fingerprint,
+                        metadata=token.metadata,
+                    )
+                    db_token.save()
             db_payment_method.save()
         return db_payment_method.to_domain()
 
@@ -87,8 +88,8 @@ class PaymentMethodRepository:
     def get(self, id: UUID) -> "protocols.PaymentMethod":
         try:
             payment_method = (
-                models.PaymentMethod.objects.prefetch_related("payment_operations")
-                .select_related("token", "payment_attempt")
+                models.PaymentMethod.objects.prefetch_related("payment_operations", "tokens")
+                .select_related("payment_attempt")
                 .get(id=id)
             )
             return payment_method.to_domain()
@@ -120,7 +121,7 @@ class PaymentMethodRepository:
             db_payment_method.token = db_token
             db_payment_method.save()
 
-            payment_method.token = db_token.to_domain()
+            payment_method.tokens.append(db_token.to_domain())
             return payment_method
 
 

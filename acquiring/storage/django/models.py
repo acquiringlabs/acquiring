@@ -112,14 +112,6 @@ class PaymentMethod(Identifiable, django.db.models.Model):
         related_name="payment_methods",
     )
 
-    token = django.db.models.OneToOneField(
-        "Token",
-        on_delete=django.db.models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="payment_method",
-    )
-
     confirmable = django.db.models.BooleanField(
         editable=False,
         help_text="Whether this PaymentMethod can at some point run inside PaymentFlow.confirm",
@@ -132,7 +124,7 @@ class PaymentMethod(Identifiable, django.db.models.Model):
         return domain.PaymentMethod(
             id=self.id,
             created_at=self.created_at,
-            token=self.token.to_domain() if self.token else None,
+            tokens=[token.to_domain() for token in self.tokens.all()],
             payment_attempt=self.payment_attempt.to_domain(),
             payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations.all()],
             confirmable=self.confirmable,
@@ -158,6 +150,12 @@ class Token(django.db.models.Model):
         help_text="tag your tokens with custom key-value attributes (i.e., to reference a record in your own database, tag records that fall into certain compliance requirements like GDPR, etc)",
     )
 
+    payment_method = django.db.models.ForeignKey(
+        PaymentMethod,
+        on_delete=django.db.models.CASCADE,
+        related_name="tokens",
+    )
+
     def __str__(self) -> str:
         return f"[{self.token}]"
 
@@ -168,6 +166,7 @@ class Token(django.db.models.Model):
             token=self.token,
             fingerprint=self.fingerprint,
             metadata=self.metadata,
+            payment_method_id=self.payment_method_id,
         )
 
 

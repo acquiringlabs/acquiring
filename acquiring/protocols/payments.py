@@ -23,9 +23,18 @@ class PaymentOperation(Protocol):
     def __repr__(self) -> str: ...
 
 
+class DraftToken(Protocol):
+    created_at: datetime
+    token: str
+    metadata: Optional[dict[str, str | int]]
+    expires_at: Optional[datetime]
+    fingerprint: Optional[str]
+
+
 class Token(Protocol):
     created_at: datetime
     token: str
+    payment_method_id: UUID
     metadata: Optional[dict[str, str | int]]
     expires_at: Optional[datetime]
     fingerprint: Optional[str]
@@ -68,7 +77,7 @@ class PaymentAttempt(Protocol):
 class PaymentMethod(Protocol):
     id: UUID
     created_at: datetime
-    token: Token | None
+    tokens: list[Token]
     payment_attempt: PaymentAttempt
     confirmable: bool
     payment_operations: list[PaymentOperation]
@@ -85,7 +94,7 @@ class PaymentMethod(Protocol):
 class DraftPaymentMethod(Protocol):
     payment_attempt: PaymentAttempt
     confirmable: bool
-    token: Token | None = None
+    tokens: list[DraftToken]
 
 
 class DraftPaymentAttempt(Protocol):

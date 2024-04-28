@@ -55,12 +55,23 @@ def fake_payment_method_repository() -> Callable[
         units: List[protocols.PaymentMethod]
 
         def add(self, data: protocols.DraftPaymentMethod) -> protocols.PaymentMethod:
+            payment_method_id = uuid.uuid4()
             payment_method = domain.PaymentMethod(
-                id=uuid.uuid4(),
+                id=payment_method_id,
                 created_at=datetime.now(),
                 payment_attempt=data.payment_attempt,
                 confirmable=data.confirmable,
-                token=data.token,
+                tokens=[
+                    domain.Token(
+                        created_at=token.created_at,
+                        token=token.token,
+                        payment_method_id=payment_method_id,
+                        metadata=token.metadata,
+                        expires_at=token.expires_at,
+                        fingerprint=token.fingerprint,
+                    )
+                    for token in data.tokens
+                ],
                 payment_operations=[],
             )
             self.units.append(payment_method)

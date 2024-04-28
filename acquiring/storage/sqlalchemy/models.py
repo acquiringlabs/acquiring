@@ -70,7 +70,7 @@ class PaymentMethod(Identifiable, Model):
         return domain.PaymentMethod(
             id=self.id,
             created_at=self.created_at,
-            token=None,  # TODO Fill
+            tokens=[],  # TODO Fill
             payment_attempt=self.payment_attempt.to_domain(),
             payment_operations=[],  # TODO Fill
             confirmable=self.confirmable,
