@@ -11,24 +11,26 @@ from . import models
 @dataclass
 class PaymentMethodRepository:
 
+    session: orm.Session
+
     @deal.safe()
-    def add(self, session: orm.Session, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
+    def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
         db_payment_method = models.PaymentMethod(
             payment_attempt_id=data.payment_attempt.id,
             confirmable=data.confirmable,
         )
-        session.add(db_payment_method)
-        session.flush()
+        self.session.add(db_payment_method)
+        self.session.commit()
         return db_payment_method.to_domain()
 
     @deal.reason(
         domain.PaymentMethod.DoesNotExist,
-        lambda self, session, id: session.query(models.PaymentMethod).filter_by(id=id).count() == 0,
+        lambda self, id: self.session.query(models.PaymentMethod).filter_by(id=id).count() == 0,
     )
-    def get(self, session: orm.Session, id: UUID) -> "protocols.PaymentMethod":
+    def get(self, id: UUID) -> "protocols.PaymentMethod":
         try:
             return (
-                session.query(models.PaymentMethod)
+                self.session.query(models.PaymentMethod)
                 .options(
                     orm.joinedload("payment_attempt"),
                 )

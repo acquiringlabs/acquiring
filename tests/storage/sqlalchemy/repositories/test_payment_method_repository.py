@@ -16,14 +16,16 @@ if utils.is_sqlalchemy_installed():
 
 @skip_if_sqlalchemy_not_installed
 def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
-    session: orm.Session,
+    session: "orm.Session",
     sqlalchemy_assert_num_queries: Callable,
 ) -> None:
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method = factories.PaymentMethodFactory(payment_attempt=payment_attempt)
 
     with sqlalchemy_assert_num_queries(5):
-        result = storage.sqlalchemy.PaymentMethodRepository().get(session=session, id=payment_method.id)
+        result = storage.sqlalchemy.PaymentMethodRepository(
+            session=session,
+        ).get(id=payment_method.id)
 
     assert result.payment_attempt == payment_attempt.to_domain()
     assert result == payment_method.to_domain()
@@ -41,7 +43,9 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
     )
 
     with sqlalchemy_assert_num_queries(5), pytest.raises(domain.PaymentMethod.DoesNotExist):
-        storage.sqlalchemy.PaymentMethodRepository().get(session=session, id=payment_method.id)
+        storage.sqlalchemy.PaymentMethodRepository(
+            session=session,
+        ).get(id=payment_method.id)
 
 
 @skip_if_sqlalchemy_not_installed
@@ -58,12 +62,12 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     )
 
     with sqlalchemy_assert_num_queries(7):
-        result = storage.sqlalchemy.PaymentMethodRepository().add(session, data)
-        session.commit()
+        result = storage.sqlalchemy.PaymentMethodRepository(session=session).add(data)
 
     db_payment_methods = session.query(storage.sqlalchemy.models.PaymentMethod).all()
     assert len(db_payment_methods) == 1
     db_payment_method = db_payment_methods[0]
 
-    # TODO Verify timezone awareness in created_at
     assert db_payment_method.id == result.id
+    assert db_payment_method.created_at == result.created_at
+    assert db_payment_method.to_domain() == result
