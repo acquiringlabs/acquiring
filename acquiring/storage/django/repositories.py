@@ -8,54 +8,6 @@ from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 from acquiring.storage.django import models
 
 
-class PaymentAttemptRepository:
-
-    @deal.reason(
-        domain.Item.InvalidTotalAmount,
-        lambda _, data: sum(i.quantity * i.unit_price for i in data.items) != data.amount,
-    )
-    def add(self, data: "protocols.DraftPaymentAttempt") -> "protocols.PaymentAttempt":
-        with django.db.transaction.atomic():
-
-            payment_attempt = models.PaymentAttempt(
-                amount=data.amount,
-                currency=data.currency,
-            )
-            payment_attempt.save()
-            if data.items:
-                items = [
-                    models.Item(
-                        name=item.name,
-                        quantity=item.quantity,
-                        quantity_unit=item.quantity_unit,
-                        reference=item.reference,
-                        unit_price=item.unit_price,
-                        payment_attempt=payment_attempt,
-                    )
-                    for item in data.items
-                ]
-                # TODO Embed this validation into Item somehow?
-                if sum(item.quantity * item.unit_price for item in items) != payment_attempt.amount:
-                    raise domain.Item.InvalidTotalAmount
-                models.Item.objects.bulk_create(items)
-
-        return payment_attempt.to_domain()
-
-    @deal.reason(
-        domain.PaymentAttempt.DoesNotExist,
-        lambda _, id: models.PaymentAttempt.objects.filter(id=id).count() == 0,
-    )
-    def get(self, id: UUID) -> "protocols.PaymentAttempt":
-        try:
-            payment_attempt = models.PaymentAttempt.objects.prefetch_related(
-                "payment_methods",
-                "payment_methods__payment_operations",
-            ).get(id=id)
-            return payment_attempt.to_domain()
-        except models.PaymentAttempt.DoesNotExist:
-            raise domain.PaymentAttempt.DoesNotExist
-
-
 class PaymentMethodRepository:
 
     # @deal.safe()

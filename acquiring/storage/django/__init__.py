@@ -1,7 +1,6 @@
 from . import models
 from .repositories import (
     BlockEventRepository,
-    PaymentAttemptRepository,
     PaymentMethodRepository,
     PaymentOperationRepository,
     TokenRepository,
@@ -13,7 +12,6 @@ __all__ = [
     "BlockEventRepository",
     "DjangoUnitOfWork",
     "models",
-    "PaymentAttemptRepository",
     "PaymentMethodRepository",
     "PaymentOperationRepository",
     "TransactionRepository",
