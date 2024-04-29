@@ -44,6 +44,49 @@ def fake_os_environ() -> Generator:
         yield
 
 
+@pytest.fixture()
+def fake_payment_repository_class() -> Callable[[Optional[list[protocols.PaymentMethod]]], type[protocols.Repository]]:
+
+    def func(payment_methods: Optional[list[protocols.PaymentMethod]] = None) -> type[protocols.Repository]:
+
+        @dataclass
+        class FakePaymentMethodRepository:
+            units: list = payment_methods or []
+
+            def add(self, data: protocols.DraftPaymentMethod) -> protocols.PaymentMethod:
+                payment_method_id = uuid.uuid4()
+                payment_method = domain.PaymentMethod(
+                    id=payment_method_id,
+                    created_at=datetime.now(),
+                    payment_attempt=data.payment_attempt,
+                    confirmable=data.confirmable,
+                    tokens=[
+                        domain.Token(
+                            created_at=token.created_at,
+                            token=token.token,
+                            payment_method_id=payment_method_id,
+                            metadata=token.metadata,
+                            expires_at=token.expires_at,
+                            fingerprint=token.fingerprint,
+                        )
+                        for token in data.tokens
+                    ],
+                    payment_operations=[],
+                )
+                self.units.append(payment_method)
+                return payment_method
+
+            def get(self, id: uuid.UUID) -> protocols.PaymentMethod:
+                for unit in self.units:
+                    if unit.id == id:
+                        return unit
+                raise domain.PaymentMethod.DoesNotExist
+
+        return FakePaymentMethodRepository
+
+    return func
+
+
 @pytest.fixture(scope="module")
 def fake_payment_method_repository() -> Callable[
     [Optional[List[protocols.PaymentMethod]]],
