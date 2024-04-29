@@ -6,9 +6,20 @@ from typing import Optional, Self
 import sqlalchemy
 from sqlalchemy import orm
 
+from acquiring import protocols
+
 
 @dataclass
 class SqlAlchemyUnitOfWork:
+    """
+    Unit of Work context manager for SQLAlchemy database engine.
+
+    See Unit of Work pattern here: https://martinfowler.com/eaaCatalog/unitOfWork.html
+    """
+
+    payment_method_repository_class: type[protocols.Repository]
+    payment_methods: protocols.Repository = field(init=False)
+
     session_factory: orm.sessionmaker = orm.sessionmaker(
         bind=sqlalchemy.create_engine(os.environ.get("SQLALCHEMY_DATABASE_URL"))
     )
@@ -16,6 +27,7 @@ class SqlAlchemyUnitOfWork:
 
     def __enter__(self) -> Self:
         self.session = self.session_factory()
+        self.payment_methods = self.payment_method_repository_class(session=self.session)  # type: ignore[call-arg]
         return self
 
     def __exit__(

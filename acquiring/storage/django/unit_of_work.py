@@ -1,26 +1,36 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import TracebackType
 from typing import Self
 
 import django.db.transaction
 
+from acquiring import protocols
+
 
 @dataclass
 class DjangoUnitOfWork:
     """
-    Despite Cosmic Python's suggestion, a better approach is to delegate
-    to transaction.atomic instead of setting autocommit to False, then revert to True.
+    Unit of Work context manager for Django.
 
-    I trust that this code is better than anything I could build myself.
+    See Unit of Work pattern here: https://martinfowler.com/eaaCatalog/unitOfWork.html
     """
+
+    payment_method_repository_class: type[protocols.Repository]
+    payment_methods: protocols.Repository = field(init=False)
 
     def __enter__(self) -> Self:
         """
+        Despite Cosmic Python's suggestion, a better approach is to delegate
+        to transaction.atomic instead of setting autocommit to False, then revert to True.
+
         See django.db.transaction Atomic.__enter__ here
         https://github.com/django/django/blob/main/django/db/transaction.py#L182
+
+        I trust that that code is better than anything I could build myself.
         """
         self.transaction = django.db.transaction.atomic()
         self.transaction.__enter__()
+        self.payment_methods = self.payment_method_repository_class()
         return self
 
     def __exit__(
