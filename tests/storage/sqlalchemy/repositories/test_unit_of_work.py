@@ -78,17 +78,18 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
 
     @dataclass
     class TemporaryRepository:
+        session: orm.Session
 
-        def add(self, session: orm.Session, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
+        def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
             )
-            session.add(db_payment_method)
-            session.flush()
+            self.session.add(db_payment_method)
+            self.session.flush()
 
             db_extra = FakeModel(name="test", payment_method_id=db_payment_method.id)
-            session.add(db_extra)
+            self.session.add(db_extra)
             return db_payment_method.to_domain()
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
@@ -98,12 +99,11 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
 
     with sqlalchemy_assert_num_queries(5):
         with storage.sqlalchemy.SqlAlchemyUnitOfWork() as uow:
-            TemporaryRepository().add(
-                uow.session,
+            TemporaryRepository(uow.session).add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,
                     confirmable=False,
-                ),
+                )
             )
             uow.commit()
 
@@ -128,17 +128,18 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
 
     @dataclass
     class TemporaryRepository:
+        session: orm.Session
 
-        def add(self, session: orm.Session, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
+        def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
             )
-            session.add(db_payment_method)
-            session.flush()
+            self.session.add(db_payment_method)
+            self.session.flush()
 
             db_extra = FakeModel(name="test", payment_method_id=db_payment_method.id)
-            session.add(db_extra)
+            self.session.add(db_extra)
             raise TestException
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
@@ -148,14 +149,12 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
 
     with sqlalchemy_assert_num_queries(5), pytest.raises(TestException):
         with storage.sqlalchemy.SqlAlchemyUnitOfWork() as uow:
-            TemporaryRepository().add(
-                uow.session,
+            TemporaryRepository(uow.session).add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,
                     confirmable=False,
-                ),
+                )
             )
-            uow.commit()
 
     assert session.query(sqlalchemy.func.count(storage.sqlalchemy.models.PaymentMethod.id)).scalar() == 0
     assert session.query(sqlalchemy.func.count(FakeModel.id)).scalar() == 0
@@ -174,17 +173,18 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
 
     @dataclass
     class TemporaryRepository:
+        session: orm.Session
 
-        def add(self, session: orm.Session, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
+        def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
             )
-            session.add(db_payment_method)
-            session.flush()
+            self.session.add(db_payment_method)
+            self.session.flush()
 
             db_extra = FakeModel(name="test", payment_method_id=db_payment_method.id)
-            session.add(db_extra)
+            self.session.add(db_extra)
             return db_payment_method.to_domain()
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
@@ -203,12 +203,11 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
     payment_attempt = factories.PaymentAttemptFactory().to_domain()
     with sqlalchemy_assert_num_queries(5), pytest.raises(TestException):
         with storage.sqlalchemy.SqlAlchemyUnitOfWork() as uow:
-            TemporaryRepository().add(
-                uow.session,
+            TemporaryRepository(uow.session).add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,
                     confirmable=False,
-                ),
+                )
             )
             uow.commit()
             FakeModelRepository(uow.session).add()
@@ -225,17 +224,18 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
 ) -> None:
     @dataclass
     class TemporaryRepository:
+        session: orm.Session
 
-        def add(self, session: orm.Session, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
+        def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt.id,
                 confirmable=data.confirmable,
             )
-            session.add(db_payment_method)
-            session.flush()
+            self.session.add(db_payment_method)
+            self.session.flush()
 
             db_extra = FakeModel(name="test", payment_method_id=db_payment_method.id)
-            session.add(db_extra)
+            self.session.add(db_extra)
             return db_payment_method.to_domain()
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
@@ -254,12 +254,11 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
     payment_attempt = factories.PaymentAttemptFactory().to_domain()
     with sqlalchemy_assert_num_queries(5):
         with storage.sqlalchemy.SqlAlchemyUnitOfWork() as uow:
-            TemporaryRepository().add(
-                uow.session,
+            TemporaryRepository(uow.session).add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,
                     confirmable=False,
-                ),
+                )
             )
             uow.rollback()
             FakeModelRepository(uow.session).add()
