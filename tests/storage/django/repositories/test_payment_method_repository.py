@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Callable
 
 import pytest
@@ -35,7 +35,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
         confirmable=True,
     )
 
-    with django_assert_num_queries(8):
+    with django_assert_num_queries(6):
         result = storage.django.PaymentMethodRepository().add(data)
 
     db_payment_methods = storage.django.models.PaymentMethod.objects.all()
@@ -45,42 +45,6 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     assert db_payment_method.id == result.id
     assert db_payment_method.created_at == result.created_at
     assert db_payment_method.to_domain() == result
-
-
-@skip_if_django_not_installed
-@pytest.mark.django_db
-def test_givenTokenData_whenCallingRepositoryAdd_thenTokenGetsCreated(django_assert_num_queries: Callable) -> None:
-
-    payment_attempt = PaymentAttemptFactory()
-    data = domain.DraftPaymentMethod(
-        payment_attempt=payment_attempt.to_domain(),
-        confirmable=False,
-        tokens=[
-            domain.DraftToken(
-                created_at=timezone.now(),
-                token=fake.sha256(raw_output=False),
-                expires_at=timezone.now() + timedelta(days=365),
-                fingerprint=fake.sha256(),
-                metadata={"customer_id": str(uuid.uuid4())},
-            ),
-        ],
-    )
-
-    with django_assert_num_queries(9):
-        result = storage.django.PaymentMethodRepository().add(data)
-
-    db_tokens = storage.django.models.Token.objects.all()
-    assert len(db_tokens) == 1
-    db_token = db_tokens[0]
-
-    db_payment_methods = storage.django.models.PaymentMethod.objects.all()
-    assert len(db_payment_methods) == 1
-    db_payment_method = db_payment_methods[0]
-
-    assert db_token.payment_method == db_payment_method
-
-    assert len(result.tokens) == 1
-    assert result.tokens[0] == db_token.to_domain()
 
 
 @skip_if_django_not_installed

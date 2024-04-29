@@ -10,27 +10,13 @@ from acquiring.storage.django import models
 
 class PaymentMethodRepository:
 
-    # @deal.safe()
+    @deal.safe()
     def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
-        with django.db.transaction.atomic():
-            db_payment_method = models.PaymentMethod(
-                payment_attempt_id=data.payment_attempt.id,
-                confirmable=data.confirmable,
-            )
-
-            # TODO Can I do bulk insert under UoW?
-            if data.tokens:
-                for token in data.tokens:
-                    db_token = models.Token(
-                        payment_method_id=db_payment_method.id,
-                        created_at=token.created_at,  # TODO Ensure via type that datetime is timezone aware
-                        token=token.token,
-                        expires_at=token.expires_at,  # TODO Ensure via type that datetime is timezone aware
-                        fingerprint=token.fingerprint,
-                        metadata=token.metadata,
-                    )
-                    db_token.save()
-            db_payment_method.save()
+        db_payment_method = models.PaymentMethod(
+            payment_attempt_id=data.payment_attempt.id,
+            confirmable=data.confirmable,
+        )
+        db_payment_method.save()
         return db_payment_method.to_domain()
 
     @deal.reason(
