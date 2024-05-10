@@ -45,13 +45,16 @@ def fake_os_environ() -> Generator:
 
 
 @pytest.fixture()
-def fake_payment_repository_class() -> Callable[[Optional[list[protocols.PaymentMethod]]], type[protocols.Repository]]:
+def fake_payment_method_repository_class() -> (
+    Callable[[Optional[list[protocols.PaymentMethod]]], type[protocols.Repository]]
+):
 
-    def func(payment_methods: Optional[list[protocols.PaymentMethod]] = None) -> type[protocols.Repository]:
+    def func(payment_methods: Optional[list[protocols.PaymentMethod]]) -> type[protocols.Repository]:
 
-        @dataclass
         class FakePaymentMethodRepository:
-            units: list = payment_methods or []
+
+            def __init__(self) -> None:
+                self.units = payment_methods or []
 
             def add(self, data: protocols.DraftPaymentMethod) -> protocols.PaymentMethod:
                 payment_method_id = uuid.uuid4()

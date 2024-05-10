@@ -66,7 +66,8 @@ def refresh_payment_method(  # type:ignore[misc]
         **kwargs: dict,
     ) -> "protocols.OperationResponse":
         try:
-            payment_method = self.payment_method_repository.get(id=payment_method.id)
+            with self.unit_of_work as uow:
+                payment_method = uow.payment_methods.get(id=payment_method.id)
         except domain.PaymentMethod.DoesNotExist:
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
@@ -100,7 +101,6 @@ class PaymentFlow:
     """
 
     unit_of_work: "protocols.UnitOfWork"
-    payment_method_repository: "protocols.Repository"
     payment_operation_repository: "protocols.Repository"
 
     initialize_block: Optional["protocols.Block"]

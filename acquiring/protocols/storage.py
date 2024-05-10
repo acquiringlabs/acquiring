@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from types import TracebackType
 from typing import Optional, Protocol, Self, runtime_checkable
 from uuid import UUID
@@ -11,7 +12,10 @@ class Repository(Protocol):
     def get(self, id: UUID): ...  # type: ignore[no-untyped-def]
 
 
+@dataclass(match_args=False)
 class UnitOfWork(Protocol):
+    payment_method_repository_class: type[Repository]
+    payment_methods: Repository = field(init=False)
 
     def __enter__(self) -> Self: ...
 

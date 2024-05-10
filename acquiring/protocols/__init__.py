@@ -21,7 +21,6 @@ from .storage import Repository, UnitOfWork
 
 class PaymentFlow(Protocol):
     unit_of_work: "UnitOfWork"
-    payment_method_repository: "Repository"
     payment_operation_repository: "Repository"
 
     initialize_block: Optional["Block"]

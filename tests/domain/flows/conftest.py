@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from types import TracebackType
 from typing import Callable, Optional, Self, Sequence
 
@@ -66,9 +67,13 @@ def fake_process_action_block(  # type:ignore[misc]
 @pytest.fixture(scope="module")
 def fake_unit_of_work() -> type[protocols.UnitOfWork]:
 
+    @dataclass
     class FakeUnitOfWork:
+        payment_method_repository_class: type[protocols.Repository]
+        payment_methods: protocols.Repository = field(init=False)
 
         def __enter__(self) -> Self:
+            self.payment_methods = self.payment_method_repository_class()
             return self
 
         def __exit__(
