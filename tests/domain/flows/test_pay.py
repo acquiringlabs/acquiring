@@ -36,9 +36,9 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository: Callable[
+    fake_payment_operation_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
-        protocols.Repository,
+        type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
     result_status: OperationStatusEnum,
@@ -56,8 +56,8 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+            payment_operation_repository_class=fake_payment_operation_repository_class([]),
         ),
-        payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.COMPLETED,
             fake_response_actions=[],
@@ -101,9 +101,9 @@ def test_givenAValidPaymentMethod_whenPayCompletesWithActions_thenPaymentFlowRet
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository: Callable[
+    fake_payment_operation_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
-        protocols.Repository,
+        type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
@@ -120,8 +120,8 @@ def test_givenAValidPaymentMethod_whenPayCompletesWithActions_thenPaymentFlowRet
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+            payment_operation_repository_class=fake_payment_operation_repository_class([]),
         ),
-        payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.COMPLETED,
             fake_response_actions=[],

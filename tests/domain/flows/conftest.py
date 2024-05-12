@@ -72,8 +72,12 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
         payment_method_repository_class: type[protocols.Repository]
         payment_methods: protocols.Repository = field(init=False)
 
+        payment_operation_repository_class: type[protocols.Repository]
+        payment_operations: protocols.Repository = field(init=False)
+
         def __enter__(self) -> Self:
             self.payment_methods = self.payment_method_repository_class()
+            self.payment_operations = self.payment_operation_repository_class()
             return self
 
         def __exit__(

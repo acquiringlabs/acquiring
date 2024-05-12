@@ -18,6 +18,9 @@ class DjangoUnitOfWork:
     payment_method_repository_class: type[protocols.Repository]
     payment_methods: protocols.Repository = field(init=False)
 
+    payment_operation_repository_class: type[protocols.Repository]
+    payment_operations: protocols.Repository = field(init=False)
+
     def __enter__(self) -> Self:
         """
         Despite Cosmic Python's suggestion, a better approach is to delegate
@@ -31,6 +34,7 @@ class DjangoUnitOfWork:
         self.transaction = django.db.transaction.atomic()
         self.transaction.__enter__()
         self.payment_methods = self.payment_method_repository_class()
+        self.payment_operations = self.payment_operation_repository_class()
         return self
 
     def __exit__(

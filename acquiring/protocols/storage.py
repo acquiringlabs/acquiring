@@ -17,6 +17,9 @@ class UnitOfWork(Protocol):
     payment_method_repository_class: type[Repository]
     payment_methods: Repository = field(init=False)
 
+    payment_operation_repository_class: type[Repository]
+    payment_operations: Repository = field(init=False)
+
     def __enter__(self) -> Self: ...
 
     def __exit__(

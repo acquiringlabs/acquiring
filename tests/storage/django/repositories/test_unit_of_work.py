@@ -91,7 +91,9 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
     payment_attempt = PaymentAttemptFactory().to_domain()
 
     with django_assert_num_queries(9):
-        with storage.django.DjangoUnitOfWork(payment_method_repository_class=TemporaryRepository) as uow:
+        with storage.django.DjangoUnitOfWork(
+            payment_method_repository_class=TemporaryRepository, payment_operation_repository_class=TemporaryRepository
+        ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,
@@ -135,7 +137,9 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
     payment_attempt = PaymentAttemptFactory().to_domain()
 
     with django_assert_num_queries(4), pytest.raises(TestException):
-        with storage.django.DjangoUnitOfWork(payment_method_repository_class=TemporaryRepository) as uow:
+        with storage.django.DjangoUnitOfWork(
+            payment_method_repository_class=TemporaryRepository, payment_operation_repository_class=TemporaryRepository
+        ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,
@@ -181,7 +185,9 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
     payment_attempt = PaymentAttemptFactory().to_domain()
 
     with django_assert_num_queries(10), pytest.raises(TestException):
-        with storage.django.DjangoUnitOfWork(payment_method_repository_class=TemporaryRepository) as uow:
+        with storage.django.DjangoUnitOfWork(
+            payment_method_repository_class=TemporaryRepository, payment_operation_repository_class=TemporaryRepository
+        ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,
@@ -225,7 +231,9 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
     payment_attempt = PaymentAttemptFactory().to_domain()
 
     with django_assert_num_queries(8):
-        with storage.django.DjangoUnitOfWork(payment_method_repository_class=TemporaryRepository) as uow:
+        with storage.django.DjangoUnitOfWork(
+            payment_method_repository_class=TemporaryRepository, payment_operation_repository_class=TemporaryRepository
+        ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
                     payment_attempt=payment_attempt,

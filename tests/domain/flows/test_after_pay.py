@@ -36,9 +36,9 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository: Callable[
+    fake_payment_operation_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
-        protocols.Repository,
+        type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
     payment_operation_status: OperationStatusEnum,
@@ -79,8 +79,8 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentFlowReturnsTheCorre
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+            payment_operation_repository_class=fake_payment_operation_repository_class([]),
         ),
-        payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
@@ -127,9 +127,9 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowRe
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository: Callable[
+    fake_payment_operation_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
-        protocols.Repository,
+        type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
@@ -154,8 +154,8 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentFlowRe
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+            payment_operation_repository_class=fake_payment_operation_repository_class([]),
         ),
-        payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
@@ -177,9 +177,9 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository: Callable[
+    fake_payment_operation_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
-        protocols.Repository,
+        type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
@@ -203,8 +203,8 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+            payment_operation_repository_class=fake_payment_operation_repository_class([]),
         ),
-        payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
         pay_blocks=[],

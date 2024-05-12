@@ -41,9 +41,9 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository: Callable[
+    fake_payment_operation_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
-        protocols.Repository,
+        type[protocols.Repository],
     ],
     block_response_actions: list[dict],
     payment_operations_status: OperationStatusEnum,
@@ -61,8 +61,8 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+            payment_operation_repository_class=fake_payment_operation_repository_class([]),
         ),
-        payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=payment_operations_status,
             fake_response_actions=block_response_actions,
@@ -109,9 +109,9 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository: Callable[
+    fake_payment_operation_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
-        protocols.Repository,
+        type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
     payment_operations_status: OperationStatusEnum,
@@ -128,8 +128,8 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+            payment_operation_repository_class=fake_payment_operation_repository_class([]),
         ),
-        payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=(
             fake_block(  # type:ignore[call-arg]
                 fake_response_status=payment_operations_status,
@@ -175,9 +175,9 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository: Callable[
+    fake_payment_operation_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
-        protocols.Repository,
+        type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
@@ -201,8 +201,8 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+            payment_operation_repository_class=fake_payment_operation_repository_class([]),
         ),
-        payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
@@ -225,9 +225,9 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository: Callable[
+    fake_payment_operation_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
-        protocols.Repository,
+        type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
@@ -251,8 +251,8 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([]),
+            payment_operation_repository_class=fake_payment_operation_repository_class([]),
         ),
-        payment_operation_repository=fake_payment_operation_repository([]),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
         pay_blocks=[],

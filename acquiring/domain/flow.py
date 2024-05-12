@@ -101,7 +101,6 @@ class PaymentFlow:
     """
 
     unit_of_work: "protocols.UnitOfWork"
-    payment_operation_repository: "protocols.Repository"
 
     initialize_block: Optional["protocols.Block"]
     process_action_block: Optional["protocols.Block"]
@@ -125,19 +124,21 @@ class PaymentFlow:
             )
 
         # Create Started PaymentOperation
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.INITIALIZE,
-            status=OperationStatusEnum.STARTED,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.INITIALIZE,
+                status=OperationStatusEnum.STARTED,
+            )
 
         # Run Operation Block if it exists
         if self.initialize_block is None:
-            self.payment_operation_repository.add(
-                payment_method=payment_method,
-                type=OperationTypeEnum.INITIALIZE,
-                status=OperationStatusEnum.NOT_PERFORMED,
-            )
+            with self.unit_of_work as uow:
+                uow.payment_operations.add(
+                    payment_method=payment_method,
+                    type=OperationTypeEnum.INITIALIZE,
+                    status=OperationStatusEnum.NOT_PERFORMED,
+                )
             return self.__pay(payment_method)
 
         block_response = self.initialize_block.run(payment_method=payment_method)
@@ -148,11 +149,12 @@ class PaymentFlow:
             OperationStatusEnum.FAILED,
             OperationStatusEnum.REQUIRES_ACTION,
         ]:
-            self.payment_operation_repository.add(
-                payment_method=payment_method,
-                type=OperationTypeEnum.INITIALIZE,  # TODO Refer to function name rather than explicit input in all cases
-                status=OperationStatusEnum.FAILED,
-            )
+            with self.unit_of_work as uow:
+                uow.payment_operations.add(
+                    payment_method=payment_method,
+                    type=OperationTypeEnum.INITIALIZE,  # TODO Refer to function name rather than explicit input in all cases
+                    status=OperationStatusEnum.FAILED,
+                )
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -160,11 +162,12 @@ class PaymentFlow:
                 error_message=f"Invalid status {block_response.status}",
             )
         if block_response.status == OperationStatusEnum.REQUIRES_ACTION and not block_response.actions:
-            self.payment_operation_repository.add(
-                payment_method=payment_method,
-                type=OperationTypeEnum.INITIALIZE,
-                status=OperationStatusEnum.FAILED,
-            )
+            with self.unit_of_work as uow:
+                uow.payment_operations.add(
+                    payment_method=payment_method,
+                    type=OperationTypeEnum.INITIALIZE,
+                    status=OperationStatusEnum.FAILED,
+                )
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -173,11 +176,12 @@ class PaymentFlow:
             )
 
         # Create PaymentOperation with the outcome
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.INITIALIZE,
-            status=block_response.status,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.INITIALIZE,
+                status=block_response.status,
+            )
 
         # Return Response
         if block_response.status == OperationStatusEnum.COMPLETED:
@@ -206,18 +210,20 @@ class PaymentFlow:
             )
 
         # Create Started PaymentOperation
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.PROCESS_ACTION,
-            status=OperationStatusEnum.STARTED,
-        )
-
-        if self.process_action_block is None:
-            self.payment_operation_repository.add(
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
                 payment_method=payment_method,
                 type=OperationTypeEnum.PROCESS_ACTION,
-                status=OperationStatusEnum.NOT_PERFORMED,
+                status=OperationStatusEnum.STARTED,
             )
+
+        if self.process_action_block is None:
+            with self.unit_of_work as uow:
+                uow.payment_operations.add(
+                    payment_method=payment_method,
+                    type=OperationTypeEnum.PROCESS_ACTION,
+                    status=OperationStatusEnum.NOT_PERFORMED,
+                )
             return OperationResponse(
                 status=OperationStatusEnum.NOT_PERFORMED,
                 payment_method=payment_method,
@@ -233,11 +239,12 @@ class PaymentFlow:
             OperationStatusEnum.COMPLETED,
             OperationStatusEnum.FAILED,
         ]:
-            self.payment_operation_repository.add(
-                payment_method=payment_method,
-                type=OperationTypeEnum.PROCESS_ACTION,
-                status=OperationStatusEnum.FAILED,
-            )
+            with self.unit_of_work as uow:
+                uow.payment_operations.add(
+                    payment_method=payment_method,
+                    type=OperationTypeEnum.PROCESS_ACTION,
+                    status=OperationStatusEnum.FAILED,
+                )
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -246,11 +253,12 @@ class PaymentFlow:
             )
 
         # Create PaymentOperation with the outcome
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.PROCESS_ACTION,
-            status=block_response.status,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.PROCESS_ACTION,
+                status=block_response.status,
+            )
 
         # Return Response
         if block_response.status == OperationStatusEnum.COMPLETED:
@@ -270,11 +278,12 @@ class PaymentFlow:
         # No need to verify if payment can go through a private method
 
         # Create Started PaymentOperation
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.PAY,
-            status=OperationStatusEnum.STARTED,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.PAY,
+                status=OperationStatusEnum.STARTED,
+            )
 
         # Run Operation Blocks
         responses = []
@@ -297,11 +306,12 @@ class PaymentFlow:
             status = OperationStatusEnum.FAILED
 
         # Create PaymentOperation with the outcome
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.PAY,
-            status=status,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.PAY,
+                status=status,
+            )
 
         # Return Response
         return OperationResponse(
@@ -327,11 +337,12 @@ class PaymentFlow:
             )
 
         # Create Started PaymentOperation
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.AFTER_PAY,
-            status=OperationStatusEnum.STARTED,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.AFTER_PAY,
+                status=OperationStatusEnum.STARTED,
+            )
 
         # Run Operation Blocks
         responses = [block.run(payment_method) for block in self.after_pay_blocks]
@@ -339,11 +350,12 @@ class PaymentFlow:
         has_completed = all([response.status == OperationStatusEnum.COMPLETED for response in responses])
 
         if not has_completed:
-            self.payment_operation_repository.add(
-                payment_method=payment_method,
-                type=OperationTypeEnum.AFTER_PAY,
-                status=OperationStatusEnum.FAILED,
-            )
+            with self.unit_of_work as uow:
+                uow.payment_operations.add(
+                    payment_method=payment_method,
+                    type=OperationTypeEnum.AFTER_PAY,
+                    status=OperationStatusEnum.FAILED,
+                )
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -353,11 +365,12 @@ class PaymentFlow:
         status = OperationStatusEnum.COMPLETED if has_completed else OperationStatusEnum.FAILED
 
         # Create PaymentOperation with the outcome
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.AFTER_PAY,
-            status=status,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.AFTER_PAY,
+                status=status,
+            )
 
         # Return Response
         return OperationResponse(
@@ -379,19 +392,21 @@ class PaymentFlow:
             )
 
         # Create Started PaymentOperation
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.CONFIRM,
-            status=OperationStatusEnum.STARTED,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.CONFIRM,
+                status=OperationStatusEnum.STARTED,
+            )
 
         # Run Operation Blocks
         if self.confirm_block is None:
-            self.payment_operation_repository.add(
-                payment_method=payment_method,
-                type=OperationTypeEnum.CONFIRM,
-                status=OperationStatusEnum.NOT_PERFORMED,
-            )
+            with self.unit_of_work as uow:
+                uow.payment_operations.add(
+                    payment_method=payment_method,
+                    type=OperationTypeEnum.CONFIRM,
+                    status=OperationStatusEnum.NOT_PERFORMED,
+                )
             return OperationResponse(
                 status=OperationStatusEnum.NOT_PERFORMED,
                 payment_method=payment_method,
@@ -408,11 +423,12 @@ class PaymentFlow:
             OperationStatusEnum.FAILED,
             OperationStatusEnum.PENDING,
         ]:
-            self.payment_operation_repository.add(
-                payment_method=payment_method,
-                type=OperationTypeEnum.CONFIRM,
-                status=OperationStatusEnum.FAILED,
-            )
+            with self.unit_of_work as uow:
+                uow.payment_operations.add(
+                    payment_method=payment_method,
+                    type=OperationTypeEnum.CONFIRM,
+                    status=OperationStatusEnum.FAILED,
+                )
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -421,11 +437,12 @@ class PaymentFlow:
             )
 
         # Create PaymentOperation with the outcome
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.CONFIRM,
-            status=block_response.status,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.CONFIRM,
+                status=block_response.status,
+            )
 
         # Return Response
         return OperationResponse(
@@ -448,11 +465,12 @@ class PaymentFlow:
             )
 
         # Create Started PaymentOperation
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.AFTER_CONFIRM,
-            status=OperationStatusEnum.STARTED,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.AFTER_CONFIRM,
+                status=OperationStatusEnum.STARTED,
+            )
 
         # Run Operation Blocks
         responses = [block.run(payment_method) for block in self.after_confirm_blocks]
@@ -470,11 +488,12 @@ class PaymentFlow:
             status = OperationStatusEnum.FAILED
 
         # Create PaymentOperation with the outcome
-        self.payment_operation_repository.add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.AFTER_CONFIRM,
-            status=status,
-        )
+        with self.unit_of_work as uow:
+            uow.payment_operations.add(
+                payment_method=payment_method,
+                type=OperationTypeEnum.AFTER_CONFIRM,
+                status=status,
+            )
 
         # Return Response
         return OperationResponse(

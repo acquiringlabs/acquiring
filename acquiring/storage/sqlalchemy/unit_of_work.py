@@ -20,6 +20,9 @@ class SqlAlchemyUnitOfWork:
     payment_method_repository_class: type[protocols.Repository]
     payment_methods: protocols.Repository = field(init=False)
 
+    payment_operation_repository_class: type[protocols.Repository]
+    payment_operations: protocols.Repository = field(init=False)
+
     session_factory: orm.sessionmaker = orm.sessionmaker(
         bind=sqlalchemy.create_engine(os.environ.get("SQLALCHEMY_DATABASE_URL"))
     )
@@ -28,6 +31,7 @@ class SqlAlchemyUnitOfWork:
     def __enter__(self) -> Self:
         self.session = self.session_factory()
         self.payment_methods = self.payment_method_repository_class(session=self.session)  # type: ignore[call-arg]
+        self.payment_operations = self.payment_operation_repository_class(session=self.session)  # type: ignore[call-arg]
         return self
 
     def __exit__(
