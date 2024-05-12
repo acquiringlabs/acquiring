@@ -6,6 +6,7 @@ from acquiring.contrib import paypal
 
 @dataclass
 class PayPalAfterCreatingOrder:
+    unit_of_work: protocols.UnitOfWork
     block_event_repository: protocols.Repository
     transaction_repository: protocols.Repository
 

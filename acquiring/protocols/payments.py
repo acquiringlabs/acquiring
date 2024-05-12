@@ -12,7 +12,7 @@ from uuid import UUID
 
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
-from .storage import Repository
+from .storage import Repository, UnitOfWork
 
 
 class PaymentOperation(Protocol):
@@ -119,6 +119,7 @@ class BlockResponse(Protocol):
 
 @runtime_checkable
 class Block(Protocol):
+    unit_of_work: UnitOfWork
     block_event_repository: Repository
 
     def run(self, payment_method: PaymentMethod, *args: Sequence, **kwargs: dict) -> BlockResponse: ...
