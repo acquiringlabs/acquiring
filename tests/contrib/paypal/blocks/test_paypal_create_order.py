@@ -1,7 +1,7 @@
 import os
 import uuid
 from datetime import datetime, timezone
-from typing import Callable, Generator
+from typing import Callable, Generator, Optional
 
 import responses
 from faker import Faker
@@ -19,10 +19,19 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         ...,
         protocols.Repository,
     ],
-    fake_block_event_repository: Callable[
-        ...,
-        protocols.Repository,
+    fake_payment_method_repository_class: Callable[
+        [Optional[list[protocols.PaymentMethod]]],
+        type[protocols.Repository],
     ],
+    fake_payment_operation_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
+    fake_block_event_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     payment_method = domain.PaymentMethod(
         id=uuid.uuid4(),
@@ -51,10 +60,13 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         content_type="application/json",
     )
 
-    repository = fake_block_event_repository()
+    unit_of_work = fake_unit_of_work(
+        payment_method_repository_class=fake_payment_method_repository_class([]),
+        payment_operation_repository_class=fake_payment_operation_repository_class([]),
+        block_event_repository_class=fake_block_event_repository_class([]),
+    )
 
     block = paypal.blocks.PayPalCreateOrder(
-        block_event_repository=repository,
         adapter=paypal.adapter.PayPalAdapter(
             base_url=os.environ["PAYPAL_BASE_URL"],
             client_id=os.environ["PAYPAL_CLIENT_ID"],
@@ -100,7 +112,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         )
     )
 
-    response = block.run(payment_method)
+    response = block.run(unit_of_work, payment_method)
 
     assert response == domain.BlockResponse(
         status=enums.OperationStatusEnum.COMPLETED,
@@ -108,7 +120,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         error_message=None,
     )
 
-    block_events: list[domain.BlockEvent] = repository.units  # type:ignore[attr-defined]
+    block_events: list[domain.BlockEvent] = unit_of_work.block_event_units  # type:ignore[attr-defined]
     assert len(block_events) == 2
     assert [block.status for block in block_events] == [
         enums.OperationStatusEnum.STARTED,

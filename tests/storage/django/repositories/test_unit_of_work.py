@@ -92,7 +92,9 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
 
     with django_assert_num_queries(9):
         with storage.django.DjangoUnitOfWork(
-            payment_method_repository_class=TemporaryRepository, payment_operation_repository_class=TemporaryRepository
+            payment_method_repository_class=TemporaryRepository,
+            payment_operation_repository_class=TemporaryRepository,
+            block_event_repository_class=TemporaryRepository,
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
@@ -138,7 +140,9 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
 
     with django_assert_num_queries(4), pytest.raises(TestException):
         with storage.django.DjangoUnitOfWork(
-            payment_method_repository_class=TemporaryRepository, payment_operation_repository_class=TemporaryRepository
+            payment_method_repository_class=TemporaryRepository,
+            payment_operation_repository_class=TemporaryRepository,
+            block_event_repository_class=TemporaryRepository,
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
@@ -186,7 +190,9 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
 
     with django_assert_num_queries(10), pytest.raises(TestException):
         with storage.django.DjangoUnitOfWork(
-            payment_method_repository_class=TemporaryRepository, payment_operation_repository_class=TemporaryRepository
+            payment_method_repository_class=TemporaryRepository,
+            payment_operation_repository_class=TemporaryRepository,
+            block_event_repository_class=TemporaryRepository,
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
@@ -232,7 +238,9 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
 
     with django_assert_num_queries(8):
         with storage.django.DjangoUnitOfWork(
-            payment_method_repository_class=TemporaryRepository, payment_operation_repository_class=TemporaryRepository
+            payment_method_repository_class=TemporaryRepository,
+            payment_operation_repository_class=TemporaryRepository,
+            block_event_repository_class=TemporaryRepository,
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(

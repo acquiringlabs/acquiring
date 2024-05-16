@@ -141,7 +141,7 @@ class PaymentFlow:
                 )
             return self.__pay(payment_method)
 
-        block_response = self.initialize_block.run(payment_method=payment_method)
+        block_response = self.initialize_block.run(unit_of_work=self.unit_of_work, payment_method=payment_method)
 
         # Validate that status is one of the expected ones
         if block_response.status not in [
@@ -232,7 +232,9 @@ class PaymentFlow:
             )
 
         # Run Operation Block
-        block_response = self.process_action_block.run(payment_method=payment_method, action_data=action_data)
+        block_response = self.process_action_block.run(
+            unit_of_work=self.unit_of_work, payment_method=payment_method, action_data=action_data
+        )
 
         # Validate that status is one of the expected ones
         if block_response.status not in [
@@ -289,7 +291,7 @@ class PaymentFlow:
         responses = []
         actions = []
         for block in self.pay_blocks:
-            response = block.run(payment_method)
+            response = block.run(unit_of_work=self.unit_of_work, payment_method=payment_method)
             responses.append(response)
             actions += response.actions
 
@@ -345,7 +347,9 @@ class PaymentFlow:
             )
 
         # Run Operation Blocks
-        responses = [block.run(payment_method) for block in self.after_pay_blocks]
+        responses = [
+            block.run(unit_of_work=self.unit_of_work, payment_method=payment_method) for block in self.after_pay_blocks
+        ]
 
         has_completed = all([response.status == OperationStatusEnum.COMPLETED for response in responses])
 
@@ -415,7 +419,7 @@ class PaymentFlow:
             )
 
         # Run Operation Block
-        block_response = self.confirm_block.run(payment_method=payment_method)
+        block_response = self.confirm_block.run(unit_of_work=self.unit_of_work, payment_method=payment_method)
 
         # Validate that status is one of the expected ones
         if block_response.status not in [
@@ -473,7 +477,10 @@ class PaymentFlow:
             )
 
         # Run Operation Blocks
-        responses = [block.run(payment_method) for block in self.after_confirm_blocks]
+        responses = [
+            block.run(unit_of_work=self.unit_of_work, payment_method=payment_method)
+            for block in self.after_confirm_blocks
+        ]
 
         has_completed = all([response.status == OperationStatusEnum.COMPLETED for response in responses])
 

@@ -20,6 +20,9 @@ class UnitOfWork(Protocol):
     payment_operation_repository_class: type[Repository]
     payment_operations: Repository = field(init=False)
 
+    block_event_repository_class: type[Repository]
+    block_events: Repository = field(init=False)
+
     def __enter__(self) -> Self: ...
 
     def __exit__(

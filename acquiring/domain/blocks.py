@@ -23,29 +23,34 @@ def wrapped_by_block_events(  # type:ignore[misc]
     @functools.wraps(function)
     def wrapper(
         self: "protocols.Block",
+        unit_of_work: "protocols.UnitOfWork",
         payment_method: "protocols.PaymentMethod",
         *args: Sequence,
         **kwargs: dict,
     ) -> "protocols.BlockResponse":
         block_name = self.__class__.__name__
 
-        self.block_event_repository.add(
-            block_event=domain.BlockEvent(
-                status=OperationStatusEnum.STARTED,
-                payment_method_id=payment_method.id,
-                block_name=block_name,
+        with unit_of_work as uow:
+            uow.block_events.add(
+                block_event=domain.BlockEvent(
+                    status=OperationStatusEnum.STARTED,
+                    payment_method_id=payment_method.id,
+                    block_name=block_name,
+                )
             )
-        )
+            uow.commit()
 
-        result = function(self, payment_method, *args, **kwargs)
+        result = function(self, unit_of_work, payment_method, *args, **kwargs)
 
-        self.block_event_repository.add(
-            block_event=domain.BlockEvent(
-                status=result.status,
-                payment_method_id=payment_method.id,
-                block_name=block_name,
+        with unit_of_work as uow:
+            uow.block_events.add(
+                block_event=domain.BlockEvent(
+                    status=result.status,
+                    payment_method_id=payment_method.id,
+                    block_name=block_name,
+                )
             )
-        )
+            uow.commit()
         return result
 
     return wrapper

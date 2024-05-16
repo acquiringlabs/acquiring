@@ -1,8 +1,9 @@
 import os
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Callable, Generator, List, Optional
+from types import TracebackType
+from typing import Callable, Generator, List, Optional, Self
 from unittest import mock
 
 import pytest
@@ -126,42 +127,6 @@ def fake_payment_operation_repository_class() -> (
 
 
 @pytest.fixture(scope="module")
-def fake_payment_operation_repository() -> Callable[
-    [Optional[list[protocols.PaymentOperation]]],
-    protocols.Repository,
-]:
-
-    @dataclass
-    class FakePaymentOperationRepository:
-        units: list[protocols.PaymentOperation]
-
-        def add(
-            self,
-            payment_method: protocols.PaymentMethod,
-            type: enums.OperationTypeEnum,
-            status: enums.OperationStatusEnum,
-        ) -> protocols.PaymentOperation:
-            payment_operation = domain.PaymentOperation(
-                type=type,
-                status=status,
-                payment_method_id=payment_method.id,
-            )
-            payment_method.payment_operations.append(payment_operation)
-            return payment_operation
-
-        def get(  # type:ignore[empty-body]
-            self, id: uuid.UUID
-        ) -> protocols.PaymentOperation: ...
-
-    def build_repository(
-        units: Optional[list[protocols.PaymentOperation]] = None,
-    ) -> protocols.Repository:
-        return FakePaymentOperationRepository(units=units if units else [])
-
-    return build_repository
-
-
-@pytest.fixture(scope="module")
 def fake_transaction_repository() -> Callable[
     [Optional[List[protocols.Transaction]]],
     protocols.Repository,
@@ -196,30 +161,72 @@ def fake_transaction_repository() -> Callable[
 
 
 @pytest.fixture(scope="module")
-def fake_block_event_repository() -> Callable[[Optional[list[protocols.BlockEvent]]], protocols.Repository]:
+def fake_block_event_repository_class() -> Callable[[Optional[list[protocols.BlockEvent]]], type[protocols.Repository]]:
+
+    def func(block_events: Optional[list[protocols.BlockEvent]]) -> type[protocols.Repository]:
+
+        @dataclass
+        class FakeBlockEventRepository:
+
+            def __init__(self) -> None:
+                self.units = block_events or []
+
+            def add(self, block_event: protocols.BlockEvent) -> protocols.BlockEvent:
+                block_event = domain.BlockEvent(
+                    status=block_event.status,
+                    payment_method_id=block_event.payment_method_id,
+                    block_name=block_event.block_name,
+                )
+                self.units.append(block_event)
+                return block_event
+
+            def get(  # type:ignore[empty-body]
+                self, id: uuid.UUID
+            ) -> protocols.BlockEvent: ...
+
+        return FakeBlockEventRepository
+
+    return func
+
+
+@pytest.fixture(scope="module")
+def fake_unit_of_work() -> type[protocols.UnitOfWork]:
 
     @dataclass
-    class FakeBlockEventRepository:
-        units: list[protocols.BlockEvent]
+    class FakeUnitOfWork:
+        payment_method_repository_class: type[protocols.Repository]
+        payment_methods: protocols.Repository = field(init=False)
 
-        def add(self, block_event: protocols.BlockEvent) -> protocols.BlockEvent:
-            block_event = domain.BlockEvent(
-                status=block_event.status,
-                payment_method_id=block_event.payment_method_id,
-                block_name=block_event.block_name,
-            )
-            self.units.append(block_event)
-            return block_event
+        payment_operation_repository_class: type[protocols.Repository]
+        payment_operations: protocols.Repository = field(init=False)
 
-        def get(  # type:ignore[empty-body]
-            self, id: uuid.UUID
-        ) -> protocols.BlockEvent: ...
+        block_event_repository_class: type[protocols.Repository]
+        block_events: protocols.Repository = field(init=False)
 
-    assert issubclass(FakeBlockEventRepository, protocols.Repository)
+        payment_method_units: list[protocols.PaymentMethod] = field(default_factory=list)
+        payment_operation_units: list[protocols.PaymentMethod] = field(default_factory=list)
+        block_event_units: list[protocols.BlockEvent] = field(default_factory=list)
 
-    def build_repository(
-        units: Optional[list[protocols.BlockEvent]] = None,
-    ) -> protocols.Repository:
-        return FakeBlockEventRepository(units=units if units else [])
+        def __enter__(self) -> Self:
+            self.payment_methods = self.payment_method_repository_class()
+            self.payment_operations = self.payment_operation_repository_class()
+            self.block_events = self.block_event_repository_class()
+            return self
 
-    return build_repository
+        def __exit__(
+            self,
+            exc_type: Optional[type[Exception]],
+            exc_value: Optional[type[Exception]],
+            exc_tb: Optional[TracebackType],
+        ) -> None:
+            pass
+
+        def commit(self) -> None:
+            self.payment_method_units += self.payment_methods.units  # type:ignore[attr-defined]
+            self.payment_method_units += self.payment_methods.units  # type:ignore[attr-defined]
+            self.block_event_units += self.block_events.units  # type:ignore[attr-defined]
+
+        def rollback(self) -> None:
+            pass
+
+    return FakeUnitOfWork

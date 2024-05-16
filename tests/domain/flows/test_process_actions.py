@@ -19,6 +19,10 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_block_event_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # given a valid payment attempt
@@ -47,6 +51,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
+            block_event_repository_class=fake_block_event_repository_class([]),
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(  # type:ignore[call-arg]
@@ -92,6 +97,10 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_block_event_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # given a valid payment attempt
@@ -120,6 +129,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
+            block_event_repository_class=fake_block_event_repository_class([]),
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(
@@ -170,6 +180,10 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_block_event_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # given a valid payment attempt
@@ -198,6 +212,7 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
+            block_event_repository_class=fake_block_event_repository_class([]),
         ),
         initialize_block=fake_block(),
         process_action_block=None,  # not present
@@ -241,6 +256,10 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_block_event_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # Given a payment method that cannot initialize
@@ -265,6 +284,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
+            block_event_repository_class=fake_block_event_repository_class([]),
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(
@@ -294,6 +314,10 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_block_event_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
 
@@ -317,6 +341,7 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
+            block_event_repository_class=fake_block_event_repository_class([]),
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),

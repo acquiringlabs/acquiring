@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from typing import Callable
+from typing import Callable, Optional
 
 from faker import Faker
 
@@ -16,10 +16,19 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         ...,
         protocols.Repository,
     ],
-    fake_block_event_repository: Callable[
-        ...,
-        protocols.Repository,
+    fake_payment_method_repository_class: Callable[
+        [Optional[list[protocols.PaymentMethod]]],
+        type[protocols.Repository],
     ],
+    fake_payment_operation_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
+    fake_block_event_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
 
     payment_method = domain.PaymentMethod(
@@ -34,11 +43,15 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         confirmable=False,
     )
 
-    block_event_repository = fake_block_event_repository()
+    unit_of_work = fake_unit_of_work(
+        payment_method_repository_class=fake_payment_method_repository_class([]),
+        payment_operation_repository_class=fake_payment_operation_repository_class([]),
+        block_event_repository_class=fake_block_event_repository_class([]),
+    )
+
     transaction_repository = fake_transaction_repository()
 
     block = paypal.blocks.PayPalAfterCreatingOrder(
-        block_event_repository=block_event_repository,
         transaction_repository=transaction_repository,
     )
 
@@ -122,6 +135,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
     }
 
     response = block.run(
+        unit_of_work,
         payment_method,
         webhook_data=paypal.domain.PayPalWebhookData(
             id=raw_data["id"],
@@ -141,7 +155,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         error_message=None,
     )
 
-    block_events: list[domain.BlockEvent] = block_event_repository.units  # type:ignore[attr-defined]
+    block_events: list[domain.BlockEvent] = unit_of_work.block_event_units  # type:ignore[attr-defined]
     assert len(block_events) == 2
     assert [block.status for block in block_events] == [
         enums.OperationStatusEnum.STARTED,

@@ -6,13 +6,12 @@ from acquiring.contrib import paypal
 
 @dataclass
 class PayPalAfterCreatingOrder:
-    unit_of_work: protocols.UnitOfWork
-    block_event_repository: protocols.Repository
     transaction_repository: protocols.Repository
 
     @domain.wrapped_by_block_events
     def run(
         self,
+        unit_of_work: "protocols.UnitOfWork",
         payment_method: "protocols.PaymentMethod",
         webhook_data: paypal.domain.PayPalWebhookData,
     ) -> "protocols.BlockResponse":
