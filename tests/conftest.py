@@ -161,6 +161,39 @@ def fake_transaction_repository() -> Callable[
 
 
 @pytest.fixture(scope="module")
+def fake_transaction_repository_class() -> (
+    Callable[[Optional[list[protocols.Transaction]]], type[protocols.Repository]]
+):
+
+    def func(transactions: Optional[list[protocols.Transaction]]) -> type[protocols.Repository]:
+
+        @dataclass
+        class FakeTransactionRepository:
+            def __init__(self) -> None:
+                self.units = transactions or []
+
+            def add(self, transaction: protocols.Transaction) -> protocols.Transaction:
+                transaction = domain.Transaction(
+                    external_id=transaction.external_id,
+                    timestamp=transaction.timestamp,
+                    raw_data=transaction.raw_data,
+                    provider_name=transaction.provider_name,
+                    payment_method_id=transaction.payment_method_id,
+                )
+                self.units.append(transaction)
+                return transaction
+
+            def get(  # type:ignore[empty-body]
+                self,
+                id: uuid.UUID,
+            ) -> protocols.Transaction: ...
+
+        return FakeTransactionRepository
+
+    return func
+
+
+@pytest.fixture(scope="module")
 def fake_block_event_repository_class() -> Callable[[Optional[list[protocols.BlockEvent]]], type[protocols.Repository]]:
 
     def func(block_events: Optional[list[protocols.BlockEvent]]) -> type[protocols.Repository]:
