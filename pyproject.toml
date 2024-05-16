@@ -25,11 +25,12 @@ name = "acquiring"
 readme = "README.rst"
 requires-python = ">=3.8"
 
+[project.urls]
+Home = "https://github.com/acquiringlabs/acquiring"
+
 [tool.flit.metadata.requires-extra]
 django = ["django>=4.2"]
 
-[project.urls]
-Home = "https://github.com/acquiringlabs/acquiring"
 
 [tool.bandit]
 exclude_dirs = ["tests"]
@@ -63,3 +64,6 @@ ignore-init-module = true
 fail-under = 25
 verbose = 1
 exclude = ["manage.py", "*conftest.py", "*factories.py", "*migrations*", "tests/*"]
+
+[tool.isort]
+sections="STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"

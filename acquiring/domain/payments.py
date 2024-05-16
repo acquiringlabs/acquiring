@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, Sequence
 from uuid import UUID
+
 from acquiring import enums, protocols
 
 

@@ -5,7 +5,6 @@ from django.core import validators as django_validators
 
 from acquiring import domain, protocols
 
-
 CURRENCY_CODE_MAX_LENGTH = 3
 
 

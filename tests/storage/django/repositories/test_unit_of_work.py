@@ -11,6 +11,7 @@ fake = Faker()
 
 if is_django_installed():
     import django
+
     from acquiring import domain, protocols, storage
     from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory
 

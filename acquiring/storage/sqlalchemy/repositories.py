@@ -5,6 +5,7 @@ import deal
 from sqlalchemy import orm
 
 from acquiring import domain, protocols
+
 from . import models
 
 

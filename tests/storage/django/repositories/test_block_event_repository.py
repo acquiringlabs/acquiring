@@ -1,5 +1,6 @@
 import pytest
 from faker import Faker
+
 from acquiring.enums import OperationStatusEnum
 from acquiring.utils import is_django_installed
 from tests.storage.utils import skip_if_django_not_installed
