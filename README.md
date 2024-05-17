@@ -2,6 +2,9 @@
 
 Payment Orchestration Library for Python.
 
+[![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
+
+
 ## Overview
 
 Acquiring aspires to be a flexible and effective toolkit for building applications that handle money.

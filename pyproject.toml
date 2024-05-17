@@ -20,16 +20,17 @@ classifiers = [
 ]
 dynamic = ["version", "description"]
 license = {file = "LICENSE"}
-long_description = {file = "README.rst"}
 name = "acquiring"
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">=3.8"
+long_description = {file = "README.md"}
 
 [project.urls]
 Home = "https://github.com/acquiringlabs/acquiring"
 
-[tool.flit.metadata.requires-extra]
+[project.optional-dependencies]
 django = ["django>=4.2"]
+sqlalchemy = ["sqlalchemy>=1.4"]
 
 
 [tool.bandit]
