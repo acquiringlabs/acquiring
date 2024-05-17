@@ -26,6 +26,9 @@ class SqlAlchemyUnitOfWork:
     block_event_repository_class: type[protocols.Repository]
     block_events: protocols.Repository = field(init=False)
 
+    transaction_repository_class: type[protocols.Repository]
+    transactions: protocols.Repository = field(init=False)
+
     session_factory: orm.sessionmaker = orm.sessionmaker(
         bind=sqlalchemy.create_engine(os.environ.get("SQLALCHEMY_DATABASE_URL"))
     )
@@ -37,6 +40,7 @@ class SqlAlchemyUnitOfWork:
         self.payment_methods = self.payment_method_repository_class(session=self.session)  # type: ignore[call-arg]
         self.payment_operations = self.payment_operation_repository_class(session=self.session)  # type: ignore[call-arg]
         self.block_events = self.block_event_repository_class(session=self.session)  # type: ignore[call-arg]
+        self.transactions = self.transaction_repository_class(session=self.session)  # type: ignore[call-arg]
 
         return self
 

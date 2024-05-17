@@ -49,6 +49,10 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_transaction_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     block_response_actions: list[dict],
     payment_operations_status: OperationStatusEnum,
     fake_unit_of_work: type[protocols.UnitOfWork],
@@ -67,6 +71,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
             block_event_repository_class=fake_block_event_repository_class([]),
+            transaction_repository_class=fake_transaction_repository_class([]),
         ),
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=payment_operations_status,
@@ -139,6 +144,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
             block_event_repository_class=fake_block_event_repository_class([]),
+            transaction_repository_class=fake_payment_operation_repository_class([]),
         ),
         initialize_block=(
             fake_block(  # type:ignore[call-arg]
@@ -193,6 +199,10 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_transaction_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # Given a payment method that cannot initialize
@@ -217,6 +227,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
             block_event_repository_class=fake_block_event_repository_class([]),
+            transaction_repository_class=fake_transaction_repository_class([]),
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
@@ -248,6 +259,10 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_transaction_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
 
@@ -272,6 +287,7 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
             payment_method_repository_class=fake_payment_method_repository_class([]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
             block_event_repository_class=fake_block_event_repository_class([]),
+            transaction_repository_class=fake_transaction_repository_class([]),
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),

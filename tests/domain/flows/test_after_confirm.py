@@ -46,6 +46,10 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_transaction_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     result_status: OperationStatusEnum,
     payment_operation_status: OperationStatusEnum,
 ) -> None:
@@ -106,6 +110,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
             block_event_repository_class=fake_block_event_repository_class([]),
+            transaction_repository_class=fake_transaction_repository_class([]),
         ),
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.COMPLETED,
@@ -178,6 +183,10 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_transaction_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
     # Given a payment method that cannot initialize
@@ -196,6 +205,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
             block_event_repository_class=fake_block_event_repository_class([]),
+            transaction_repository_class=fake_transaction_repository_class([]),
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
@@ -226,6 +236,10 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
+    fake_transaction_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
     fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
 
@@ -250,6 +264,7 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class([]),
             block_event_repository_class=fake_block_event_repository_class([]),
+            transaction_repository_class=fake_transaction_repository_class([]),
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),

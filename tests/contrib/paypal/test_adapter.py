@@ -1,7 +1,6 @@
 import pytest
 import responses
 
-from acquiring import storage
 from acquiring.contrib import paypal
 
 
@@ -21,7 +20,6 @@ def test_givenInvalidCredentials_whenInstantiatingTheAdapter_thenAnUnauthorizedR
             client_id="TEST_CLIENT_ID",
             client_secret="TEST_CLIENT_SECRET",
             callback_url="https://www.example.com",
-            transaction_repository=storage.django.TransactionRepository(),
             webhook_id="LONG_ID",
         )
 
@@ -48,7 +46,6 @@ def test_givenValidCredentials_whenInstantiatingTheAdapter_thenAccessTokenIsRetr
         base_url="https://api-m.sandbox.paypal.com/",
         client_id="TEST_CLIENT_ID",
         client_secret="TEST_CLIENT_SECRET",
-        transaction_repository=storage.django.TransactionRepository(),
         callback_url="https://www.example.com",
         webhook_id="LONG_ID",
     )
@@ -61,7 +58,6 @@ def test_givenABaseUrlThatDoesNotEndInSlash_whenInstantiatingTheAdapter_thenABad
             base_url="https://bad-url.com",
             client_id="TEST_CLIENT_ID",
             client_secret="TEST_CLIENT_SECRET",
-            transaction_repository=storage.django.TransactionRepository(),
             callback_url="https://www.example.com",
             webhook_id="LONG_ID",
         )

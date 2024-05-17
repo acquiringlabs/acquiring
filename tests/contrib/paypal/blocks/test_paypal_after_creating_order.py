@@ -11,12 +11,12 @@ fake = Faker()
 
 
 # TODO implement hypothesis
-def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCompletesPayment(  # type:ignore[misc]
-    fake_transaction_repository: Callable[
-        ...,
-        protocols.Repository,
-    ],
+def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCompletesPayment(
     fake_payment_method_repository_class: Callable[
+        [Optional[list[protocols.PaymentMethod]]],
+        type[protocols.Repository],
+    ],
+    fake_transaction_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
@@ -47,13 +47,10 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         payment_method_repository_class=fake_payment_method_repository_class([]),
         payment_operation_repository_class=fake_payment_operation_repository_class([]),
         block_event_repository_class=fake_block_event_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class([]),
     )
 
-    transaction_repository = fake_transaction_repository()
-
-    block = paypal.blocks.PayPalAfterCreatingOrder(
-        transaction_repository=transaction_repository,
-    )
+    block = paypal.blocks.PayPalAfterCreatingOrder()
 
     external_id = "WH-684457241H310260F-0FC94184GF055315P"
     fake_create_time = datetime.now(timezone.utc).isoformat()
@@ -162,7 +159,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         enums.OperationStatusEnum.COMPLETED,
     ]
 
-    transactions: list[domain.Transaction] = transaction_repository.units  # type:ignore[attr-defined]
+    transactions: list[domain.Transaction] = unit_of_work.transaction_units  # type:ignore[attr-defined]
 
     assert len(transactions) == 1
 

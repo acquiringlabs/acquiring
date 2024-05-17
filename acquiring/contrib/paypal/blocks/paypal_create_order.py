@@ -37,6 +37,7 @@ class PayPalCreateOrder:
             ],
         )
         response = self.adapter.create_order(
+            unit_of_work=unit_of_work,
             payment_method=payment_method,
             request_id=external_id,
             order=order,

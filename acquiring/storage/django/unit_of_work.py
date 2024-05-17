@@ -24,6 +24,9 @@ class DjangoUnitOfWork:
     block_event_repository_class: type[protocols.Repository]
     block_events: protocols.Repository = field(init=False)
 
+    transaction_repository_class: type[protocols.Repository]
+    transactions: protocols.Repository = field(init=False)
+
     def __enter__(self) -> Self:
         """
         Despite Cosmic Python's suggestion, a better approach is to delegate
@@ -39,6 +42,7 @@ class DjangoUnitOfWork:
         self.payment_methods = self.payment_method_repository_class()
         self.payment_operations = self.payment_operation_repository_class()
         self.block_events = self.block_event_repository_class()
+        self.transactions = self.transaction_repository_class()
 
         return self
 

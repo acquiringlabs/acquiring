@@ -236,14 +236,19 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
         block_event_repository_class: type[protocols.Repository]
         block_events: protocols.Repository = field(init=False)
 
+        transaction_repository_class: type[protocols.Repository]
+        transactions: protocols.Repository = field(init=False)
+
         payment_method_units: list[protocols.PaymentMethod] = field(default_factory=list)
         payment_operation_units: list[protocols.PaymentMethod] = field(default_factory=list)
         block_event_units: list[protocols.BlockEvent] = field(default_factory=list)
+        transaction_units: list[protocols.Transaction] = field(default_factory=list)
 
         def __enter__(self) -> Self:
             self.payment_methods = self.payment_method_repository_class()
             self.payment_operations = self.payment_operation_repository_class()
             self.block_events = self.block_event_repository_class()
+            self.transactions = self.transaction_repository_class()
             return self
 
         def __exit__(
@@ -258,6 +263,7 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
             self.payment_method_units += self.payment_methods.units  # type:ignore[attr-defined]
             self.payment_method_units += self.payment_methods.units  # type:ignore[attr-defined]
             self.block_event_units += self.block_events.units  # type:ignore[attr-defined]
+            self.transaction_units += self.transactions.units  # type:ignore[attr-defined]
 
         def rollback(self) -> None:
             pass

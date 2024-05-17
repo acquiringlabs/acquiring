@@ -28,11 +28,12 @@ def wrapped_by_transaction(  # type:ignore[misc]
     @functools.wraps(function)
     def wrapper(
         self: "protocols.Adapter",
+        unit_of_work: "protocols.UnitOfWork",
         payment_method: "protocols.PaymentMethod",
         *args: Sequence,
         **kwargs: dict,
     ) -> "protocols.AdapterResponse":
-        result = function(self, payment_method, *args, **kwargs)
+        result = function(self, unit_of_work, payment_method, *args, **kwargs)
 
         # A transaction is created only when the Adapter Response is successful
         if result.timestamp is not None and result.external_id is not None:
@@ -43,7 +44,9 @@ def wrapped_by_transaction(  # type:ignore[misc]
                 provider_name=self.provider_name,
                 payment_method_id=payment_method.id,
             )
-            self.transaction_repository.add(transaction)
+            with unit_of_work as uow:
+                uow.transactions.add(transaction)
+                uow.commit()
 
         return result
 

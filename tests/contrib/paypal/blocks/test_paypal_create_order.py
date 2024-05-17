@@ -13,13 +13,13 @@ fake = Faker()
 
 
 @responses.activate
-def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRedirectAction(  # type:ignore[misc]
+def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRedirectAction(
     fake_os_environ: Generator,
-    fake_transaction_repository: Callable[
-        ...,
-        protocols.Repository,
-    ],
     fake_payment_method_repository_class: Callable[
+        [Optional[list[protocols.PaymentMethod]]],
+        type[protocols.Repository],
+    ],
+    fake_transaction_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
@@ -64,6 +64,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         payment_method_repository_class=fake_payment_method_repository_class([]),
         payment_operation_repository_class=fake_payment_operation_repository_class([]),
         block_event_repository_class=fake_block_event_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class([]),
     )
 
     block = paypal.blocks.PayPalCreateOrder(
@@ -71,7 +72,6 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
             base_url=os.environ["PAYPAL_BASE_URL"],
             client_id=os.environ["PAYPAL_CLIENT_ID"],
             client_secret=os.environ["PAYPAL_CLIENT_SECRET"],
-            transaction_repository=fake_transaction_repository(),
             callback_url=fake.url(),
             webhook_id=fake.isbn10(),
         ),

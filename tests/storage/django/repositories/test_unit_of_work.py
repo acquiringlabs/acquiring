@@ -96,6 +96,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
             payment_method_repository_class=TemporaryRepository,
             payment_operation_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
+            transaction_repository_class=TemporaryRepository,
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
@@ -144,6 +145,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
             payment_method_repository_class=TemporaryRepository,
             payment_operation_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
+            transaction_repository_class=TemporaryRepository,
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
@@ -194,6 +196,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
             payment_method_repository_class=TemporaryRepository,
             payment_operation_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
+            transaction_repository_class=TemporaryRepository,
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
@@ -242,6 +245,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
             payment_method_repository_class=TemporaryRepository,
             payment_operation_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
+            transaction_repository_class=TemporaryRepository,
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(

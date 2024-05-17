@@ -11,11 +11,24 @@ from tests.domain import factories
 fake = Faker()
 
 
-def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransactionGetsCorrectlyCreated(  # type:ignore[misc]
-    fake_transaction_repository: Callable[
-        ...,
-        protocols.Repository,
+def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransactionGetsCorrectlyCreated(
+    fake_payment_method_repository_class: Callable[
+        [Optional[list[protocols.PaymentMethod]]],
+        type[protocols.Repository],
     ],
+    fake_transaction_repository_class: Callable[
+        [Optional[list[protocols.PaymentMethod]]],
+        type[protocols.Repository],
+    ],
+    fake_payment_operation_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
+    fake_block_event_repository_class: Callable[
+        [Optional[list[protocols.PaymentOperation]]],
+        type[protocols.Repository],
+    ],
+    fake_unit_of_work: type[protocols.UnitOfWork],
 ) -> None:
 
     external_id = "external"
@@ -34,15 +47,16 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
     class FakeAdapter:
         base_url: str
         provider_name: str
-        transaction_repository: protocols.Repository
 
         @domain.wrapped_by_transaction
         def do_something(
             self: protocols.Adapter,
+            unit_of_work: protocols.UnitOfWork,
             payment_method: protocols.PaymentMethod,
             *args: Sequence,
             **kwargs: dict,
         ) -> protocols.AdapterResponse:
+            """This is the expected doc"""
 
             return FakeAdapterResponse(
                 external_id=external_id,
@@ -59,15 +73,19 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
         confirmable=True,
     )
 
-    transaction_repository = fake_transaction_repository()
+    unit_of_work = fake_unit_of_work(
+        payment_method_repository_class=fake_payment_method_repository_class([]),
+        payment_operation_repository_class=fake_payment_operation_repository_class([]),
+        block_event_repository_class=fake_block_event_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class([]),
+    )
 
     FakeAdapter(
         base_url=fake.url(),
         provider_name=provider_name,
-        transaction_repository=transaction_repository,
-    ).do_something(payment_method)
+    ).do_something(unit_of_work, payment_method)
 
-    transactions: list[protocols.Transaction] = transaction_repository.units  # type:ignore[attr-defined]
+    transactions: list[protocols.Transaction] = unit_of_work.transaction_units  # type:ignore[attr-defined]
     assert len(transactions) == 1
 
     assert transactions[0] == domain.Transaction(
@@ -77,38 +95,6 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
         provider_name=provider_name,
         payment_method_id=payment_method.id,
     )
-
-
-def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenNameAndDocsArePreserved() -> None:
-
-    @dataclass(match_args=False)
-    class FakeAdapterResponse:
-        external_id: Optional[str]
-        timestamp: Optional[datetime]
-        raw_data: dict
-        status: str
-
-    @dataclass
-    class FakeAdapter:
-        base_url: str
-        provider_name: str
-        transaction_repository: protocols.Repository
-
-        @domain.wrapped_by_transaction
-        def do_something(
-            self: protocols.Adapter,
-            payment_method: protocols.PaymentMethod,
-            *args: Sequence,
-            **kwargs: dict,
-        ) -> protocols.AdapterResponse:
-            """This is the expected doc"""
-
-            return FakeAdapterResponse(
-                external_id="external",
-                timestamp=datetime.now(),
-                raw_data=fake.pydict(),
-                status=enums.OperationStatusEnum.COMPLETED,
-            )
 
     assert FakeAdapter.do_something.__name__ == "do_something"
     assert FakeAdapter.do_something.__doc__ == "This is the expected doc"
