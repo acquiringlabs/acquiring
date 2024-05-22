@@ -61,8 +61,8 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
     )
 
     unit_of_work = fake_unit_of_work(
-        payment_method_repository_class=fake_payment_method_repository_class([]),
-        payment_operation_repository_class=fake_payment_operation_repository_class([]),
+        payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+        payment_operation_repository_class=fake_payment_operation_repository_class(payment_method.payment_operations),
         block_event_repository_class=fake_block_event_repository_class([]),
         transaction_repository_class=fake_transaction_repository_class([]),
     )

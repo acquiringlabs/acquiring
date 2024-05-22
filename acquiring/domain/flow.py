@@ -130,6 +130,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.STARTED,
             )
+            uow.commit()
 
         # Run Operation Block if it exists
         if self.initialize_block is None:
@@ -139,6 +140,7 @@ class PaymentFlow:
                     type=OperationTypeEnum.INITIALIZE,
                     status=OperationStatusEnum.NOT_PERFORMED,
                 )
+                uow.commit()
             return self.__pay(payment_method)
 
         block_response = self.initialize_block.run(unit_of_work=self.unit_of_work, payment_method=payment_method)
@@ -155,6 +157,7 @@ class PaymentFlow:
                     type=OperationTypeEnum.INITIALIZE,  # TODO Refer to function name rather than explicit input in all cases
                     status=OperationStatusEnum.FAILED,
                 )
+                uow.commit()
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -168,6 +171,7 @@ class PaymentFlow:
                     type=OperationTypeEnum.INITIALIZE,
                     status=OperationStatusEnum.FAILED,
                 )
+                uow.commit()
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -182,6 +186,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.INITIALIZE,
                 status=block_response.status,
             )
+            uow.commit()
 
         # Return Response
         if block_response.status == OperationStatusEnum.COMPLETED:
@@ -216,6 +221,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.PROCESS_ACTION,
                 status=OperationStatusEnum.STARTED,
             )
+            uow.commit()
 
         if self.process_action_block is None:
             with self.unit_of_work as uow:
@@ -224,6 +230,7 @@ class PaymentFlow:
                     type=OperationTypeEnum.PROCESS_ACTION,
                     status=OperationStatusEnum.NOT_PERFORMED,
                 )
+                uow.commit()
             return OperationResponse(
                 status=OperationStatusEnum.NOT_PERFORMED,
                 payment_method=payment_method,
@@ -247,6 +254,7 @@ class PaymentFlow:
                     type=OperationTypeEnum.PROCESS_ACTION,
                     status=OperationStatusEnum.FAILED,
                 )
+                uow.commit()
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -261,6 +269,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.PROCESS_ACTION,
                 status=block_response.status,
             )
+            uow.commit()
 
         # Return Response
         if block_response.status == OperationStatusEnum.COMPLETED:
@@ -286,6 +295,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.PAY,
                 status=OperationStatusEnum.STARTED,
             )
+            uow.commit()
 
         # Run Operation Blocks
         responses = []
@@ -314,6 +324,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.PAY,
                 status=status,
             )
+            uow.commit()
 
         # Return Response
         return OperationResponse(
@@ -345,6 +356,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.AFTER_PAY,
                 status=OperationStatusEnum.STARTED,
             )
+            uow.commit()
 
         # Run Operation Blocks
         responses = [
@@ -360,6 +372,7 @@ class PaymentFlow:
                     type=OperationTypeEnum.AFTER_PAY,
                     status=OperationStatusEnum.FAILED,
                 )
+                uow.commit()
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -375,6 +388,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.AFTER_PAY,
                 status=status,
             )
+            uow.commit()
 
         # Return Response
         return OperationResponse(
@@ -402,6 +416,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.CONFIRM,
                 status=OperationStatusEnum.STARTED,
             )
+            uow.commit()
 
         # Run Operation Blocks
         if self.confirm_block is None:
@@ -411,6 +426,7 @@ class PaymentFlow:
                     type=OperationTypeEnum.CONFIRM,
                     status=OperationStatusEnum.NOT_PERFORMED,
                 )
+                uow.commit()
             return OperationResponse(
                 status=OperationStatusEnum.NOT_PERFORMED,
                 payment_method=payment_method,
@@ -433,6 +449,7 @@ class PaymentFlow:
                     type=OperationTypeEnum.CONFIRM,
                     status=OperationStatusEnum.FAILED,
                 )
+                uow.commit()
             return OperationResponse(
                 status=OperationStatusEnum.FAILED,
                 payment_method=payment_method,
@@ -447,6 +464,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.CONFIRM,
                 status=block_response.status,
             )
+            uow.commit()
 
         # Return Response
         return OperationResponse(
@@ -475,6 +493,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.AFTER_CONFIRM,
                 status=OperationStatusEnum.STARTED,
             )
+            uow.commit()
 
         # Run Operation Blocks
         responses = [
@@ -501,6 +520,7 @@ class PaymentFlow:
                 type=OperationTypeEnum.AFTER_CONFIRM,
                 status=status,
             )
+            uow.commit()
 
         # Return Response
         return OperationResponse(

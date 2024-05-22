@@ -3,7 +3,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from types import TracebackType
-from typing import Callable, Generator, List, Optional, Self
+from typing import Callable, Generator, Optional, Self
 from unittest import mock
 
 import pytest
@@ -55,7 +55,10 @@ def fake_payment_method_repository_class() -> (
         class FakePaymentMethodRepository:
 
             def __init__(self) -> None:
-                self.units = payment_methods or []
+                """
+                Cloning the list into units attribute to simulate the independence of database versus objects in memory
+                """
+                self.units = payment_methods.copy() if payment_methods is not None else []
 
             def add(self, data: protocols.DraftPaymentMethod) -> protocols.PaymentMethod:
                 payment_method_id = uuid.uuid4()
@@ -101,7 +104,10 @@ def fake_payment_operation_repository_class() -> (
         @dataclass
         class FakePaymentOperationRepository:
             def __init__(self) -> None:
-                self.units = payment_operations or []
+                """
+                Cloning the list into units attribute to simulate the independence of database versus objects in memory
+                """
+                self.units = payment_operations.copy() if payment_operations is not None else []
 
             def add(
                 self,
@@ -115,6 +121,7 @@ def fake_payment_operation_repository_class() -> (
                     payment_method_id=payment_method.id,
                 )
                 payment_method.payment_operations.append(payment_operation)
+                self.units.append(payment_operation)
                 return payment_operation
 
             def get(  # type:ignore[empty-body]
@@ -127,40 +134,6 @@ def fake_payment_operation_repository_class() -> (
 
 
 @pytest.fixture(scope="module")
-def fake_transaction_repository() -> Callable[
-    [Optional[List[protocols.Transaction]]],
-    protocols.Repository,
-]:
-
-    @dataclass
-    class FakeTransactionRepository:
-        units: List[protocols.Transaction]
-
-        def add(self, transaction: protocols.Transaction) -> protocols.Transaction:
-            transaction = domain.Transaction(
-                external_id=transaction.external_id,
-                timestamp=transaction.timestamp,
-                raw_data=transaction.raw_data,
-                provider_name=transaction.provider_name,
-                payment_method_id=transaction.payment_method_id,
-            )
-            self.units.append(transaction)
-            return transaction
-
-        def get(  # type:ignore[empty-body]
-            self,
-            id: uuid.UUID,
-        ) -> protocols.Transaction: ...
-
-    def build_repository(
-        units: Optional[list[protocols.Transaction]] = None,
-    ) -> protocols.Repository:
-        return FakeTransactionRepository(units=units if units else [])
-
-    return build_repository
-
-
-@pytest.fixture(scope="module")
 def fake_transaction_repository_class() -> (
     Callable[[Optional[list[protocols.Transaction]]], type[protocols.Repository]]
 ):
@@ -170,7 +143,10 @@ def fake_transaction_repository_class() -> (
         @dataclass
         class FakeTransactionRepository:
             def __init__(self) -> None:
-                self.units = transactions or []
+                """
+                Cloning the list into units attribute to simulate the independence of database versus objects in memory
+                """
+                self.units = transactions.copy() if transactions is not None else []
 
             def add(self, transaction: protocols.Transaction) -> protocols.Transaction:
                 transaction = domain.Transaction(
@@ -202,7 +178,10 @@ def fake_block_event_repository_class() -> Callable[[Optional[list[protocols.Blo
         class FakeBlockEventRepository:
 
             def __init__(self) -> None:
-                self.units = block_events or []
+                """
+                Cloning the list into units attribute to simulate the independence of database versus objects in memory
+                """
+                self.units = block_events.copy() if block_events is not None else []
 
             def add(self, block_event: protocols.BlockEvent) -> protocols.BlockEvent:
                 block_event = domain.BlockEvent(
@@ -239,6 +218,7 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
         transaction_repository_class: type[protocols.Repository]
         transactions: protocols.Repository = field(init=False)
 
+        # TODO Make these sets so that appending doesn't lead to duplicates by construction
         payment_method_units: list[protocols.PaymentMethod] = field(default_factory=list)
         payment_operation_units: list[protocols.PaymentMethod] = field(default_factory=list)
         block_event_units: list[protocols.BlockEvent] = field(default_factory=list)
@@ -246,9 +226,24 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
 
         def __enter__(self) -> Self:
             self.payment_methods = self.payment_method_repository_class()
+            self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]
+
             self.payment_operations = self.payment_operation_repository_class()
+            self.payment_operation_units = self.payment_operations.units  # type:ignore[attr-defined]
+
             self.block_events = self.block_event_repository_class()
+            self.block_event_units += [
+                unit
+                for unit in self.block_events.units  # type:ignore[attr-defined]
+                if unit not in self.block_event_units
+            ]
+
             self.transactions = self.transaction_repository_class()
+            self.transaction_units += [
+                unit
+                for unit in self.transactions.units  # type:ignore[attr-defined]
+                if unit not in self.transaction_units
+            ]
             return self
 
         def __exit__(
@@ -260,10 +255,19 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
             pass
 
         def commit(self) -> None:
-            self.payment_method_units += self.payment_methods.units  # type:ignore[attr-defined]
-            self.payment_method_units += self.payment_methods.units  # type:ignore[attr-defined]
-            self.block_event_units += self.block_events.units  # type:ignore[attr-defined]
-            self.transaction_units += self.transactions.units  # type:ignore[attr-defined]
+            """Refreshes the units with those inside the repository"""
+            self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]
+            self.payment_operation_units = self.payment_operations.units  # type:ignore[attr-defined]
+            self.block_event_units += [
+                unit
+                for unit in self.block_events.units  # type:ignore[attr-defined]
+                if unit not in self.block_event_units
+            ]
+            self.transaction_units += [
+                unit
+                for unit in self.transactions.units  # type:ignore[attr-defined]
+                if unit not in self.transaction_units
+            ]
 
         def rollback(self) -> None:
             pass

@@ -104,14 +104,14 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
         ],
     )
 
-    # when Confirming
+    unit_of_work = fake_unit_of_work(
+        payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+        payment_operation_repository_class=fake_payment_operation_repository_class(payment_method.payment_operations),
+        block_event_repository_class=fake_block_event_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class([]),
+    )
     result = domain.PaymentFlow(
-        unit_of_work=fake_unit_of_work(
-            payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-            payment_operation_repository_class=fake_payment_operation_repository_class([]),
-            block_event_repository_class=fake_block_event_repository_class([]),
-            transaction_repository_class=fake_transaction_repository_class([]),
-        ),
+        unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.COMPLETED,
             fake_response_actions=[],
@@ -128,44 +128,47 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
     ).after_confirm(payment_method)
 
     # then the payment flow returns the correct Operation Response
-    db_payment_operations = payment_method.payment_operations
-    assert len(db_payment_operations) == 10
+    payment_operations = payment_method.payment_operations
+    assert len(payment_operations) == 10
 
-    assert db_payment_operations[0].type == OperationTypeEnum.INITIALIZE
-    assert db_payment_operations[0].status == OperationStatusEnum.STARTED
+    assert payment_operations[0].type == OperationTypeEnum.INITIALIZE
+    assert payment_operations[0].status == OperationStatusEnum.STARTED
 
-    assert db_payment_operations[1].type == OperationTypeEnum.INITIALIZE
-    assert db_payment_operations[1].status == OperationStatusEnum.COMPLETED
+    assert payment_operations[1].type == OperationTypeEnum.INITIALIZE
+    assert payment_operations[1].status == OperationStatusEnum.COMPLETED
 
-    assert db_payment_operations[2].type == OperationTypeEnum.PAY
-    assert db_payment_operations[2].status == OperationStatusEnum.STARTED
+    assert payment_operations[2].type == OperationTypeEnum.PAY
+    assert payment_operations[2].status == OperationStatusEnum.STARTED
 
-    assert db_payment_operations[3].type == OperationTypeEnum.PAY
-    assert db_payment_operations[3].status == OperationStatusEnum.COMPLETED
+    assert payment_operations[3].type == OperationTypeEnum.PAY
+    assert payment_operations[3].status == OperationStatusEnum.COMPLETED
 
-    assert db_payment_operations[4].type == OperationTypeEnum.AFTER_PAY
-    assert db_payment_operations[4].status == OperationStatusEnum.STARTED
+    assert payment_operations[4].type == OperationTypeEnum.AFTER_PAY
+    assert payment_operations[4].status == OperationStatusEnum.STARTED
 
-    assert db_payment_operations[5].type == OperationTypeEnum.AFTER_PAY
-    assert db_payment_operations[5].status == OperationStatusEnum.COMPLETED
+    assert payment_operations[5].type == OperationTypeEnum.AFTER_PAY
+    assert payment_operations[5].status == OperationStatusEnum.COMPLETED
 
-    assert db_payment_operations[6].type == OperationTypeEnum.CONFIRM
-    assert db_payment_operations[6].status == OperationStatusEnum.STARTED
+    assert payment_operations[6].type == OperationTypeEnum.CONFIRM
+    assert payment_operations[6].status == OperationStatusEnum.STARTED
 
-    assert db_payment_operations[7].type == OperationTypeEnum.CONFIRM
-    assert db_payment_operations[7].status == OperationStatusEnum.COMPLETED
+    assert payment_operations[7].type == OperationTypeEnum.CONFIRM
+    assert payment_operations[7].status == OperationStatusEnum.COMPLETED
 
-    assert db_payment_operations[8].type == OperationTypeEnum.AFTER_CONFIRM
-    assert db_payment_operations[8].status == OperationStatusEnum.STARTED
+    assert payment_operations[8].type == OperationTypeEnum.AFTER_CONFIRM
+    assert payment_operations[8].status == OperationStatusEnum.STARTED
 
-    assert db_payment_operations[9].type == OperationTypeEnum.AFTER_CONFIRM
-    assert db_payment_operations[9].status == result_status
+    assert payment_operations[9].type == OperationTypeEnum.AFTER_CONFIRM
+    assert payment_operations[9].status == result_status
 
     assert result.type == OperationTypeEnum.AFTER_CONFIRM
     assert result.status == result_status
     assert result.actions == []
     assert result.payment_method is not None
     assert result.payment_method.id == payment_method_id
+
+    db_payment_operations = unit_of_work.payment_operation_units  # type:ignore[attr-defined]
+    assert len(db_payment_operations) == 10
 
 
 def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPaymentFlowReturnsAFailedStatusOperationResponse(
@@ -199,7 +202,6 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
     )
     assert dl.can_after_confirm(payment_method) is False
 
-    # When Initializing
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
@@ -258,7 +260,6 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
         confirmable=False,
     )
 
-    # When Confirming
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),

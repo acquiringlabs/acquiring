@@ -30,7 +30,8 @@ VALID_RESPONSE_STATUS = [
         if status
         not in [
             OperationStatusEnum.REQUIRES_ACTION,
-            OperationStatusEnum.COMPLETED,  # check test below
+            OperationStatusEnum.NOT_PERFORMED,
+            OperationStatusEnum.COMPLETED,
         ]
     ],
 )
@@ -66,13 +67,15 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
     )
 
     # when Initializing
+    unit_of_work = fake_unit_of_work(
+        payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+        payment_operation_repository_class=fake_payment_operation_repository_class(payment_method.payment_operations),
+        block_event_repository_class=fake_block_event_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class([]),
+    )
+
     result = domain.PaymentFlow(
-        unit_of_work=fake_unit_of_work(
-            payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-            payment_operation_repository_class=fake_payment_operation_repository_class([]),
-            block_event_repository_class=fake_block_event_repository_class([]),
-            transaction_repository_class=fake_transaction_repository_class([]),
-        ),
+        unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=payment_operations_status,
             fake_response_actions=block_response_actions,
@@ -85,16 +88,19 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
     ).initialize(payment_method)
 
     # then the payment flow returns the correct Operation Response
-    db_payment_operations = payment_method.payment_operations
-    assert len(db_payment_operations) == 2
+    payment_operations = payment_method.payment_operations
+    assert len(payment_operations) == 2
 
-    assert db_payment_operations[0].type == OperationTypeEnum.INITIALIZE
-    assert db_payment_operations[0].status == OperationStatusEnum.STARTED
+    assert payment_operations[0].type == OperationTypeEnum.INITIALIZE
+    assert payment_operations[0].status == OperationStatusEnum.STARTED
 
-    assert db_payment_operations[1].type == OperationTypeEnum.INITIALIZE
-    assert db_payment_operations[1].status == (
+    assert payment_operations[1].type == OperationTypeEnum.INITIALIZE
+    assert payment_operations[1].status == (
         payment_operations_status if payment_operations_status in VALID_RESPONSE_STATUS else OperationStatusEnum.FAILED
     )
+
+    payment_operations = unit_of_work.payment_operation_units  # type:ignore[attr-defined]
+    assert len(payment_operations) == 2
 
     assert result.type == OperationTypeEnum.INITIALIZE
     assert result.status == (
@@ -139,13 +145,15 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
     )
 
     # when Initializing
+    unit_of_work = fake_unit_of_work(
+        payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+        payment_operation_repository_class=fake_payment_operation_repository_class(payment_method.payment_operations),
+        block_event_repository_class=fake_block_event_repository_class([]),
+        transaction_repository_class=fake_payment_operation_repository_class([]),
+    )
+
     result = domain.PaymentFlow(
-        unit_of_work=fake_unit_of_work(
-            payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-            payment_operation_repository_class=fake_payment_operation_repository_class([]),
-            block_event_repository_class=fake_block_event_repository_class([]),
-            transaction_repository_class=fake_payment_operation_repository_class([]),
-        ),
+        unit_of_work=unit_of_work,
         initialize_block=(
             fake_block(  # type:ignore[call-arg]
                 fake_response_status=payment_operations_status,
@@ -162,20 +170,23 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
     ).initialize(payment_method)
 
     # then the payment flow returns the correct Operation Response
-    db_payment_operations = payment_method.payment_operations
-    assert len(db_payment_operations) == 4
+    payment_operations = payment_method.payment_operations
+    assert len(payment_operations) == 4
 
-    assert db_payment_operations[0].type == OperationTypeEnum.INITIALIZE
-    assert db_payment_operations[0].status == OperationStatusEnum.STARTED
+    assert payment_operations[0].type == OperationTypeEnum.INITIALIZE
+    assert payment_operations[0].status == OperationStatusEnum.STARTED
 
-    assert db_payment_operations[1].type == OperationTypeEnum.INITIALIZE
-    assert db_payment_operations[1].status == payment_operations_status
+    assert payment_operations[1].type == OperationTypeEnum.INITIALIZE
+    assert payment_operations[1].status == payment_operations_status
 
-    assert db_payment_operations[2].type == OperationTypeEnum.PAY
-    assert db_payment_operations[2].status == OperationStatusEnum.STARTED
+    assert payment_operations[2].type == OperationTypeEnum.PAY
+    assert payment_operations[2].status == OperationStatusEnum.STARTED
 
-    assert db_payment_operations[3].type == OperationTypeEnum.PAY
-    assert db_payment_operations[3].status == OperationStatusEnum.COMPLETED
+    assert payment_operations[3].type == OperationTypeEnum.PAY
+    assert payment_operations[3].status == OperationStatusEnum.COMPLETED
+
+    payment_operations = unit_of_work.payment_operation_units  # type:ignore[attr-defined]
+    assert len(payment_operations) == 4
 
     assert result.type == OperationTypeEnum.PAY
     assert result.status == OperationStatusEnum.COMPLETED
@@ -221,14 +232,14 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
     )
     assert dl.can_initialize(payment_method) is False
 
-    # When Initializing
+    unit_of_work = fake_unit_of_work(
+        payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
+        payment_operation_repository_class=fake_payment_operation_repository_class(payment_method.payment_operations),
+        block_event_repository_class=fake_block_event_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class([]),
+    )
     result = domain.PaymentFlow(
-        unit_of_work=fake_unit_of_work(
-            payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-            payment_operation_repository_class=fake_payment_operation_repository_class([]),
-            block_event_repository_class=fake_block_event_repository_class([]),
-            transaction_repository_class=fake_transaction_repository_class([]),
-        ),
+        unit_of_work=unit_of_work,
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
@@ -285,7 +296,9 @@ def test_givenANonExistingPaymentMethod_whenInitializing_thenPaymentFlowReturnsA
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([]),
-            payment_operation_repository_class=fake_payment_operation_repository_class([]),
+            payment_operation_repository_class=fake_payment_operation_repository_class(
+                payment_method.payment_operations
+            ),
             block_event_repository_class=fake_block_event_repository_class([]),
             transaction_repository_class=fake_transaction_repository_class([]),
         ),
