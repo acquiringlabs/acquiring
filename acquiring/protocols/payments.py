@@ -5,7 +5,7 @@ Check this link for more info.
 https://typing.readthedocs.io/en/latest/spec/protocol.html#protocols
 """
 
-from dataclasses import field
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, Protocol, Sequence, runtime_checkable
 from uuid import UUID
@@ -15,6 +15,7 @@ from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 from .storage import UnitOfWork
 
 
+@dataclass(frozen=True, match_args=False)
 class PaymentOperation(Protocol):
     payment_method_id: UUID
     type: OperationTypeEnum

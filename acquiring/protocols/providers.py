@@ -24,7 +24,7 @@ class Adapter(Protocol):
     transaction_repository: storage.Repository
 
 
-@dataclass
+@dataclass(frozen=True, match_args=False)
 class Transaction(Protocol):
     external_id: str
     timestamp: datetime

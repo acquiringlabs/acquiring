@@ -27,11 +27,11 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
         type[protocols.Repository],
     ],
     fake_payment_operation_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
     fake_block_event_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.BlockEvent]]],
         type[protocols.Repository],
     ],
     fake_transaction_repository_class: Callable[
@@ -43,8 +43,8 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
 
     unit_of_work = fake_unit_of_work(
         payment_method_repository_class=fake_payment_method_repository_class([]),
-        payment_operation_repository_class=fake_payment_operation_repository_class([]),
-        block_event_repository_class=fake_block_event_repository_class([]),
+        payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+        block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class([]),
     )
 
@@ -60,13 +60,20 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
     block_events: list[domain.BlockEvent] = unit_of_work.block_event_units  # type:ignore[attr-defined]
     assert len(block_events) == 2
 
-    assert block_events[0].status == enums.OperationStatusEnum.STARTED
-    assert block_events[0].payment_method_id == payment_method.id
-    assert block_events[0].block_name == FooBlock.__name__
-
-    assert block_events[1].status == enums.OperationStatusEnum.COMPLETED
-    assert block_events[1].payment_method_id == payment_method.id
-    assert block_events[1].block_name == FooBlock.__name__
+    assert (
+        domain.BlockEvent(
+            status=enums.OperationStatusEnum.STARTED, payment_method_id=payment_method.id, block_name=FooBlock.__name__
+        )
+        in block_events
+    )
+    assert (
+        domain.BlockEvent(
+            status=enums.OperationStatusEnum.COMPLETED,
+            payment_method_id=payment_method.id,
+            block_name=FooBlock.__name__,
+        )
+        in block_events
+    )
 
     # Name and Doc are Preserved
     assert FooBlock.run.__name__ == "run"

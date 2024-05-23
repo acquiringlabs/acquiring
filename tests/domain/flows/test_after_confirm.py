@@ -39,11 +39,11 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
         [Optional[list[protocols.PaymentMethod]]], type[protocols.Repository]
     ],
     fake_payment_operation_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
     fake_block_event_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.BlockEvent]]],
         type[protocols.Repository],
     ],
     fake_transaction_repository_class: Callable[
@@ -106,8 +106,10 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
 
     unit_of_work = fake_unit_of_work(
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(payment_method.payment_operations),
-        block_event_repository_class=fake_block_event_repository_class([]),
+        payment_operation_repository_class=fake_payment_operation_repository_class(
+            set(payment_method.payment_operations)
+        ),
+        block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class([]),
     )
     result = domain.PaymentFlow(
@@ -179,11 +181,11 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
         type[protocols.Repository],
     ],
     fake_payment_operation_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
     fake_block_event_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.BlockEvent]]],
         type[protocols.Repository],
     ],
     fake_transaction_repository_class: Callable[
@@ -205,8 +207,8 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-            payment_operation_repository_class=fake_payment_operation_repository_class([]),
-            block_event_repository_class=fake_block_event_repository_class([]),
+            payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+            block_event_repository_class=fake_block_event_repository_class(set()),
             transaction_repository_class=fake_transaction_repository_class([]),
         ),
         initialize_block=fake_block(),
@@ -231,11 +233,11 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
         type[protocols.Repository],
     ],
     fake_payment_operation_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
     fake_block_event_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.BlockEvent]]],
         type[protocols.Repository],
     ],
     fake_transaction_repository_class: Callable[
@@ -263,8 +265,8 @@ def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowRetur
     result = domain.PaymentFlow(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-            payment_operation_repository_class=fake_payment_operation_repository_class([]),
-            block_event_repository_class=fake_block_event_repository_class([]),
+            payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+            block_event_repository_class=fake_block_event_repository_class(set()),
             transaction_repository_class=fake_transaction_repository_class([]),
         ),
         initialize_block=fake_block(),

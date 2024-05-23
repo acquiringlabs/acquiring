@@ -4,7 +4,7 @@ from uuid import UUID
 from acquiring.enums import OperationStatusEnum
 
 
-@dataclass
+@dataclass(frozen=True)
 class BlockEvent:
     """
     Represents a wide event related to executing the code inside a Block class.

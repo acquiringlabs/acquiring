@@ -6,8 +6,7 @@ from uuid import UUID
 from acquiring import enums, protocols
 
 
-# TODO frozen=True compatible with protocols.PaymentOperation (expected settable variable, got read-only attribute)
-@dataclass
+@dataclass(frozen=True)
 class PaymentOperation:
     type: "enums.OperationTypeEnum"
     status: "enums.OperationStatusEnum"

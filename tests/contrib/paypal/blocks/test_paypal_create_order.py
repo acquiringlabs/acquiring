@@ -24,11 +24,11 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         type[protocols.Repository],
     ],
     fake_payment_operation_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
     fake_block_event_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.BlockEvent]]],
         type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
@@ -62,8 +62,10 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
 
     unit_of_work = fake_unit_of_work(
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(payment_method.payment_operations),
-        block_event_repository_class=fake_block_event_repository_class([]),
+        payment_operation_repository_class=fake_payment_operation_repository_class(
+            set(payment_method.payment_operations)
+        ),
+        block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class([]),
     )
 
@@ -120,19 +122,22 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         error_message=None,
     )
 
-    block_events: list[domain.BlockEvent] = unit_of_work.block_event_units  # type:ignore[attr-defined]
+    block_events = unit_of_work.block_event_units  # type:ignore[attr-defined]
     assert len(block_events) == 2
-    assert [block.status for block in block_events] == [
-        enums.OperationStatusEnum.STARTED,
+    assert sorted([block.status for block in block_events]) == [
         enums.OperationStatusEnum.COMPLETED,
+        enums.OperationStatusEnum.STARTED,
     ]
 
-    # assert models.Transaction.objects.count() == 1
-    # transaction = models.Transaction.objects.first()
-    # assert transaction.to_domain() == domain.Transaction(
-    #     external_id=fake_id,
-    #     timestamp=datetime.fromisoformat(fake_create_time),
-    #     provider_name="paypal",
-    #     payment_method_id=payment_method.id,
-    #     raw_data=raw_response,
-    # )
+    transaction_units = unit_of_work.transaction_units  # type:ignore[attr-defined]
+    assert len(transaction_units) == 1
+    assert (
+        domain.Transaction(
+            external_id=fake_id,
+            timestamp=datetime.fromisoformat(fake_create_time),
+            provider_name="paypal",
+            payment_method_id=payment_method.id,
+            raw_data=raw_response,
+        )
+        in transaction_units
+    )

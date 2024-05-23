@@ -96,10 +96,10 @@ def fake_payment_method_repository_class() -> (
 
 @pytest.fixture
 def fake_payment_operation_repository_class() -> (
-    Callable[[Optional[list[protocols.PaymentOperation]]], type[protocols.Repository]]
+    Callable[[Optional[set[protocols.PaymentOperation]]], type[protocols.Repository]]
 ):
 
-    def func(payment_operations: Optional[list[protocols.PaymentOperation]]) -> type[protocols.Repository]:
+    def func(payment_operations: Optional[set[protocols.PaymentOperation]]) -> type[protocols.Repository]:
 
         @dataclass
         class FakePaymentOperationRepository:
@@ -107,7 +107,7 @@ def fake_payment_operation_repository_class() -> (
                 """
                 Cloning the list into units attribute to simulate the independence of database versus objects in memory
                 """
-                self.units = payment_operations.copy() if payment_operations is not None else []
+                self.units = payment_operations.copy() if payment_operations is not None else set()
 
             def add(
                 self,
@@ -121,7 +121,7 @@ def fake_payment_operation_repository_class() -> (
                     payment_method_id=payment_method.id,
                 )
                 payment_method.payment_operations.append(payment_operation)
-                self.units.append(payment_operation)
+                self.units.add(payment_operation)
                 return payment_operation
 
             def get(  # type:ignore[empty-body]
@@ -170,9 +170,9 @@ def fake_transaction_repository_class() -> (
 
 
 @pytest.fixture(scope="module")
-def fake_block_event_repository_class() -> Callable[[Optional[list[protocols.BlockEvent]]], type[protocols.Repository]]:
+def fake_block_event_repository_class() -> Callable[[Optional[set[protocols.BlockEvent]]], type[protocols.Repository]]:
 
-    def func(block_events: Optional[list[protocols.BlockEvent]]) -> type[protocols.Repository]:
+    def func(block_events: Optional[set[protocols.BlockEvent]]) -> type[protocols.Repository]:
 
         @dataclass
         class FakeBlockEventRepository:
@@ -181,7 +181,7 @@ def fake_block_event_repository_class() -> Callable[[Optional[list[protocols.Blo
                 """
                 Cloning the list into units attribute to simulate the independence of database versus objects in memory
                 """
-                self.units = block_events.copy() if block_events is not None else []
+                self.units = block_events.copy() if block_events is not None else set()
 
             def add(self, block_event: protocols.BlockEvent) -> protocols.BlockEvent:
                 block_event = domain.BlockEvent(
@@ -189,7 +189,7 @@ def fake_block_event_repository_class() -> Callable[[Optional[list[protocols.Blo
                     payment_method_id=block_event.payment_method_id,
                     block_name=block_event.block_name,
                 )
-                self.units.append(block_event)
+                self.units.add(block_event)
                 return block_event
 
             def get(  # type:ignore[empty-body]
@@ -218,25 +218,24 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
         transaction_repository_class: type[protocols.Repository]
         transactions: protocols.Repository = field(init=False)
 
-        # TODO Make these sets so that appending doesn't lead to duplicates by construction
         payment_method_units: list[protocols.PaymentMethod] = field(default_factory=list)
-        payment_operation_units: list[protocols.PaymentMethod] = field(default_factory=list)
-        block_event_units: list[protocols.BlockEvent] = field(default_factory=list)
-        transaction_units: list[protocols.Transaction] = field(default_factory=list)
+        payment_operation_units: set[protocols.PaymentMethod] = field(default_factory=set)
+        block_event_units: set[protocols.BlockEvent] = field(default_factory=set)
+
+        # TODO Make Transaction hashable despite the use of raw_data: dict
+        transaction_units: list[protocols.Transaction] = field(default_factory=list)  # not hashable because of dict
 
         def __enter__(self) -> Self:
             self.payment_methods = self.payment_method_repository_class()
             self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]
 
             self.payment_operations = self.payment_operation_repository_class()
-            self.payment_operation_units = self.payment_operations.units  # type:ignore[attr-defined]
+            self.payment_operation_units.update(
+                unit for unit in self.payment_operations.units  # type:ignore[attr-defined]
+            )
 
             self.block_events = self.block_event_repository_class()
-            self.block_event_units += [
-                unit
-                for unit in self.block_events.units  # type:ignore[attr-defined]
-                if unit not in self.block_event_units
-            ]
+            self.block_event_units.update(unit for unit in self.block_events.units)  # type:ignore[attr-defined]
 
             self.transactions = self.transaction_repository_class()
             self.transaction_units += [
@@ -257,12 +256,13 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
         def commit(self) -> None:
             """Refreshes the units with those inside the repository"""
             self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]
-            self.payment_operation_units = self.payment_operations.units  # type:ignore[attr-defined]
-            self.block_event_units += [
-                unit
-                for unit in self.block_events.units  # type:ignore[attr-defined]
-                if unit not in self.block_event_units
-            ]
+
+            self.payment_operation_units.update(
+                unit for unit in self.payment_operations.units  # type:ignore[attr-defined]
+            )
+
+            self.block_event_units.update(unit for unit in self.block_events.units)  # type:ignore[attr-defined]
+
             self.transaction_units += [
                 unit
                 for unit in self.transactions.units  # type:ignore[attr-defined]

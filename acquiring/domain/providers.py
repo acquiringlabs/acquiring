@@ -7,7 +7,7 @@ from uuid import UUID
 from acquiring import domain, protocols
 
 
-@dataclass
+@dataclass(frozen=True)
 class Transaction:
     external_id: str
     timestamp: datetime

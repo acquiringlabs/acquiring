@@ -8,11 +8,11 @@ def test_givenCorrectInformation_paymentFlowGetsDefined(
         [Optional[list[protocols.PaymentMethod]]], type[protocols.Repository]
     ],
     fake_payment_operation_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
     fake_block_event_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.BlockEvent]]],
         type[protocols.Repository],
     ],
     fake_transaction_repository_class: Callable[
@@ -29,8 +29,8 @@ def test_givenCorrectInformation_paymentFlowGetsDefined(
         return domain.PaymentFlow(
             unit_of_work=fake_unit_of_work(
                 payment_method_repository_class=fake_payment_method_repository_class([]),
-                payment_operation_repository_class=fake_payment_operation_repository_class([]),
-                block_event_repository_class=fake_block_event_repository_class([]),
+                payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+                block_event_repository_class=fake_block_event_repository_class(set()),
                 transaction_repository_class=fake_transaction_repository_class([]),
             ),
             initialize_block=fake_block(),

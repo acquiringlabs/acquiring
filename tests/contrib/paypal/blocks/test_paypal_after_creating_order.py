@@ -21,11 +21,11 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         type[protocols.Repository],
     ],
     fake_payment_operation_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
     fake_block_event_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
+        [Optional[set[protocols.BlockEvent]]],
         type[protocols.Repository],
     ],
     fake_unit_of_work: type[protocols.UnitOfWork],
@@ -45,8 +45,10 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
 
     unit_of_work = fake_unit_of_work(
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(payment_method.payment_operations),
-        block_event_repository_class=fake_block_event_repository_class([]),
+        payment_operation_repository_class=fake_payment_operation_repository_class(
+            set(payment_method.payment_operations)
+        ),
+        block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class([]),
     )
 
@@ -154,9 +156,9 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
 
     block_events: list[domain.BlockEvent] = unit_of_work.block_event_units  # type:ignore[attr-defined]
     assert len(block_events) == 2
-    assert [block.status for block in block_events] == [
-        enums.OperationStatusEnum.STARTED,
+    assert sorted([block.status for block in block_events]) == [
         enums.OperationStatusEnum.COMPLETED,
+        enums.OperationStatusEnum.STARTED,
     ]
 
     transactions: list[domain.Transaction] = unit_of_work.transaction_units  # type:ignore[attr-defined]
