@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Callable, Optional, Sequence
 
 from acquiring import domain, enums, protocols
+from tests import protocols as test_protocols
 from tests.domain import factories
 
 
@@ -28,17 +29,17 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
         [Optional[set[protocols.BlockEvent]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
-    fake_unit_of_work: type[protocols.UnitOfWork],
+    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
 
     unit_of_work = fake_unit_of_work(
@@ -57,7 +58,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
 
     FooBlock().run(unit_of_work=unit_of_work, payment_method=payment_method)
 
-    block_events: list[domain.BlockEvent] = unit_of_work.block_event_units  # type:ignore[attr-defined]
+    block_events = unit_of_work.block_event_units
     assert len(block_events) == 2
 
     assert (

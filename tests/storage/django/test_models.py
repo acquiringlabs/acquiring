@@ -19,9 +19,7 @@ def test_PaymentOperationTypeChoices_match_OperationTypeEnum() -> None:
 
 @skip_if_django_not_installed
 def test_StatusChoices_match_OperationStatusEnum() -> None:
-    choices = set(
-        member.value for member in storage.django.models.StatusChoices  # type:ignore[attr-defined]
-    )
+    choices = set(member.value for member in storage.django.models.StatusChoices)  # type:ignore[attr-defined]
     status_enums = set(item.value for item in enums.OperationStatusEnum)
 
     assert choices == status_enums

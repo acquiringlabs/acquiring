@@ -6,6 +6,7 @@ from faker import Faker
 
 from acquiring import domain, enums, protocols
 from acquiring.contrib import paypal
+from tests import protocols as test_protocols
 
 fake = Faker()
 
@@ -22,13 +23,13 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
         [Optional[set[protocols.BlockEvent]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
-    fake_unit_of_work: type[protocols.UnitOfWork],
+    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
 
     payment_method = domain.PaymentMethod(
@@ -154,14 +155,14 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         error_message=None,
     )
 
-    block_events: list[domain.BlockEvent] = unit_of_work.block_event_units  # type:ignore[attr-defined]
+    block_events = unit_of_work.block_event_units
     assert len(block_events) == 2
     assert sorted([block.status for block in block_events]) == [
         enums.OperationStatusEnum.COMPLETED,
         enums.OperationStatusEnum.STARTED,
     ]
 
-    transactions: list[domain.Transaction] = unit_of_work.transaction_units  # type:ignore[attr-defined]
+    transactions = unit_of_work.transaction_units
 
     assert len(transactions) == 1
 

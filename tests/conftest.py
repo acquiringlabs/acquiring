@@ -9,6 +9,7 @@ from unittest import mock
 import pytest
 
 from acquiring import domain, enums, protocols
+from tests import protocols as test_protocols
 
 
 # https://docs.pytest.org/en/7.1.x/reference/reference.html?highlight=pytest_config#pytest.hookspec.pytest_configure
@@ -96,10 +97,10 @@ def fake_payment_method_repository_class() -> (
 
 @pytest.fixture
 def fake_payment_operation_repository_class() -> (
-    Callable[[Optional[set[protocols.PaymentOperation]]], type[protocols.Repository]]
+    Callable[[Optional[set[protocols.PaymentOperation]]], type[test_protocols.FakeRepository]]
 ):
 
-    def func(payment_operations: Optional[set[protocols.PaymentOperation]]) -> type[protocols.Repository]:
+    def func(payment_operations: Optional[set[protocols.PaymentOperation]]) -> type[test_protocols.FakeRepository]:
 
         @dataclass
         class FakePaymentOperationRepository:
@@ -133,6 +134,7 @@ def fake_payment_operation_repository_class() -> (
     return func
 
 
+# TODO Turn this into a FakeRepo (use set vs list)
 @pytest.fixture(scope="module")
 def fake_transaction_repository_class() -> (
     Callable[[Optional[list[protocols.Transaction]]], type[protocols.Repository]]
@@ -170,9 +172,11 @@ def fake_transaction_repository_class() -> (
 
 
 @pytest.fixture(scope="module")
-def fake_block_event_repository_class() -> Callable[[Optional[set[protocols.BlockEvent]]], type[protocols.Repository]]:
+def fake_block_event_repository_class() -> (
+    Callable[[Optional[set[protocols.BlockEvent]]], type[test_protocols.FakeRepository]]
+):
 
-    def func(block_events: Optional[set[protocols.BlockEvent]]) -> type[protocols.Repository]:
+    def func(block_events: Optional[set[protocols.BlockEvent]]) -> type[test_protocols.FakeRepository]:
 
         @dataclass
         class FakeBlockEventRepository:
@@ -202,24 +206,24 @@ def fake_block_event_repository_class() -> Callable[[Optional[set[protocols.Bloc
 
 
 @pytest.fixture(scope="module")
-def fake_unit_of_work() -> type[protocols.UnitOfWork]:
+def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
 
     @dataclass
     class FakeUnitOfWork:
         payment_method_repository_class: type[protocols.Repository]
         payment_methods: protocols.Repository = field(init=False)
 
-        payment_operation_repository_class: type[protocols.Repository]
-        payment_operations: protocols.Repository = field(init=False)
+        payment_operation_repository_class: type[test_protocols.FakeRepository]
+        payment_operations: test_protocols.FakeRepository = field(init=False)
 
-        block_event_repository_class: type[protocols.Repository]
-        block_events: protocols.Repository = field(init=False)
+        block_event_repository_class: type[test_protocols.FakeRepository]
+        block_events: test_protocols.FakeRepository = field(init=False)
 
         transaction_repository_class: type[protocols.Repository]
         transactions: protocols.Repository = field(init=False)
 
         payment_method_units: list[protocols.PaymentMethod] = field(default_factory=list)
-        payment_operation_units: set[protocols.PaymentMethod] = field(default_factory=set)
+        payment_operation_units: set[protocols.PaymentOperation] = field(default_factory=set)
         block_event_units: set[protocols.BlockEvent] = field(default_factory=set)
 
         # TODO Make Transaction hashable despite the use of raw_data: dict
@@ -230,12 +234,10 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
             self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]
 
             self.payment_operations = self.payment_operation_repository_class()
-            self.payment_operation_units.update(
-                unit for unit in self.payment_operations.units  # type:ignore[attr-defined]
-            )
+            self.payment_operation_units.update(unit for unit in self.payment_operations.units)
 
             self.block_events = self.block_event_repository_class()
-            self.block_event_units.update(unit for unit in self.block_events.units)  # type:ignore[attr-defined]
+            self.block_event_units.update(unit for unit in self.block_events.units)
 
             self.transactions = self.transaction_repository_class()
             self.transaction_units += [
@@ -257,11 +259,9 @@ def fake_unit_of_work() -> type[protocols.UnitOfWork]:
             """Refreshes the units with those inside the repository"""
             self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]
 
-            self.payment_operation_units.update(
-                unit for unit in self.payment_operations.units  # type:ignore[attr-defined]
-            )
+            self.payment_operation_units.update(unit for unit in self.payment_operations.units)
 
-            self.block_event_units.update(unit for unit in self.block_events.units)  # type:ignore[attr-defined]
+            self.block_event_units.update(unit for unit in self.block_events.units)
 
             self.transaction_units += [
                 unit

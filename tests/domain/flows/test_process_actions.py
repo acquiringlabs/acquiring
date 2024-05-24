@@ -5,6 +5,7 @@ from typing import Callable, Optional
 from acquiring import domain, protocols
 from acquiring.domain import decision_logic as dl
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
+from tests import protocols as test_protocols
 from tests.domain import factories
 
 
@@ -17,17 +18,17 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
         [Optional[set[protocols.BlockEvent]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
-    fake_unit_of_work: type[protocols.UnitOfWork],
+    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
     # given a valid payment attempt
     payment_attempt = factories.PaymentAttemptFactory()
@@ -91,7 +92,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
     assert payment_operations[3].type == OperationTypeEnum.PROCESS_ACTION
     assert payment_operations[3].status == OperationStatusEnum.FAILED
 
-    payment_operations = unit_of_work.payment_operation_units  # type:ignore[attr-defined]
+    payment_operations = unit_of_work.payment_operation_units
     len(payment_operations) == 4
 
 
@@ -104,17 +105,17 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
         [Optional[set[protocols.BlockEvent]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
-    fake_unit_of_work: type[protocols.UnitOfWork],
+    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
     # given a valid payment attempt
     payment_attempt = factories.PaymentAttemptFactory()
@@ -183,7 +184,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
     assert payment_operations[5].type == OperationTypeEnum.PAY
     assert payment_operations[5].status == OperationStatusEnum.COMPLETED
 
-    payment_operations = unit_of_work.payment_operation_units  # type:ignore[attr-defined]
+    payment_operations = unit_of_work.payment_operation_units
     len(payment_operations) == 4
 
 
@@ -195,17 +196,17 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
         [Optional[set[protocols.BlockEvent]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
-    fake_unit_of_work: type[protocols.UnitOfWork],
+    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
     # given a valid payment attempt
     payment_attempt = factories.PaymentAttemptFactory()
@@ -266,7 +267,7 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
     assert payment_operations[3].type == OperationTypeEnum.PROCESS_ACTION
     assert payment_operations[3].status == OperationStatusEnum.NOT_PERFORMED
 
-    payment_operations = unit_of_work.payment_operation_units  # type:ignore[attr-defined]
+    payment_operations = unit_of_work.payment_operation_units
     len(payment_operations) == 4
 
 
@@ -279,17 +280,17 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
         [Optional[set[protocols.BlockEvent]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
-    fake_unit_of_work: type[protocols.UnitOfWork],
+    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
     # Given a payment method that cannot initialize
     payment_attempt = factories.PaymentAttemptFactory()
@@ -342,17 +343,17 @@ def test_givenANonExistingPaymentMethod_whenProcessingActions_thenPaymentFlowRet
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
         [Optional[set[protocols.BlockEvent]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
         type[protocols.Repository],
     ],
-    fake_unit_of_work: type[protocols.UnitOfWork],
+    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
 
     payment_attempt = domain.PaymentAttempt(

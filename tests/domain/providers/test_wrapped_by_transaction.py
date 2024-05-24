@@ -6,6 +6,7 @@ from typing import Callable, Optional, Sequence
 from faker import Faker
 
 from acquiring import domain, enums, protocols
+from tests import protocols as test_protocols
 from tests.domain import factories
 
 fake = Faker()
@@ -22,13 +23,13 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
         [Optional[set[protocols.BlockEvent]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
-    fake_unit_of_work: type[protocols.UnitOfWork],
+    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
 
     external_id = "external"
@@ -85,7 +86,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
         provider_name=provider_name,
     ).do_something(unit_of_work, payment_method)
 
-    transactions: list[protocols.Transaction] = unit_of_work.transaction_units  # type:ignore[attr-defined]
+    transactions: list[protocols.Transaction] = unit_of_work.transaction_units
     assert len(transactions) == 1
 
     assert transactions[0] == domain.Transaction(

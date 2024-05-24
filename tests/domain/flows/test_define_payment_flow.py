@@ -1,19 +1,21 @@
 from typing import Callable, Optional
 
 from acquiring import domain, protocols
+from tests import protocols as test_protocols
 
 
 def test_givenCorrectInformation_paymentFlowGetsDefined(
     fake_payment_method_repository_class: Callable[
-        [Optional[list[protocols.PaymentMethod]]], type[protocols.Repository]
+        [Optional[list[protocols.PaymentMethod]]],
+        type[protocols.Repository],
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
         [Optional[set[protocols.BlockEvent]]],
-        type[protocols.Repository],
+        type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
         [Optional[list[protocols.PaymentOperation]]],
@@ -21,7 +23,7 @@ def test_givenCorrectInformation_paymentFlowGetsDefined(
     ],
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
-    fake_unit_of_work: type[protocols.UnitOfWork],
+    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
 
     def fake_payment_flow() -> protocols.PaymentFlow:
