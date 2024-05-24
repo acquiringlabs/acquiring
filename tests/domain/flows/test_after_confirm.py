@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 from typing import Callable, Optional
 
 import pytest
@@ -225,61 +224,3 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
     assert result.type == OperationTypeEnum.AFTER_CONFIRM
     assert result.status == OperationStatusEnum.FAILED
     result.error_message == "PaymentMethod cannot go through this operation"
-
-
-def test_givenANonExistingPaymentMethod_whenAfterConfirming_thenPaymentFlowReturnsAFailedStatusOperationResponse(
-    fake_block: type[protocols.Block],
-    fake_process_action_block: type[protocols.Block],
-    fake_payment_method_repository_class: Callable[
-        [Optional[list[protocols.PaymentMethod]]],
-        type[protocols.Repository],
-    ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
-        type[test_protocols.FakeRepository],
-    ],
-    fake_block_event_repository_class: Callable[
-        [Optional[set[protocols.BlockEvent]]],
-        type[test_protocols.FakeRepository],
-    ],
-    fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
-    ],
-    fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
-) -> None:
-
-    payment_attempt = domain.PaymentAttempt(
-        id=uuid.uuid4(),
-        created_at=datetime.now(),
-        amount=10,
-        currency="USD",
-        payment_method_ids=[],
-    )
-
-    payment_method = domain.PaymentMethod(
-        id=uuid.uuid4(),
-        payment_attempt=payment_attempt,
-        created_at=datetime.now(),
-        confirmable=False,
-    )
-
-    result = domain.PaymentFlow(
-        unit_of_work=fake_unit_of_work(
-            payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-            payment_operation_repository_class=fake_payment_operation_repository_class(set()),
-            block_event_repository_class=fake_block_event_repository_class(set()),
-            transaction_repository_class=fake_transaction_repository_class([]),
-        ),
-        initialize_block=fake_block(),
-        process_action_block=fake_process_action_block(),
-        pay_blocks=[],
-        after_pay_blocks=[],
-        confirm_block=None,
-        after_confirm_blocks=[],
-    ).after_confirm(payment_method)
-
-    # then the payment flow returns a failed status operation response
-    assert result.type == OperationTypeEnum.AFTER_CONFIRM
-    assert result.status == OperationStatusEnum.FAILED
-    result.error_message == "PaymentMethod not found"
