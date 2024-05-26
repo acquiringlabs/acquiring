@@ -67,4 +67,4 @@ verbose = 1
 exclude = ["manage.py", "*conftest.py", "*factories.py", "*migrations*", "tests/*"]
 
 [tool.isort]
-sections="STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+sections="STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"  # codespell:ignore
