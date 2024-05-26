@@ -38,15 +38,34 @@ def payment_operation_type(  # type:ignore[misc]
         *args: Sequence,
         **kwargs: dict,
     ) -> "protocols.OperationResponse":
-        if function.__name__ not in OperationTypeEnum:
-
-            # Private methods that start with double _ and have a name that belongs to enum are also allowed
-            if function.__name__.startswith("__") and function.__name__[2:] in OperationTypeEnum:
-                return function(*args, **kwargs)
-
+        if function.__name__.strip("_") not in OperationTypeEnum:
             raise TypeError("This function cannot be a payment type")
-
         return function(*args, **kwargs)
+
+    return wrapper
+
+
+def implements_blocks(  # type:ignore[misc]
+    function: Callable[..., "protocols.OperationResponse"]
+) -> Callable[..., "protocols.OperationResponse"]:
+    """
+    This decorator verifies that the class implements the blocks used in the decorated function.
+
+    Raises a TypeError otherwise.
+    """
+
+    @functools.wraps(function)
+    def wrapper(
+        self: "protocols.PaymentFlow",
+        payment_method: "protocols.PaymentMethod",
+        *args: Sequence,
+        **kwargs: dict,
+    ) -> "protocols.OperationResponse":
+        if hasattr(self, f"{function.__name__.strip('_')}_block") or hasattr(
+            self, f"{function.__name__.strip('_')}_blocks"
+        ):
+            return function(self, payment_method, *args, **kwargs)
+        raise TypeError("This PaymentFlow does not implement blocks for this operation type")
 
     return wrapper
 
@@ -112,6 +131,7 @@ class PaymentFlow:
     after_confirm_blocks: list["protocols.Block"]
 
     @payment_operation_type
+    @implements_blocks
     @refresh_payment_method
     def initialize(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
@@ -200,6 +220,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
+    @implements_blocks
     @refresh_payment_method
     def process_action(
         self, payment_method: "protocols.PaymentMethod", action_data: dict
@@ -283,6 +304,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
+    @implements_blocks
     def __pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # No need to refresh from DB
 
@@ -338,6 +360,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
+    @implements_blocks
     @refresh_payment_method
     def after_pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
@@ -398,6 +421,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
+    @implements_blocks
     @refresh_payment_method
     def confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
@@ -475,6 +499,7 @@ class PaymentFlow:
         )
 
     @payment_operation_type
+    @implements_blocks
     @refresh_payment_method
     def after_confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
