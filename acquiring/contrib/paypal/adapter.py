@@ -41,9 +41,9 @@ class PayPalAdapter:
     provider_name: str = "paypal"
     webhook_id: Optional[str] = None
 
-    access_token: str = field(init=False)
-    scope: list[str] = field(init=False)
-    expires_in: int = field(init=False)
+    access_token: str = field(init=False, repr=False)
+    scope: list[str] = field(init=False, repr=False)
+    expires_in: int = field(init=False, repr=False)
 
     def __repr__(self) -> str:
         """String representation of the class"""

@@ -15,16 +15,16 @@ class Repository(Protocol):
 @dataclass(match_args=False)
 class UnitOfWork(Protocol):
     payment_method_repository_class: type[Repository]
-    payment_methods: Repository = field(init=False)
+    payment_methods: Repository = field(init=False, repr=False)
 
     payment_operation_repository_class: type[Repository]
-    payment_operations: Repository = field(init=False)
+    payment_operations: Repository = field(init=False, repr=False)
 
     block_event_repository_class: type[Repository]
-    block_events: Repository = field(init=False)
+    block_events: Repository = field(init=False, repr=False)
 
     transaction_repository_class: type[Repository]
-    transactions: Repository = field(init=False)
+    transactions: Repository = field(init=False, repr=False)
 
     def __enter__(self) -> Self: ...
 

@@ -18,21 +18,21 @@ class SqlAlchemyUnitOfWork:
     """
 
     payment_method_repository_class: type[protocols.Repository]
-    payment_methods: protocols.Repository = field(init=False)
+    payment_methods: protocols.Repository = field(init=False, repr=False)
 
     payment_operation_repository_class: type[protocols.Repository]
-    payment_operations: protocols.Repository = field(init=False)
+    payment_operations: protocols.Repository = field(init=False, repr=False)
 
     block_event_repository_class: type[protocols.Repository]
-    block_events: protocols.Repository = field(init=False)
+    block_events: protocols.Repository = field(init=False, repr=False)
 
     transaction_repository_class: type[protocols.Repository]
-    transactions: protocols.Repository = field(init=False)
+    transactions: protocols.Repository = field(init=False, repr=False)
 
     session_factory: orm.sessionmaker = orm.sessionmaker(
         bind=sqlalchemy.create_engine(os.environ.get("SQLALCHEMY_DATABASE_URL"))
     )
-    session: orm.Session = field(init=False)
+    session: orm.Session = field(init=False, repr=False)
 
     def __enter__(self) -> Self:
         self.session = self.session_factory()

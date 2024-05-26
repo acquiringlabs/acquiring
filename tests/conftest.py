@@ -211,16 +211,16 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
     @dataclass
     class FakeUnitOfWork:
         payment_method_repository_class: type[protocols.Repository]
-        payment_methods: protocols.Repository = field(init=False)
+        payment_methods: protocols.Repository = field(init=False, repr=False)
 
         payment_operation_repository_class: type[test_protocols.FakeRepository]
-        payment_operations: test_protocols.FakeRepository = field(init=False)
+        payment_operations: test_protocols.FakeRepository = field(init=False, repr=False)
 
         block_event_repository_class: type[test_protocols.FakeRepository]
-        block_events: test_protocols.FakeRepository = field(init=False)
+        block_events: test_protocols.FakeRepository = field(init=False, repr=False)
 
         transaction_repository_class: type[protocols.Repository]
-        transactions: protocols.Repository = field(init=False)
+        transactions: protocols.Repository = field(init=False, repr=False)
 
         payment_method_units: list[protocols.PaymentMethod] = field(default_factory=list)
         payment_operation_units: set[protocols.PaymentOperation] = field(default_factory=set)
