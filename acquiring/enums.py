@@ -26,10 +26,12 @@ class OperationTypeEnum(StrEnum):
     PAY = "pay"
     CONFIRM = "confirm"
 
+    VOID = "void"
     REFUND = "refund"
 
     AFTER_PAY = "after_pay"
     AFTER_CONFIRM = "after_confirm"
+    AFTER_VOID = "after_void"
     AFTER_REFUND = "after_refund"
 
 
