@@ -203,9 +203,6 @@ class PaymentOperation(django.db.models.Model):
         related_name="payment_operations",
     )
 
-    class Meta:
-        unique_together = ("status", "payment_method", "type")
-
     def __str__(self) -> str:
         return f"[type={self.type}, status={self.status}]"
 
