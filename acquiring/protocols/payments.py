@@ -91,6 +91,12 @@ class PaymentMethod(Protocol):
         status: OperationStatusEnum,
     ) -> bool: ...
 
+    def count_payment_operation(
+        self: "PaymentMethod",
+        type: OperationTypeEnum,
+        status: OperationStatusEnum,
+    ) -> int: ...
+
 
 class DraftPaymentMethod(Protocol):
     payment_attempt: PaymentAttempt

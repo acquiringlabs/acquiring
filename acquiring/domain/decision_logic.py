@@ -1,9 +1,12 @@
+import deal
+
 from acquiring import protocols
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 # TODO Test these functions with hypothesis
 
 
+@deal.pure()
 def can_initialize(payment_method: "protocols.PaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the initialize operation.
@@ -14,6 +17,7 @@ def can_initialize(payment_method: "protocols.PaymentMethod") -> bool:
     return True
 
 
+@deal.pure()
 def can_process_action(payment_method: "protocols.PaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the process_action operation.
@@ -39,6 +43,7 @@ def can_process_action(payment_method: "protocols.PaymentMethod") -> bool:
     return True
 
 
+@deal.pure()
 def can_after_pay(payment_method: "protocols.PaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the after pay operation.
@@ -102,6 +107,7 @@ def can_after_pay(payment_method: "protocols.PaymentMethod") -> bool:
     return True
 
 
+@deal.pure()
 def can_confirm(payment_method: "protocols.PaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the confirm operation.
@@ -133,6 +139,7 @@ def can_confirm(payment_method: "protocols.PaymentMethod") -> bool:
     return True
 
 
+@deal.pure()
 def can_after_confirm(payment_method: "protocols.PaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the after confirm operation.
@@ -194,6 +201,46 @@ def can_after_confirm(payment_method: "protocols.PaymentMethod") -> bool:
     if payment_method.has_payment_operation(
         type=OperationTypeEnum.AFTER_CONFIRM,
         status=OperationStatusEnum.STARTED,
+    ):
+        return False
+
+    return True
+
+
+@deal.pure()
+def can_refund(payment_method: "protocols.PaymentMethod") -> bool:
+    """
+    Return whether the payment_method can go through the refund operation.
+    """
+    if any(
+        [
+            can_initialize(payment_method),
+            can_process_action(payment_method),
+            can_after_pay(payment_method),
+            can_confirm(payment_method),
+            can_after_confirm(payment_method),
+        ]
+    ):
+        return False
+
+    if not payment_method.has_payment_operation(
+        type=OperationTypeEnum.AFTER_PAY,
+        status=OperationStatusEnum.COMPLETED,
+    ):
+        return False
+
+    if payment_method.confirmable and not payment_method.has_payment_operation(
+        type=OperationTypeEnum.AFTER_CONFIRM,
+        status=OperationStatusEnum.COMPLETED,
+    ):
+        return False
+
+    if payment_method.count_payment_operation(
+        type=OperationTypeEnum.REFUND,
+        status=OperationStatusEnum.STARTED,
+    ) > payment_method.count_payment_operation(
+        type=OperationTypeEnum.REFUND,
+        status=OperationStatusEnum.COMPLETED,
     ):
         return False
 

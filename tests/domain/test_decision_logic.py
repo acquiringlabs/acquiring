@@ -850,6 +850,203 @@ class TestCanAfterConfirm:
         )
 
 
+class TestRefund:
+
+    @pytest.mark.parametrize(
+        "non_completed_after_pay_status",
+        [status for status in enums.OperationStatusEnum if status != enums.OperationStatusEnum.COMPLETED],
+    )
+    def test_paymentMethodNotConfirmableAndAfterPayNotCompletedCannotRefund(
+        self,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_completed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        non_completed_after_pay_status: enums.OperationStatusEnum,
+    ) -> None:
+        assert (
+            domain.flow.dl.can_refund(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_completed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        factories.PaymentOperationFactory(
+                            payment_method_id=uuid.uuid4(),
+                            type=enums.OperationTypeEnum.AFTER_PAY,
+                            status=non_completed_after_pay_status,
+                        ),
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodConfirmableAndAfterPayCompletedCannotRefund(
+        self,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_completed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+    ) -> None:
+        assert (
+            domain.flow.dl.can_refund(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=True,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_completed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodNotConfirmableAndAfterPayCompletedCanRefund(
+        self,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_completed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+    ) -> None:
+        assert (
+            domain.flow.dl.can_refund(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_completed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                    ],
+                )
+            )
+            is True
+        )
+
+    def test_paymentMethodConfirmableAndAfterConfirmCompletedCanRefund(
+        self,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_completed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+        payment_operation_confirm_started: protocols.PaymentOperation,
+        payment_operation_confirm_completed: protocols.PaymentOperation,
+        payment_operation_after_confirm_started: protocols.PaymentOperation,
+        payment_operation_after_confirm_completed: protocols.PaymentOperation,
+    ) -> None:
+        assert (
+            domain.flow.dl.can_refund(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_completed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                        payment_operation_confirm_started,
+                        payment_operation_confirm_completed,
+                    ],
+                )
+            )
+            is True
+        )
+
+    def test_paymentMethodNonConfirmableAndRefundStartedCannotRefund(
+        self,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_completed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+        payment_operation_refund_started: protocols.PaymentOperation,
+    ) -> None:
+        assert (
+            domain.flow.dl.can_refund(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_completed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                        payment_operation_refund_started,
+                    ],
+                )
+            )
+            is False
+        )
+
+    def test_paymentMethodNonConfirmableAndRefundCompletedCanRefundAgain(
+        self,
+        payment_operation_initialize_started: protocols.PaymentOperation,
+        payment_operation_initialize_completed: protocols.PaymentOperation,
+        payment_operation_pay_started: protocols.PaymentOperation,
+        payment_operation_pay_completed: protocols.PaymentOperation,
+        payment_operation_after_pay_started: protocols.PaymentOperation,
+        payment_operation_after_pay_completed: protocols.PaymentOperation,
+        payment_operation_refund_started: protocols.PaymentOperation,
+        payment_operation_refund_completed: protocols.PaymentOperation,
+    ) -> None:
+        assert (
+            domain.flow.dl.can_refund(
+                domain.PaymentMethod(
+                    id=uuid.uuid4(),
+                    payment_attempt=factories.PaymentAttemptFactory(),
+                    created_at=datetime.now(),
+                    confirmable=False,
+                    payment_operations=[
+                        payment_operation_initialize_started,
+                        payment_operation_initialize_completed,
+                        payment_operation_pay_started,
+                        payment_operation_pay_completed,
+                        payment_operation_after_pay_started,
+                        payment_operation_after_pay_completed,
+                        payment_operation_refund_started,
+                        payment_operation_refund_completed,
+                    ],
+                )
+            )
+            is True
+        )
+
+
 ### DECISION LOGIC SPECIFIC FIXTURES
 
 
@@ -985,4 +1182,49 @@ def payment_operation_after_confirm_started() -> protocols.PaymentOperation:
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_CONFIRM,
         status=enums.OperationStatusEnum.STARTED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_after_confirm_completed() -> protocols.PaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.AFTER_CONFIRM,
+        status=enums.OperationStatusEnum.COMPLETED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_refund_started() -> protocols.PaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.REFUND,
+        status=enums.OperationStatusEnum.STARTED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_refund_completed() -> protocols.PaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.REFUND,
+        status=enums.OperationStatusEnum.COMPLETED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_after_refund_started() -> protocols.PaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.AFTER_REFUND,
+        status=enums.OperationStatusEnum.STARTED,
+    )
+
+
+@pytest.fixture(scope="module")
+def payment_operation_after_refund_completed() -> protocols.PaymentOperation:
+    return factories.PaymentOperationFactory(
+        payment_method_id=uuid.uuid4(),
+        type=enums.OperationTypeEnum.AFTER_REFUND,
+        status=enums.OperationStatusEnum.COMPLETED,
     )

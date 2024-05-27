@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, Sequence
 from uuid import UUID
+import deal
 
 from acquiring import enums, protocols
 
@@ -35,8 +36,16 @@ class PaymentMethod:
         """String representation of the class"""
         return f"{self.__class__.__name__}:{self.id}"
 
+    @deal.pure()
     def has_payment_operation(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> bool:
+        """Returns True if there is a PaymentOperation associated with this PaymentMethod of given type and status"""
         return any(operation.type == type and operation.status == status for operation in self.payment_operations)
+
+    @deal.pure()
+    @deal.post(lambda result: result >= 0)
+    def count_payment_operation(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> int:
+        """Returns the number of PaymentOperations associated with this PaymentMethod of given type and status"""
+        return sum(1 for operation in self.payment_operations if operation.type == type and operation.status == status)
 
     class DoesNotExist(Exception):
         """
