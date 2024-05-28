@@ -7,8 +7,8 @@ from acquiring.utils import is_django_installed
 from tests.storage.utils import skip_if_django_not_installed
 
 if is_django_installed():
-    from acquiring import domain, storage
-    from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory, PaymentOperationFactory
+    from acquiring import storage
+    from tests.storage.django.factories import PaymentAttemptFactory, PaymentMethodFactory
 
 
 @skip_if_django_not_installed
@@ -42,26 +42,3 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOpera
     # And payment method gets the payment operation added after add_payment_operation
     assert len(payment_method.payment_operations) == 1
     assert payment_method.payment_operations[0] == payment_operation.to_domain()
-
-
-@skip_if_django_not_installed
-@pytest.mark.django_db
-def test_givenExistingPaymentOperationRow_whenCallingRepositoryAdd_thenthenDuplicatedErrorGetsRaised() -> None:
-
-    db_payment_attempt = PaymentAttemptFactory()
-    db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
-    payment_method = db_payment_method.to_domain()
-
-    # given existing payment operation
-    PaymentOperationFactory(
-        payment_method_id=payment_method.id,
-        type=OperationTypeEnum.INITIALIZE,
-        status=OperationStatusEnum.STARTED,
-    )
-
-    with pytest.raises(domain.PaymentOperation.Duplicated):
-        storage.django.PaymentOperationRepository().add(
-            payment_method=payment_method,
-            type=OperationTypeEnum.INITIALIZE,
-            status=OperationStatusEnum.STARTED,
-        )

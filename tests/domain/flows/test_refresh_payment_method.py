@@ -6,7 +6,7 @@ from typing import Callable, Optional
 import pytest
 
 from acquiring import domain, enums, protocols
-from acquiring.domain.flow import OperationResponse, refresh_payment_method
+from acquiring.domain.flows import OperationResponse, refresh_payment_method
 from tests import protocols as test_protocols
 from tests.domain import factories
 

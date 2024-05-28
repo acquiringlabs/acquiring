@@ -37,7 +37,6 @@ class PaymentMethodRepository:
 
 class PaymentOperationRepository:
 
-    @deal.raises(domain.PaymentOperation.Duplicated)  # TODO Turn this into deal.reason
     def add(
         self,
         payment_method: "protocols.PaymentMethod",
@@ -49,13 +48,10 @@ class PaymentOperationRepository:
             type=type,
             status=status,
         )
-        try:
-            db_payment_operation.save()
-            payment_operation = db_payment_operation.to_domain()
-            payment_method.payment_operations.append(payment_operation)
-            return payment_operation
-        except django.db.utils.IntegrityError:
-            raise domain.PaymentOperation.Duplicated
+        db_payment_operation.save()
+        payment_operation = db_payment_operation.to_domain()
+        payment_method.payment_operations.append(payment_operation)
+        return payment_operation
 
     def get(self, id: UUID) -> "protocols.PaymentOperation": ...  # type: ignore[empty-body]
 

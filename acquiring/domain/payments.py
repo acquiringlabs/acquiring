@@ -17,11 +17,6 @@ class PaymentOperation:
         """String representation of the class"""
         return f"{self.__class__.__name__}:{self.type}|{self.status}"
 
-    class Duplicated(Exception):
-        """This exception gets raised as a result of an Integrity error that has to do with a UNIQUE constraint"""
-
-        pass
-
 
 @dataclass
 class PaymentMethod:
@@ -36,12 +31,12 @@ class PaymentMethod:
         """String representation of the class"""
         return f"{self.__class__.__name__}:{self.id}"
 
-    @deal.pure()
+    @deal.pure
     def has_payment_operation(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> bool:
         """Returns True if there is a PaymentOperation associated with this PaymentMethod of given type and status"""
         return any(operation.type == type and operation.status == status for operation in self.payment_operations)
 
-    @deal.pure()
+    @deal.pure
     @deal.post(lambda result: result >= 0)
     def count_payment_operation(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> int:
         """Returns the number of PaymentOperations associated with this PaymentMethod of given type and status"""

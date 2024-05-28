@@ -1,6 +1,6 @@
 from .blocks import BlockResponse, wrapped_by_block_events
 from .events import BlockEvent
-from .flow import PaymentFlow
+from .flows import PaymentFlow
 from .payments import (
     DraftItem,
     DraftPaymentAttempt,

@@ -14,7 +14,7 @@ class TestCanInitialize:
     def test_paymentMethodWithoutPaymentOperationsCanInitialize(self) -> None:
         """A Payment Method that has no payment operations can go through initialize."""
         assert (
-            domain.flow.dl.can_initialize(
+            domain.flows.dl.can_initialize(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -31,7 +31,7 @@ class TestCanInitialize:
     ) -> None:
         """A Payment Method that has already started initialized cannot go through initialize."""
         assert (
-            domain.flow.dl.can_initialize(
+            domain.flows.dl.can_initialize(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -60,7 +60,7 @@ class TestCanInitialize:
     ) -> None:
         """A Payment Method that has already completed initialized cannot go through initialize."""
         assert (
-            domain.flow.dl.can_initialize(
+            domain.flows.dl.can_initialize(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -89,7 +89,7 @@ class TestCanProcessAction:
     ) -> None:
         """A Payment Method that has already started initialization and ended requiring actions can go through,"""
         assert (
-            domain.flow.dl.can_process_action(
+            domain.flows.dl.can_process_action(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -112,7 +112,7 @@ class TestCanProcessAction:
     ) -> None:
         """A Payment Method that has already started process_action cannot go through process_action."""
         assert (
-            domain.flow.dl.can_process_action(
+            domain.flows.dl.can_process_action(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -134,7 +134,7 @@ class TestCanProcessAction:
     ) -> None:
         """A Payment Method that has not performed initialize cannot go through process_action."""
         assert (
-            domain.flow.dl.can_process_action(
+            domain.flows.dl.can_process_action(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -163,7 +163,7 @@ class TestCanProcessAction:
     ) -> None:
         """A Payment Method that has not performed initialize cannot go through process_action."""
         assert (
-            domain.flow.dl.can_process_action(
+            domain.flows.dl.can_process_action(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -194,7 +194,7 @@ class TestCanAfterPay:
     ) -> None:
         """A Payment Method that has already initialized and has already pay can go through."""
         assert (
-            domain.flow.dl.can_after_pay(
+            domain.flows.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -222,7 +222,7 @@ class TestCanAfterPay:
     ) -> None:
         """A Payment Method that has already initialized via process action and has already pay can go through."""
         assert (
-            domain.flow.dl.can_after_pay(
+            domain.flows.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -250,7 +250,7 @@ class TestCanAfterPay:
     ) -> None:
         """A Payment Method that has not performed initialized and has already pay can go through."""
         assert (
-            domain.flow.dl.can_after_pay(
+            domain.flows.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -273,7 +273,7 @@ class TestCanAfterPay:
     ) -> None:
         """A Payment Method that has not completed initialization cannot go through"""
         assert (
-            domain.flow.dl.can_after_pay(
+            domain.flows.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -294,7 +294,7 @@ class TestCanAfterPay:
     ) -> None:
         """A Payment Method that has not completed initialization cannot go through"""
         assert (
-            domain.flow.dl.can_after_pay(
+            domain.flows.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -317,7 +317,7 @@ class TestCanAfterPay:
     ) -> None:
         """A Payment Method that has not completed pay cannot go through."""
         assert (
-            domain.flow.dl.can_after_pay(
+            domain.flows.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -342,7 +342,7 @@ class TestCanAfterPay:
     ) -> None:
         """A Payment Method that has not completed pay cannot go through."""
         assert (
-            domain.flow.dl.can_after_pay(
+            domain.flows.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -369,7 +369,7 @@ class TestCanAfterPay:
     ) -> None:
         """A Payment Method that has already started after pay cannot go through"""
         assert (
-            domain.flow.dl.can_after_pay(
+            domain.flows.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -401,7 +401,7 @@ class TestCanConfirm:
     ) -> None:
         """A Payment Method that is confirmable and has completed pay can go through."""
         assert (
-            domain.flow.dl.can_confirm(
+            domain.flows.dl.can_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -435,7 +435,7 @@ class TestCanConfirm:
     ) -> None:
         """A Payment Method that is confirmable and has completed pay can go through."""
         assert (
-            domain.flow.dl.can_confirm(
+            domain.flows.dl.can_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -469,7 +469,7 @@ class TestCanConfirm:
     ) -> None:
         """A Payment Method that is NOT confirmable and has completed pay cannot go through."""
         assert (
-            domain.flow.dl.can_confirm(
+            domain.flows.dl.can_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -500,7 +500,7 @@ class TestCanConfirm:
     ) -> None:
         """A Payment Method that is confirmable and has completed pay can go through."""
         assert (
-            domain.flow.dl.can_confirm(
+            domain.flows.dl.can_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -530,7 +530,7 @@ class TestCanConfirm:
     ) -> None:
         """A Payment Method that is confirmable and has not completed after pay, then cannot go through."""
         assert (
-            domain.flow.dl.can_confirm(
+            domain.flows.dl.can_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -557,7 +557,7 @@ class TestCanConfirm:
     ) -> None:
         """A Payment Method that is confirmable and has not completed after pay, then cannot go through."""
         assert (
-            domain.flow.dl.can_confirm(
+            domain.flows.dl.can_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -582,7 +582,7 @@ class TestCanConfirm:
     ) -> None:
         """A Payment Method that is confirmable and has not completed pay, then cannot go through."""
         assert (
-            domain.flow.dl.can_confirm(
+            domain.flows.dl.can_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -605,7 +605,7 @@ class TestCanConfirm:
     ) -> None:
         """A Payment Method that is confirmable and has not completed initialize, then cannot go through."""
         assert (
-            domain.flow.dl.can_confirm(
+            domain.flows.dl.can_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -636,7 +636,7 @@ class TestCanAfterConfirm:
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has already confirmed can go through."""
         assert (
-            domain.flow.dl.can_after_confirm(
+            domain.flows.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -670,7 +670,7 @@ class TestCanAfterConfirm:
     ) -> None:
         """A Payment Method that is not confirmable cannot go through."""
         assert (
-            domain.flow.dl.can_after_confirm(
+            domain.flows.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -708,7 +708,7 @@ class TestCanAfterConfirm:
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has already confirmed can go through."""
         assert (
-            domain.flow.dl.can_after_confirm(
+            domain.flows.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -747,7 +747,7 @@ class TestCanAfterConfirm:
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has already confirmed can go through."""
         assert (
-            domain.flow.dl.can_after_confirm(
+            domain.flows.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -781,7 +781,7 @@ class TestCanAfterConfirm:
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has not confirmed cannot go through."""
         assert (
-            domain.flow.dl.can_after_confirm(
+            domain.flows.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -811,7 +811,7 @@ class TestCanAfterConfirm:
     ) -> None:
         """A Payment Method that has already initialized and has already pay and has not after paid cannot go through."""
         assert (
-            domain.flow.dl.can_after_confirm(
+            domain.flows.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -835,7 +835,7 @@ class TestCanAfterConfirm:
     ) -> None:
         """A Payment Method that has not initialized cannot go through."""
         assert (
-            domain.flow.dl.can_after_confirm(
+            domain.flows.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -866,7 +866,7 @@ class TestRefund:
         non_completed_after_pay_status: enums.OperationStatusEnum,
     ) -> None:
         assert (
-            domain.flow.dl.can_refund(
+            domain.flows.dl.can_refund(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -899,7 +899,7 @@ class TestRefund:
         payment_operation_after_pay_completed: protocols.PaymentOperation,
     ) -> None:
         assert (
-            domain.flow.dl.can_refund(
+            domain.flows.dl.can_refund(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -928,7 +928,7 @@ class TestRefund:
         payment_operation_after_pay_completed: protocols.PaymentOperation,
     ) -> None:
         assert (
-            domain.flow.dl.can_refund(
+            domain.flows.dl.can_refund(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -961,7 +961,7 @@ class TestRefund:
         payment_operation_after_confirm_completed: protocols.PaymentOperation,
     ) -> None:
         assert (
-            domain.flow.dl.can_refund(
+            domain.flows.dl.can_refund(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -993,7 +993,7 @@ class TestRefund:
         payment_operation_refund_started: protocols.PaymentOperation,
     ) -> None:
         assert (
-            domain.flow.dl.can_refund(
+            domain.flows.dl.can_refund(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
@@ -1025,7 +1025,7 @@ class TestRefund:
         payment_operation_refund_completed: protocols.PaymentOperation,
     ) -> None:
         assert (
-            domain.flow.dl.can_refund(
+            domain.flows.dl.can_refund(
                 domain.PaymentMethod(
                     id=uuid.uuid4(),
                     payment_attempt=factories.PaymentAttemptFactory(),
