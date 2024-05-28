@@ -5,7 +5,6 @@ from datetime import datetime
 from types import TracebackType
 from typing import Callable, Generator, Optional, Self
 from unittest import mock
-
 import pytest
 
 from acquiring import domain, enums, protocols
@@ -117,6 +116,7 @@ def fake_payment_operation_repository_class() -> (
                 status: enums.OperationStatusEnum,
             ) -> protocols.PaymentOperation:
                 payment_operation = domain.PaymentOperation(
+                    created_at=datetime.now(),
                     type=type,
                     status=status,
                     payment_method_id=payment_method.id,

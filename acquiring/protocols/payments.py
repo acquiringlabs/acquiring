@@ -17,6 +17,7 @@ from .storage import UnitOfWork
 
 @dataclass(frozen=True, match_args=False)
 class PaymentOperation(Protocol):
+    created_at: datetime
     payment_method_id: UUID
     type: OperationTypeEnum
     status: OperationStatusEnum

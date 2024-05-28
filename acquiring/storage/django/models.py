@@ -211,6 +211,7 @@ class PaymentOperation(django.db.models.Model):
             type=self.type,
             status=self.status,
             payment_method_id=self.payment_method_id,
+            created_at=self.created_at,
         )
 
 

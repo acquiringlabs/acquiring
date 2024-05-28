@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import Callable, Optional
 
 from acquiring import domain, protocols
@@ -41,11 +42,13 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
             domain.PaymentOperation(
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.REQUIRES_ACTION,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
         ],
     )
@@ -128,11 +131,13 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
             domain.PaymentOperation(
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.REQUIRES_ACTION,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
         ],
     )
@@ -219,11 +224,13 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
             domain.PaymentOperation(
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.REQUIRES_ACTION,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
         ],
     )
@@ -303,6 +310,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
         ],
     )

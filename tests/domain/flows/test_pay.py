@@ -2,7 +2,6 @@ import uuid
 from typing import Callable, Optional
 
 import pytest
-
 from acquiring import domain, protocols
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 from tests import protocols as test_protocols

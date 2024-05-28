@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import Callable, Optional
 
 import pytest
@@ -235,6 +236,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
         ],
     )

@@ -9,6 +9,7 @@ from acquiring import enums, protocols
 
 @dataclass(frozen=True)
 class PaymentOperation:
+    created_at: datetime
     type: "enums.OperationTypeEnum"
     status: "enums.OperationStatusEnum"
     payment_method_id: UUID

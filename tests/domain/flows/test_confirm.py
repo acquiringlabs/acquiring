@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import Callable, Optional
 
 import pytest
@@ -66,31 +67,37 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
             domain.PaymentOperation(
                 type=OperationTypeEnum.INITIALIZE,
                 status=OperationStatusEnum.COMPLETED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
             domain.PaymentOperation(
                 type=OperationTypeEnum.PAY,
                 status=OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
             domain.PaymentOperation(
                 type=OperationTypeEnum.PAY,
                 status=OperationStatusEnum.COMPLETED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
             domain.PaymentOperation(
                 type=OperationTypeEnum.AFTER_PAY,
                 status=OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
             domain.PaymentOperation(
                 type=OperationTypeEnum.AFTER_PAY,
                 status=OperationStatusEnum.COMPLETED,
                 payment_method_id=payment_method_id,
+                created_at=datetime.now(),
             ),
         ],
     )
