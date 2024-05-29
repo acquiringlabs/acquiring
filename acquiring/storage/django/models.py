@@ -232,6 +232,7 @@ class BlockEvent(django.db.models.Model):
             status=self.status,
             payment_method_id=self.payment_method.id,
             block_name=self.block_name,
+            created_at=self.created_at,
         )
 
 

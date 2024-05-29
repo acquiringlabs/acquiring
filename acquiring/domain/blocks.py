@@ -1,5 +1,6 @@
 import functools
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Callable, Optional, Sequence
 
 from acquiring import domain, protocols
@@ -33,6 +34,7 @@ def wrapped_by_block_events(  # type:ignore[misc]
         with unit_of_work as uow:
             uow.block_events.add(
                 block_event=domain.BlockEvent(
+                    created_at=datetime.now(),
                     status=OperationStatusEnum.STARTED,
                     payment_method_id=payment_method.id,
                     block_name=block_name,
@@ -45,6 +47,7 @@ def wrapped_by_block_events(  # type:ignore[misc]
         with unit_of_work as uow:
             uow.block_events.add(
                 block_event=domain.BlockEvent(
+                    created_at=datetime.now(),
                     status=result.status,
                     payment_method_id=payment_method.id,
                     block_name=block_name,

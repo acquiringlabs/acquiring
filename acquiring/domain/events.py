@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from uuid import UUID
 
 from acquiring.enums import OperationStatusEnum
@@ -10,6 +11,7 @@ class BlockEvent:
     Represents a wide event related to executing the code inside a Block class.
     """
 
+    created_at: datetime
     status: "OperationStatusEnum"
     payment_method_id: UUID
     block_name: str

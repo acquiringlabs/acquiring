@@ -189,6 +189,7 @@ def fake_block_event_repository_class() -> (
 
             def add(self, block_event: protocols.BlockEvent) -> protocols.BlockEvent:
                 block_event = domain.BlockEvent(
+                    created_at=datetime.now(),
                     status=block_event.status,
                     payment_method_id=block_event.payment_method_id,
                     block_name=block_event.block_name,

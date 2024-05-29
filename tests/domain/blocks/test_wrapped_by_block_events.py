@@ -1,7 +1,6 @@
 import uuid
 from dataclasses import dataclass
 from typing import Callable, Optional, Sequence
-
 from acquiring import domain, enums, protocols
 from tests import protocols as test_protocols
 from tests.domain import factories
@@ -61,20 +60,12 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
     block_events = unit_of_work.block_event_units
     assert len(block_events) == 2
 
-    assert (
-        domain.BlockEvent(
-            status=enums.OperationStatusEnum.STARTED, payment_method_id=payment_method.id, block_name=FooBlock.__name__
-        )
-        in block_events
-    )
-    assert (
-        domain.BlockEvent(
-            status=enums.OperationStatusEnum.COMPLETED,
-            payment_method_id=payment_method.id,
-            block_name=FooBlock.__name__,
-        )
-        in block_events
-    )
+    assert sorted([be.status for be in block_events]) == [
+        enums.OperationStatusEnum.COMPLETED,
+        enums.OperationStatusEnum.STARTED,
+    ]
+    assert all([be.payment_method_id == payment_method.id for be in block_events])
+    assert all([be.block_name == FooBlock.__name__ for be in block_events])
 
     # Name and Doc are Preserved
     assert FooBlock.run.__name__ == "run"

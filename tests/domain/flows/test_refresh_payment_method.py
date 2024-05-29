@@ -58,6 +58,7 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         confirmable=False,
         payment_operations=[
             factories.PaymentOperationFactory(
+                created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,
@@ -72,11 +73,13 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         confirmable=payment_method.confirmable,
         payment_operations=[
             factories.PaymentOperationFactory(
+                created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,
             ),
             factories.PaymentOperationFactory(
+                created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.FAILED,
@@ -145,6 +148,7 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
         confirmable=False,
         payment_operations=[
             factories.PaymentOperationFactory(
+                created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,
@@ -213,6 +217,7 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
         confirmable=False,
         payment_operations=[
             factories.PaymentOperationFactory(
+                created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,

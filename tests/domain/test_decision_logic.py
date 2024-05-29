@@ -69,6 +69,7 @@ class TestCanInitialize:
                     payment_operations=[
                         payment_operation_initialize_started,
                         factories.PaymentOperationFactory(
+                            created_at=datetime.now(),
                             payment_method_id=uuid.uuid4(),
                             type=enums.OperationTypeEnum.INITIALIZE,
                             status=status,
@@ -172,6 +173,7 @@ class TestCanProcessAction:
                     payment_operations=[
                         payment_operation_initialize_started,
                         factories.PaymentOperationFactory(
+                            created_at=datetime.now(),
                             payment_method_id=uuid.uuid4(),
                             type=enums.OperationTypeEnum.INITIALIZE,
                             status=not_requires_action_status,
@@ -448,6 +450,7 @@ class TestCanConfirm:
                         payment_operation_pay_completed,
                         payment_operation_after_pay_started,
                         factories.PaymentOperationFactory(
+                            created_at=datetime.now(),
                             payment_method_id=uuid.uuid4(),
                             type=enums.OperationTypeEnum.AFTER_PAY,
                             status=non_completed_after_pay_status,
@@ -723,6 +726,7 @@ class TestCanAfterConfirm:
                         payment_operation_after_pay_completed,
                         payment_operation_confirm_started,
                         factories.PaymentOperationFactory(
+                            created_at=datetime.now(),
                             payment_method_id=uuid.uuid4(),
                             type=enums.OperationTypeEnum.CONFIRM,
                             status=non_completed_confirm_status,
@@ -879,6 +883,7 @@ class TestRefund:
                         payment_operation_pay_completed,
                         payment_operation_after_pay_started,
                         factories.PaymentOperationFactory(
+                            created_at=datetime.now(),
                             payment_method_id=uuid.uuid4(),
                             type=enums.OperationTypeEnum.AFTER_PAY,
                             status=non_completed_after_pay_status,
@@ -1053,6 +1058,7 @@ class TestRefund:
 @pytest.fixture(scope="module")
 def payment_operation_initialize_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
         status=enums.OperationStatusEnum.STARTED,
@@ -1062,6 +1068,7 @@ def payment_operation_initialize_started() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_initialize_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
         status=enums.OperationStatusEnum.COMPLETED,
@@ -1071,6 +1078,7 @@ def payment_operation_initialize_completed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_initialize_failed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
         status=enums.OperationStatusEnum.FAILED,
@@ -1080,6 +1088,7 @@ def payment_operation_initialize_failed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_initialize_requires_action() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
         status=enums.OperationStatusEnum.REQUIRES_ACTION,
@@ -1089,6 +1098,7 @@ def payment_operation_initialize_requires_action() -> protocols.PaymentOperation
 @pytest.fixture(scope="module")
 def payment_operation_initialize_not_performed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.INITIALIZE,
         status=enums.OperationStatusEnum.NOT_PERFORMED,
@@ -1098,6 +1108,7 @@ def payment_operation_initialize_not_performed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_process_action_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PROCESS_ACTION,
         status=enums.OperationStatusEnum.STARTED,
@@ -1107,6 +1118,7 @@ def payment_operation_process_action_started() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_process_action_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PROCESS_ACTION,
         status=enums.OperationStatusEnum.COMPLETED,
@@ -1116,6 +1128,7 @@ def payment_operation_process_action_completed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_pay_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PAY,
         status=enums.OperationStatusEnum.STARTED,
@@ -1125,6 +1138,7 @@ def payment_operation_pay_started() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_pay_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PAY,
         status=enums.OperationStatusEnum.COMPLETED,
@@ -1134,6 +1148,7 @@ def payment_operation_pay_completed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_pay_failed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.PAY,
         status=enums.OperationStatusEnum.FAILED,
@@ -1143,6 +1158,7 @@ def payment_operation_pay_failed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_after_pay_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_PAY,
         status=enums.OperationStatusEnum.STARTED,
@@ -1152,6 +1168,7 @@ def payment_operation_after_pay_started() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_after_pay_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_PAY,
         status=enums.OperationStatusEnum.COMPLETED,
@@ -1161,6 +1178,7 @@ def payment_operation_after_pay_completed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_confirm_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.CONFIRM,
         status=enums.OperationStatusEnum.STARTED,
@@ -1170,6 +1188,7 @@ def payment_operation_confirm_started() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_confirm_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.CONFIRM,
         status=enums.OperationStatusEnum.COMPLETED,
@@ -1179,6 +1198,7 @@ def payment_operation_confirm_completed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_after_confirm_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_CONFIRM,
         status=enums.OperationStatusEnum.STARTED,
@@ -1188,6 +1208,7 @@ def payment_operation_after_confirm_started() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_after_confirm_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_CONFIRM,
         status=enums.OperationStatusEnum.COMPLETED,
@@ -1197,6 +1218,7 @@ def payment_operation_after_confirm_completed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_refund_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.REFUND,
         status=enums.OperationStatusEnum.STARTED,
@@ -1206,6 +1228,7 @@ def payment_operation_refund_started() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_refund_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.REFUND,
         status=enums.OperationStatusEnum.COMPLETED,
@@ -1215,6 +1238,7 @@ def payment_operation_refund_completed() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_after_refund_started() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_REFUND,
         status=enums.OperationStatusEnum.STARTED,
@@ -1224,6 +1248,7 @@ def payment_operation_after_refund_started() -> protocols.PaymentOperation:
 @pytest.fixture(scope="module")
 def payment_operation_after_refund_completed() -> protocols.PaymentOperation:
     return factories.PaymentOperationFactory(
+        created_at=datetime.now(),
         payment_method_id=uuid.uuid4(),
         type=enums.OperationTypeEnum.AFTER_REFUND,
         status=enums.OperationStatusEnum.COMPLETED,

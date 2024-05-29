@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from faker import Faker
 
@@ -21,6 +23,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
 
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
     block_event = domain.BlockEvent(
+        created_at=datetime.now(),
         status=status,
         payment_method_id=db_payment_method.id,
         block_name="test",
@@ -45,6 +48,7 @@ def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
 
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
     block_event = domain.BlockEvent(
+        created_at=datetime.now(),
         status=status,
         payment_method_id=db_payment_method.id,
         block_name=block_name,
@@ -69,6 +73,7 @@ def test_givenExistingBlockEventRow_whenCallingRepositoryAdd_thenthenDuplicatedE
         block_name="test",
     )
     block_event = domain.BlockEvent(
+        created_at=datetime.now(),
         status=db_block_event.status,
         payment_method_id=db_payment_method.id,
         block_name=db_block_event.block_name,
