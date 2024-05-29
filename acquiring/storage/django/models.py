@@ -132,8 +132,8 @@ class PaymentMethod(Identifiable, django.db.models.Model):
 
 class Token(django.db.models.Model):
 
-    # TODO Rename to timestamp (it's not identifiable)
-    created_at = django.db.models.DateTimeField()  # when a token gets created is passed by the Tokenization provider
+    # When a token gets created is passed by the Tokenization provider
+    timestamp = django.db.models.DateTimeField(auto_now_add=False)
     expires_at = django.db.models.DateTimeField(null=True, blank=True)
     token = django.db.models.TextField()  # No arbitrary limitations are imposed
 
@@ -160,7 +160,7 @@ class Token(django.db.models.Model):
 
     def to_domain(self) -> "protocols.Token":
         return domain.Token(
-            created_at=self.created_at,
+            timestamp=self.timestamp,
             expires_at=self.expires_at,
             token=self.token,
             fingerprint=self.fingerprint,

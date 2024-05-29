@@ -26,7 +26,7 @@ class PaymentOperation(Protocol):
 
 
 class DraftToken(Protocol):
-    created_at: datetime
+    timestamp: datetime
     token: str
     metadata: Optional[dict[str, str | int]]
     expires_at: Optional[datetime]
@@ -34,7 +34,7 @@ class DraftToken(Protocol):
 
 
 class Token(Protocol):
-    created_at: datetime
+    timestamp: datetime
     token: str
     payment_method_id: UUID
     metadata: Optional[dict[str, str | int]]

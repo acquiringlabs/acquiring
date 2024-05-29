@@ -27,7 +27,7 @@ def test_givenCorrectTokenDataAndExistingPaymentMethod_whenCallingRepositoryAdd_
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
     payment_method = db_payment_method.to_domain()
-    token = domain.Token(payment_method_id=payment_method.id, created_at=timezone.now(), token=fake.sha256())
+    token = domain.Token(payment_method_id=payment_method.id, timestamp=timezone.now(), token=fake.sha256())
 
     with django_assert_num_queries(2):
         result = storage.django.TokenRepository().add(
@@ -67,7 +67,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAdd_thenDoesNotEx
         created_at=datetime.now(),
         confirmable=False,
     )
-    token = domain.Token(payment_method_id=payment_method.id, created_at=timezone.now(), token=fake.sha256())
+    token = domain.Token(payment_method_id=payment_method.id, timestamp=timezone.now(), token=fake.sha256())
 
     with django_assert_num_queries(2), pytest.raises(domain.PaymentMethod.DoesNotExist):
         storage.django.TokenRepository().add(

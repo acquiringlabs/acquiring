@@ -56,7 +56,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsR
     db_payment_method = PaymentMethodFactory(payment_attempt=db_payment_attempt)
     TokenFactory.create(
         token=fake.sha256(),
-        created_at=timezone.now(),
+        timestamp=timezone.now(),
         payment_method=db_payment_method,
     )
     PaymentOperationFactory.create(

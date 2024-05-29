@@ -123,7 +123,7 @@ class TokenRepository:
 
         db_token = models.Token(
             payment_method=db_payment_method,
-            created_at=token.created_at,  # TODO Ensure via type that datetime is timezone aware
+            timestamp=token.timestamp,  # TODO Ensure via type that datetime is timezone aware
             token=token.token,
             expires_at=token.expires_at,  # TODO Ensure via type that datetime is timezone aware
             fingerprint=token.fingerprint,

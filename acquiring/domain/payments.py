@@ -116,7 +116,7 @@ class DraftPaymentAttempt:
 
 @dataclass
 class DraftToken:
-    created_at: datetime
+    timestamp: datetime
     token: str
     metadata: Optional[dict[str, str | int]] = field(default_factory=dict)
     expires_at: Optional[datetime] = None
@@ -129,7 +129,7 @@ class DraftToken:
 
 @dataclass
 class Token:
-    created_at: datetime
+    timestamp: datetime
     token: str
     payment_method_id: UUID
     metadata: Optional[dict[str, str | int]] = field(default_factory=dict)

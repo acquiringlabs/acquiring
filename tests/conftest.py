@@ -69,7 +69,7 @@ def fake_payment_method_repository_class() -> (
                     confirmable=data.confirmable,
                     tokens=[
                         domain.Token(
-                            created_at=token.created_at,
+                            timestamp=token.timestamp,
                             token=token.token,
                             payment_method_id=payment_method_id,
                             metadata=token.metadata,
