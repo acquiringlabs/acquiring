@@ -1,3 +1,4 @@
+import json
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -18,8 +19,8 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
         type[protocols.Repository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentMethod]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
@@ -34,14 +35,14 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
 
     external_id = "external"
     timestamp = datetime.now()
-    raw_data = fake.pydict()
+    raw_data = json.dumps(fake.pydict())
     provider_name = fake.company()
 
     @dataclass(match_args=False)
     class FakeAdapterResponse:
         external_id: Optional[str]
         timestamp: Optional[datetime]
-        raw_data: dict
+        raw_data: str
         status: str
 
     @dataclass
@@ -78,7 +79,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
         payment_method_repository_class=fake_payment_method_repository_class([]),
         payment_operation_repository_class=fake_payment_operation_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
 
     FakeAdapter(
@@ -86,15 +87,18 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
         provider_name=provider_name,
     ).do_something(unit_of_work, payment_method)
 
-    transactions: list[protocols.Transaction] = unit_of_work.transaction_units
+    transactions: set[protocols.Transaction] = unit_of_work.transaction_units
     assert len(transactions) == 1
 
-    assert transactions[0] == domain.Transaction(
-        external_id=external_id,
-        timestamp=timestamp,
-        raw_data=raw_data,
-        provider_name=provider_name,
-        payment_method_id=payment_method.id,
+    assert (
+        domain.Transaction(
+            external_id=external_id,
+            timestamp=timestamp,
+            raw_data=raw_data,
+            provider_name=provider_name,
+            payment_method_id=payment_method.id,
+        )
+        in transactions
     )
 
     assert FakeAdapter.do_something.__name__ == "do_something"

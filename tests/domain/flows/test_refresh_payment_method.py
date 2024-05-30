@@ -26,8 +26,8 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
 ) -> None:
 
@@ -94,7 +94,7 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
                 set(db_payment_method.payment_operations)
             ),
             block_event_repository_class=fake_block_event_repository_class(set()),
-            transaction_repository_class=fake_transaction_repository_class([]),
+            transaction_repository_class=fake_transaction_repository_class(set()),
         )
     ).initialize(payment_method=payment_method)
 
@@ -116,8 +116,8 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
 ) -> None:
 
@@ -161,7 +161,7 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
             payment_method_repository_class=fake_payment_method_repository_class([]),
             payment_operation_repository_class=fake_payment_operation_repository_class(set()),
             block_event_repository_class=fake_block_event_repository_class(set()),
-            transaction_repository_class=fake_transaction_repository_class([]),
+            transaction_repository_class=fake_transaction_repository_class(set()),
         )
     ).initialize(payment_method=payment_method)
 
@@ -185,8 +185,8 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
 ) -> None:
 
@@ -231,6 +231,6 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
                 payment_method_repository_class=fake_payment_method_repository_class([]),
                 payment_operation_repository_class=fake_payment_operation_repository_class(set()),
                 block_event_repository_class=fake_block_event_repository_class(set()),
-                transaction_repository_class=fake_transaction_repository_class([]),
+                transaction_repository_class=fake_transaction_repository_class(set()),
             )
         ).do_something(payment_method=payment_method)

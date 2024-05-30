@@ -28,7 +28,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreat
         timestamp=timezone.now(),
         provider_name=fake.company(),
         payment_method_id=db_payment_method.id,
-        raw_data={},
+        raw_data="",
     )
 
     with django_assert_num_queries(1):

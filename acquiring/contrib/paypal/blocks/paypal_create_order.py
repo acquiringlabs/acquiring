@@ -1,3 +1,4 @@
+import json
 import uuid
 from dataclasses import dataclass
 from typing import Sequence
@@ -50,7 +51,7 @@ class PayPalCreateOrder:
                 error_message=str(response.raw_data),
             )
 
-        parsed_data = self._parse_response_data(response.raw_data)
+        parsed_data = self._parse_response_data(json.loads(response.raw_data))
 
         return domain.BlockResponse(
             status=enums.OperationStatusEnum.COMPLETED,

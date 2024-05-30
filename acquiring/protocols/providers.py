@@ -13,7 +13,7 @@ Status = TypeVar("Status", bound=StrEnum)
 class AdapterResponse(Generic[Status], Protocol):
     external_id: Optional[str]  # UUID cannot be imposed across all adapters
     timestamp: Optional[datetime]
-    raw_data: dict
+    raw_data: str
     status: Status
 
 
@@ -28,7 +28,7 @@ class Adapter(Protocol):
 class Transaction(Protocol):
     external_id: str
     timestamp: datetime
-    raw_data: dict
+    raw_data: str
     provider_name: str
     payment_method_id: UUID
 

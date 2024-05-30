@@ -17,7 +17,7 @@ from .domain import Order, OrderIntentEnum, PayPalStatusEnum
 class PayPalResponse:
     external_id: Optional[str]
     timestamp: Optional[datetime]
-    raw_data: dict
+    raw_data: str
     status: PayPalStatusEnum
     intent: OrderIntentEnum
 
@@ -116,7 +116,7 @@ class PayPalAdapter:
             return PayPalResponse(
                 external_id=None,
                 timestamp=None,
-                raw_data=response.json(),
+                raw_data=response.text,
                 status=PayPalStatusEnum.FAILED,
                 intent=order.intent,
             )
@@ -129,7 +129,7 @@ class PayPalAdapter:
                 if serialized_response.get("create_time")
                 else datetime.now(timezone.utc)
             ),
-            raw_data=serialized_response,
+            raw_data=response.text,
             status=PayPalStatusEnum(serialized_response["status"]),
             intent=OrderIntentEnum(serialized_response["intent"]),
         )

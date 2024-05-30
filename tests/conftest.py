@@ -134,13 +134,12 @@ def fake_payment_operation_repository_class() -> (
     return func
 
 
-# TODO Turn this into a FakeRepo (use set vs list)
 @pytest.fixture(scope="module")
 def fake_transaction_repository_class() -> (
-    Callable[[Optional[list[protocols.Transaction]]], type[protocols.Repository]]
+    Callable[[Optional[set[protocols.Transaction]]], type[test_protocols.FakeRepository]]
 ):
 
-    def func(transactions: Optional[list[protocols.Transaction]]) -> type[protocols.Repository]:
+    def func(transactions: Optional[set[protocols.Transaction]]) -> type[test_protocols.FakeRepository]:
 
         @dataclass
         class FakeTransactionRepository:
@@ -148,7 +147,7 @@ def fake_transaction_repository_class() -> (
                 """
                 Cloning the list into units attribute to simulate the independence of database versus objects in memory
                 """
-                self.units = transactions.copy() if transactions is not None else []
+                self.units = transactions.copy() if transactions is not None else set()
 
             def add(self, transaction: protocols.Transaction) -> protocols.Transaction:
                 transaction = domain.Transaction(
@@ -158,7 +157,7 @@ def fake_transaction_repository_class() -> (
                     provider_name=transaction.provider_name,
                     payment_method_id=transaction.payment_method_id,
                 )
-                self.units.append(transaction)
+                self.units.add(transaction)
                 return transaction
 
             def get(  # type:ignore[empty-body]
@@ -220,15 +219,14 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
         block_event_repository_class: type[test_protocols.FakeRepository]
         block_events: test_protocols.FakeRepository = field(init=False, repr=False)
 
-        transaction_repository_class: type[protocols.Repository]
-        transactions: protocols.Repository = field(init=False, repr=False)
+        transaction_repository_class: type[test_protocols.FakeRepository]
+        transactions: test_protocols.FakeRepository = field(init=False, repr=False)
 
         payment_method_units: list[protocols.PaymentMethod] = field(default_factory=list)
         payment_operation_units: set[protocols.PaymentOperation] = field(default_factory=set)
         block_event_units: set[protocols.BlockEvent] = field(default_factory=set)
 
-        # TODO Make Transaction hashable despite the use of raw_data: dict
-        transaction_units: list[protocols.Transaction] = field(default_factory=list)  # not hashable because of dict
+        transaction_units: set[protocols.Transaction] = field(default_factory=set)
 
         def __enter__(self) -> Self:
             self.payment_methods = self.payment_method_repository_class()
@@ -241,11 +239,7 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
             self.block_event_units.update(unit for unit in self.block_events.units)
 
             self.transactions = self.transaction_repository_class()
-            self.transaction_units += [
-                unit
-                for unit in self.transactions.units  # type:ignore[attr-defined]
-                if unit not in self.transaction_units
-            ]
+            self.transaction_units.update(unit for unit in self.transactions.units)
             return self
 
         def __exit__(
@@ -264,11 +258,7 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
 
             self.block_event_units.update(unit for unit in self.block_events.units)
 
-            self.transaction_units += [
-                unit
-                for unit in self.transactions.units  # type:ignore[attr-defined]
-                if unit not in self.transaction_units
-            ]
+            self.transaction_units.update(unit for unit in self.transactions.units)
 
         def rollback(self) -> None:
             pass

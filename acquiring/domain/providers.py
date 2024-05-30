@@ -11,7 +11,7 @@ from acquiring import domain, protocols
 class Transaction:
     external_id: str
     timestamp: datetime
-    raw_data: dict
+    raw_data: str
     provider_name: str
     payment_method_id: UUID
 

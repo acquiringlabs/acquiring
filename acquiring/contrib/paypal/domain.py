@@ -66,4 +66,4 @@ class PayPalWebhookData:
     resource_version: str
     event_type: str
     summary: str
-    raw_data: dict
+    raw_data: str

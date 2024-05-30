@@ -1,3 +1,4 @@
+import json
 import uuid
 from datetime import datetime, timezone
 from typing import Callable, Optional
@@ -18,8 +19,8 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         type[protocols.Repository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentMethod]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
@@ -50,7 +51,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
             set(payment_method.payment_operations)
         ),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
 
     block = paypal.blocks.PayPalAfterCreatingOrder()
@@ -145,7 +146,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
             resource_version=raw_data["resource_version"],
             event_type=raw_data["event_type"],
             summary=raw_data["summary"],
-            raw_data=raw_data,
+            raw_data=json.dumps(raw_data),
         ),
     )
 
@@ -166,10 +167,13 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
 
     assert len(transactions) == 1
 
-    assert transactions[0] == domain.Transaction(
-        external_id=external_id,
-        timestamp=datetime.fromisoformat(fake_create_time),
-        raw_data=raw_data,
-        provider_name="paypal",
-        payment_method_id=payment_method.id,
+    assert (
+        domain.Transaction(
+            external_id=external_id,
+            timestamp=datetime.fromisoformat(fake_create_time),
+            raw_data=json.dumps(raw_data),
+            provider_name="paypal",
+            payment_method_id=payment_method.id,
+        )
+        in transactions
     )

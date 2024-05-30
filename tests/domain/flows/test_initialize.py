@@ -52,8 +52,8 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     block_response_actions: list[dict],
     payment_operations_status: OperationStatusEnum,
@@ -74,7 +74,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
             set(payment_method.payment_operations)
         ),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
 
     result = domain.PaymentFlow(
@@ -137,8 +137,8 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.Transaction]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
     payment_operations_status: OperationStatusEnum,
@@ -158,7 +158,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
             set(payment_method.payment_operations)
         ),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
 
     result = domain.PaymentFlow(
@@ -220,8 +220,8 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
@@ -248,7 +248,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
             set(payment_method.payment_operations)
         ),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
     result = domain.PaymentFlow(
         unit_of_work=unit_of_work,

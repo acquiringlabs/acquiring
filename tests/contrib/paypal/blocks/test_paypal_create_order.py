@@ -1,3 +1,4 @@
+import json
 import os
 import uuid
 from datetime import datetime, timezone
@@ -21,8 +22,8 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         type[protocols.Repository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentMethod]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     fake_payment_operation_repository_class: Callable[
         [Optional[set[protocols.PaymentOperation]]],
@@ -67,7 +68,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
             set(payment_method.payment_operations)
         ),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
 
     block = paypal.blocks.PayPalCreateOrder(
@@ -138,7 +139,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
             timestamp=datetime.fromisoformat(fake_create_time),
             provider_name="paypal",
             payment_method_id=payment_method.id,
-            raw_data=raw_response,
+            raw_data=json.dumps(raw_response),
         )
         in transaction_units
     )

@@ -25,8 +25,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
@@ -57,7 +57,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         payment_operation_repository_class=fake_payment_operation_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
 
     result = domain.PaymentFlow(
@@ -114,8 +114,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
@@ -146,7 +146,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         payment_operation_repository_class=fake_payment_operation_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
     result = domain.PaymentFlow(
         unit_of_work=unit_of_work,
@@ -207,8 +207,8 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
@@ -239,7 +239,7 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         payment_operation_repository_class=fake_payment_operation_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
     result = domain.PaymentFlow(
         unit_of_work=unit_of_work,
@@ -293,8 +293,8 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         type[test_protocols.FakeRepository],
     ],
     fake_transaction_repository_class: Callable[
-        [Optional[list[protocols.PaymentOperation]]],
-        type[protocols.Repository],
+        [Optional[set[protocols.Transaction]]],
+        type[test_protocols.FakeRepository],
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
@@ -320,7 +320,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         payment_operation_repository_class=fake_payment_operation_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
-        transaction_repository_class=fake_transaction_repository_class([]),
+        transaction_repository_class=fake_transaction_repository_class(set()),
     )
     result = domain.PaymentFlow(
         unit_of_work=unit_of_work,
