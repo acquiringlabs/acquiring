@@ -7,16 +7,16 @@ from acquiring import domain, protocols
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 
-def payment_operation_type(  # type:ignore[misc]
+def operation_type(  # type:ignore[misc]
     function: Callable[..., "protocols.OperationResponse"]
 ) -> Callable[..., "protocols.OperationResponse"]:
     """
     This decorator verifies that the name of this function belongs to one of the OperationTypeEnums
 
     >>> def initialize(): pass
-    >>> payment_operation_type(initialize)()
+    >>> operation_type(initialize)()
     >>> def bad_name(): pass
-    >>> payment_operation_type(bad_name)()
+    >>> operation_type(bad_name)()
     Traceback (most recent call last):
         ...
     TypeError: This function cannot be a payment type
@@ -25,12 +25,12 @@ def payment_operation_type(  # type:ignore[misc]
     This is helpful to make pay a private method.
 
     >>> def __bad_name(): pass
-    >>> payment_operation_type(__bad_name)()
+    >>> operation_type(__bad_name)()
     Traceback (most recent call last):
         ...
     TypeError: This function cannot be a payment type
     >>> def __pay(): pass
-    >>> payment_operation_type(__pay)()
+    >>> operation_type(__pay)()
     """
 
     @functools.wraps(function)
@@ -92,7 +92,7 @@ def refresh_payment_method(  # type:ignore[misc]
                 status=OperationStatusEnum.FAILED,
                 payment_method=None,
                 error_message="PaymentMethod not found",
-                type=OperationTypeEnum(function.__name__),  # already valid thanks to @payment_operation_type
+                type=OperationTypeEnum(function.__name__),  # already valid thanks to @operation_type
             )
         return function(self, payment_method, *args, **kwargs)
 
@@ -110,7 +110,7 @@ class OperationResponse:
     actions: list[dict] = field(default_factory=list)
 
 
-# TODO Decorate this class to ensure that all payment_operation_types are implemented as methods
+# TODO Decorate this class to ensure that all operation_types are implemented as methods
 @dataclass
 class PaymentFlow:
     """
@@ -130,7 +130,7 @@ class PaymentFlow:
     confirm_block: Optional["protocols.Block"]
     after_confirm_blocks: list["protocols.Block"]
 
-    @payment_operation_type
+    @operation_type
     @implements_blocks
     @refresh_payment_method
     def initialize(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
@@ -219,7 +219,7 @@ class PaymentFlow:
             type=OperationTypeEnum.INITIALIZE,
         )
 
-    @payment_operation_type
+    @operation_type
     @implements_blocks
     @refresh_payment_method
     def process_action(
@@ -303,7 +303,7 @@ class PaymentFlow:
             type=OperationTypeEnum.PROCESS_ACTION,
         )
 
-    @payment_operation_type
+    @operation_type
     @implements_blocks
     def __pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # No need to refresh from DB
@@ -359,7 +359,7 @@ class PaymentFlow:
             ),
         )
 
-    @payment_operation_type
+    @operation_type
     @implements_blocks
     @refresh_payment_method
     def after_pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
@@ -420,7 +420,7 @@ class PaymentFlow:
             type=OperationTypeEnum.AFTER_PAY,
         )
 
-    @payment_operation_type
+    @operation_type
     @implements_blocks
     @refresh_payment_method
     def confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
@@ -498,7 +498,7 @@ class PaymentFlow:
             error_message=block_response.error_message,
         )
 
-    @payment_operation_type
+    @operation_type
     @implements_blocks
     @refresh_payment_method
     def after_confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":

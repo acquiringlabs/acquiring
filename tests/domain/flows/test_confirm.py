@@ -27,7 +27,7 @@ def test_statusListsAreComplete() -> None:
 
 
 @pytest.mark.parametrize(
-    "result_status, payment_operation_status",
+    "result_status, operation_status",
     [(OperationStatusEnum.COMPLETED, status) for status in COMPLETED_STATUS]
     + [(OperationStatusEnum.PENDING, status) for status in PENDING_STATUS]
     + [(OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
@@ -52,7 +52,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
         type[test_protocols.FakeRepository],
     ],
     result_status: OperationStatusEnum,
-    payment_operation_status: OperationStatusEnum,
+    operation_status: OperationStatusEnum,
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
     # given a valid payment attempt
@@ -119,7 +119,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
         after_pay_blocks=[],
-        confirm_block=fake_block(fake_response_status=payment_operation_status),  # type:ignore[call-arg]
+        confirm_block=fake_block(fake_response_status=operation_status),  # type:ignore[call-arg]
         after_confirm_blocks=[],
     ).confirm(payment_method)
 

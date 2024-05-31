@@ -64,3 +64,5 @@ class PaymentOperationRepository:
         payment_operation = db_payment_operation.to_domain()
         payment_method.payment_operations.append(payment_operation)
         return payment_operation
+
+    def get(self, id: UUID) -> "protocols.PaymentOperation": ...  # type: ignore[empty-body]
