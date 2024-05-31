@@ -1,4 +1,3 @@
-import json
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -35,7 +34,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
 
     external_id = "external"
     timestamp = datetime.now()
-    raw_data = json.dumps(fake.pydict())
+    raw_data = fake.json()
     provider_name = fake.company()
 
     @dataclass(match_args=False)
