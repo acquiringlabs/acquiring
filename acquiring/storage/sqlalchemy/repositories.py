@@ -4,7 +4,7 @@ from uuid import UUID
 import deal
 from sqlalchemy import orm
 
-from acquiring import domain, protocols
+from acquiring import domain, enums, protocols
 
 from . import models
 
@@ -41,3 +41,26 @@ class PaymentMethodRepository:
             )
         except orm.exc.NoResultFound:
             raise domain.PaymentMethod.DoesNotExist
+
+
+@dataclass
+class PaymentOperationRepository:
+
+    session: orm.Session
+
+    def add(
+        self,
+        payment_method: "protocols.PaymentMethod",
+        type: enums.OperationTypeEnum,
+        status: enums.OperationStatusEnum,
+    ) -> "protocols.PaymentOperation":
+        db_payment_operation = models.PaymentOperation(
+            payment_method_id=payment_method.id,
+            type=type,
+            status=status,
+        )
+        self.session.add(db_payment_operation)
+        self.session.commit()
+        payment_operation = db_payment_operation.to_domain()
+        payment_method.payment_operations.append(payment_operation)
+        return payment_operation

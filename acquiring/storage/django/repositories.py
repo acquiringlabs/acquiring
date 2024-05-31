@@ -3,8 +3,7 @@ from uuid import UUID
 import deal
 import django.db.transaction
 
-from acquiring import domain, protocols
-from acquiring.enums import OperationStatusEnum, OperationTypeEnum
+from acquiring import domain, enums, protocols
 from acquiring.storage.django import models
 
 
@@ -40,8 +39,8 @@ class PaymentOperationRepository:
     def add(
         self,
         payment_method: "protocols.PaymentMethod",
-        type: OperationTypeEnum,
-        status: OperationStatusEnum,
+        type: enums.OperationTypeEnum,
+        status: enums.OperationStatusEnum,
     ) -> "protocols.PaymentOperation":
         db_payment_operation = models.PaymentOperation(
             payment_method_id=payment_method.id,
