@@ -4,5 +4,6 @@ repo_name: Acquiring
 
 theme:
   name: material
+  custom_dir: material/overrides
   icon:
     repo: fontawesome/brands/github
