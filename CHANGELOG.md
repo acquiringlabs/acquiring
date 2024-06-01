@@ -2,6 +2,24 @@
 
 Follows the format of [Common-Changelog](https://common-changelog.org)
 
+## 0.4.0 - 2024-06-01 [Alpha Release]
+
+### Changed
+
+- Rename PaymentFlow as PaymentSaga (alvaro)
+- Implement PaymentOperation model in storage/sqlalchemy and its associated Repository (alvaro)
+- Ensure immutability of Wide events (Transaction, BlockEvent, PaymentOperation) (alvaro)
+- Added FakeUnitOfWork and FakeRepository protocols to improve type system for tests (alvaro)
+
+### Added
+
+### Fixed
+
+- Expose created_at for BlockEvent and PaymentOperation
+- Rename Token.created_at to timestamp (see ADR 14. created_at are internal datetimes, timestamps are external)
+- Remove non-init fields from repr in dataclasses that implemented them (alvaro)
+- Fix faking raw data using json (alvaro)
+
 _First release._
 
 ## 0.3.0 - 2024-05-17 [Alpha Release]
