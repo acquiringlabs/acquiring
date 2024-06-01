@@ -1,6 +1,5 @@
 from .blocks import BlockResponse, wrapped_by_block_events
 from .events import BlockEvent
-from .flows import PaymentFlow
 from .payments import (
     DraftItem,
     DraftPaymentAttempt,
@@ -13,6 +12,7 @@ from .payments import (
     Token,
 )
 from .providers import Transaction, wrapped_by_transaction
+from .sagas import PaymentSaga
 
 __all__ = [
     "BlockEvent",
@@ -23,7 +23,7 @@ __all__ = [
     "DraftToken",
     "Item",
     "PaymentAttempt",
-    "PaymentFlow",
+    "PaymentSaga",
     "PaymentMethod",
     "PaymentOperation",
     "Token",

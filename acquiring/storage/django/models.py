@@ -113,7 +113,7 @@ class PaymentMethod(Identifiable, django.db.models.Model):
 
     confirmable = django.db.models.BooleanField(
         editable=False,
-        help_text="Whether this PaymentMethod can at some point run inside PaymentFlow.confirm",
+        help_text="Whether this PaymentMethod can at some point run inside PaymentSaga.confirm",
     )
 
     def __str__(self) -> str:

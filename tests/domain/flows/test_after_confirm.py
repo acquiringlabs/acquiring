@@ -32,7 +32,7 @@ def test_statusListsAreComplete() -> None:
     + [(OperationStatusEnum.PENDING, status) for status in PENDING_STATUS]
     + [(OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
-def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentSagaReturnsTheCorrectOperationResponse(
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
@@ -122,7 +122,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.COMPLETED,
@@ -183,7 +183,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentFlowRe
     assert len(db_payment_operations) == 10
 
 
-def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPaymentFlowReturnsAFailedStatusOperationResponse(
+def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPaymentSagaReturnsAFailedStatusOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -214,7 +214,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
     )
     assert dl.can_after_confirm(payment_method) is False
 
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class(set()),

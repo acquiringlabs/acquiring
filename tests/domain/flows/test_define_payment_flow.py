@@ -4,7 +4,7 @@ from acquiring import domain, protocols
 from tests import protocols as test_protocols
 
 
-def test_givenCorrectInformation_paymentFlowGetsDefined(
+def test_givenCorrectInformation_paymentSagaGetsDefined(
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -26,9 +26,9 @@ def test_givenCorrectInformation_paymentFlowGetsDefined(
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
 
-    def fake_payment_flow() -> protocols.PaymentFlow:
+    def fake_payment_flow() -> protocols.PaymentSaga:
 
-        return domain.PaymentFlow(
+        return domain.PaymentSaga(
             unit_of_work=fake_unit_of_work(
                 payment_method_repository_class=fake_payment_method_repository_class([]),
                 payment_operation_repository_class=fake_payment_operation_repository_class(set()),

@@ -9,7 +9,7 @@ from tests import protocols as test_protocols
 from tests.domain import factories
 
 
-def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentSagaReturnsTheCorrectOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -60,7 +60,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
 
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(  # type:ignore[call-arg]
@@ -98,7 +98,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentFlowRet
     len(payment_operations) == 4
 
 
-def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
+def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentSagaReturnsTheCorrectOperationResponseAndCallsPay(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -148,7 +148,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(
@@ -192,7 +192,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentFlow
     len(payment_operations) == 4
 
 
-def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenPaymentFlowReturnsFailedOperationResponse(
+def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenPaymentSagaReturnsFailedOperationResponse(
     fake_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
@@ -241,7 +241,7 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(),
         process_action_block=None,  # not present
@@ -277,7 +277,7 @@ def test_givenAValidPaymentMethod_whenFlowDoesNotContainProcessActionBlock_thenP
     len(payment_operations) == 4
 
 
-def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenPaymentFlowReturnsAFailedStatusOperationResponse(
+def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenPaymentSagaReturnsAFailedStatusOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -322,7 +322,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(

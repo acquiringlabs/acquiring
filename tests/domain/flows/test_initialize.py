@@ -36,7 +36,7 @@ VALID_RESPONSE_STATUS = [
         ]
     ],
 )
-def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentSagaReturnsTheCorrectOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -77,7 +77,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
 
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=payment_operations_status,
@@ -121,7 +121,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentFlowReturns
         OperationStatusEnum.NOT_PERFORMED,
     ],
 )
-def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponseAndCallsPay(
+def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentSagaReturnsTheCorrectOperationResponseAndCallsPay(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -161,7 +161,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
 
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=(
             fake_block(  # type:ignore[call-arg]
@@ -204,7 +204,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentFlowRetur
     assert result.payment_method.id == payment_method.id
 
 
-def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlowReturnsAFailedStatusOperationResponse(
+def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentSagaReturnsAFailedStatusOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -250,7 +250,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentFlo
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),

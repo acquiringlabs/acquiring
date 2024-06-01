@@ -19,7 +19,7 @@ from .providers import Adapter, AdapterResponse, Transaction
 from .storage import Repository, UnitOfWork
 
 
-class PaymentFlow(Protocol):
+class PaymentSaga(Protocol):
     unit_of_work: "UnitOfWork"
 
     initialize_block: Optional["Block"]
@@ -57,7 +57,7 @@ __all__ = [
     "Item",
     "OperationResponse",
     "PaymentAttempt",
-    "PaymentFlow",
+    "PaymentSaga",
     "PaymentMethod",
     "PaymentOperation",
     "Repository",

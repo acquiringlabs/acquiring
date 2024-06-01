@@ -56,7 +56,7 @@ def implements_blocks(  # type:ignore[misc]
 
     @functools.wraps(function)
     def wrapper(
-        self: "protocols.PaymentFlow",
+        self: "protocols.PaymentSaga",
         payment_method: "protocols.PaymentMethod",
         *args: Sequence,
         **kwargs: dict,
@@ -65,7 +65,7 @@ def implements_blocks(  # type:ignore[misc]
             self, f"{function.__name__.strip('_')}_blocks"
         ):
             return function(self, payment_method, *args, **kwargs)
-        raise TypeError("This PaymentFlow does not implement blocks for this operation type")
+        raise TypeError("This PaymentSaga does not implement blocks for this operation type")
 
     return wrapper
 
@@ -79,7 +79,7 @@ def refresh_payment_method(  # type:ignore[misc]
 
     @functools.wraps(function)
     def wrapper(
-        self: "protocols.PaymentFlow",
+        self: "protocols.PaymentSaga",
         payment_method: "protocols.PaymentMethod",
         *args: Sequence,
         **kwargs: dict,
@@ -101,7 +101,7 @@ def refresh_payment_method(  # type:ignore[misc]
 
 @dataclass
 class OperationResponse:
-    """Represents the outcome of a PaymentFlow operation type method execution"""
+    """Represents the outcome of a PaymentSaga operation type method execution"""
 
     status: OperationStatusEnum
     payment_method: Optional["protocols.PaymentMethod"]
@@ -112,7 +112,7 @@ class OperationResponse:
 
 # TODO Decorate this class to ensure that all operation_types are implemented as methods
 @dataclass
-class PaymentFlow:
+class PaymentSaga:
     """
     Context class that defines what's common across all Payment Methods and their execution.
 
@@ -256,7 +256,7 @@ class PaymentFlow:
                 status=OperationStatusEnum.NOT_PERFORMED,
                 payment_method=payment_method,
                 type=OperationTypeEnum.PROCESS_ACTION,
-                error_message="PaymentFlow does not include a block for this operation type",
+                error_message="PaymentSaga does not include a block for this operation type",
             )
 
         # Run Operation Block
@@ -455,7 +455,7 @@ class PaymentFlow:
                 status=OperationStatusEnum.NOT_PERFORMED,
                 payment_method=payment_method,
                 type=OperationTypeEnum.CONFIRM,
-                error_message="PaymentFlow does not include a block for this operation type",
+                error_message="PaymentSaga does not include a block for this operation type",
             )
 
         # Run Operation Block

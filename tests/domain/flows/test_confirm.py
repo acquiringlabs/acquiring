@@ -32,7 +32,7 @@ def test_statusListsAreComplete() -> None:
     + [(OperationStatusEnum.PENDING, status) for status in PENDING_STATUS]
     + [(OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
-def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentSagaReturnsTheCorrectOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -110,7 +110,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.COMPLETED,
@@ -161,7 +161,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentFlowReturns
     assert len(db_payment_operations) == 8
 
 
-def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentFlowReturnsAFailedStatusOperationResponse(
+def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentSagaReturnsAFailedStatusOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -190,7 +190,7 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentFlowRetu
     )
     assert dl.can_confirm(payment_method) is False
 
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class(set()),

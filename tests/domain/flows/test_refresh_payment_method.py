@@ -6,7 +6,7 @@ from typing import Callable, Optional
 import pytest
 
 from acquiring import domain, enums, protocols
-from acquiring.domain.flows import OperationResponse, refresh_payment_method
+from acquiring.domain.sagas import OperationResponse, refresh_payment_method
 from tests import protocols as test_protocols
 from tests.domain import factories
 
@@ -32,7 +32,7 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
 ) -> None:
 
     @dataclass
-    class FakeFlow:
+    class FakeSaga:
         unit_of_work: test_protocols.FakeUnitOfWork
 
         @refresh_payment_method
@@ -87,7 +87,7 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         ],
     )
 
-    result = FakeFlow(
+    result = FakeSaga(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([db_payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class(
@@ -122,7 +122,7 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
 ) -> None:
 
     @dataclass
-    class FakeFlow:
+    class FakeSaga:
         unit_of_work: test_protocols.FakeUnitOfWork
 
         @refresh_payment_method
@@ -156,7 +156,7 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
         ],
     )
 
-    result = FakeFlow(
+    result = FakeSaga(
         unit_of_work=fake_unit_of_work(
             payment_method_repository_class=fake_payment_method_repository_class([]),
             payment_operation_repository_class=fake_payment_operation_repository_class(set()),
@@ -191,7 +191,7 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
 ) -> None:
 
     @dataclass
-    class FakeFlow:
+    class FakeSaga:
         unit_of_work: test_protocols.FakeUnitOfWork
 
         @refresh_payment_method
@@ -226,7 +226,7 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
     )
 
     with pytest.raises(ValueError):
-        FakeFlow(
+        FakeSaga(
             unit_of_work=fake_unit_of_work(
                 payment_method_repository_class=fake_payment_method_repository_class([]),
                 payment_operation_repository_class=fake_payment_operation_repository_class(set()),

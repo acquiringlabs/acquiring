@@ -29,7 +29,7 @@ def test_statusListsAreComplete() -> None:
     + [(OperationStatusEnum.PENDING, status) for status in PENDING_STATUS]
     + [(OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
-def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPayAndReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPayAndReturnsTheCorrectOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -68,7 +68,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.COMPLETED,
@@ -109,7 +109,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentFlowCallsPa
     assert len(db_payment_operations) == 4
 
 
-def test_givenAValidPaymentMethod_whenPayCompletesWithActions_thenPaymentFlowReturnsAnOperationResponseWithActions(
+def test_givenAValidPaymentMethod_whenPayCompletesWithActions_thenPaymentSagaReturnsAnOperationResponseWithActions(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_method_repository_class: Callable[
@@ -148,7 +148,7 @@ def test_givenAValidPaymentMethod_whenPayCompletesWithActions_thenPaymentFlowRet
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentFlow(
+    result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.COMPLETED,
