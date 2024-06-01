@@ -26,7 +26,7 @@ repos:
     -   id: bandit
         args: ["-c", "pyproject.toml"]
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.5
+    rev: v0.4.7
     hooks:
     -   id: ruff
         args: [ --fix ]
@@ -82,7 +82,7 @@ repos:
 #     hooks:
 #     -   id: check-manifest
 -   repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.2
+    rev: v8.18.3
     hooks:
     -   id: gitleaks
 -   repo: https://gitlab.com/adam-moss/pre-commit-trailer
@@ -90,10 +90,23 @@ repos:
     hooks:
     -   id: add-pre-commit-config-trailer
 -   repo: https://github.com/Mateusz-Grzelinski/actionlint-py
-    rev: v1.7.0.14
+    rev: v1.7.1.15
     hooks:
     -   id: actionlint
 -   repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.40.0
+    rev: v0.41.0
     hooks:
     -   id: markdownlint
+-   repo: https://github.com/Lucas-C/pre-commit-hooks-lxml
+    rev: v1.1.0
+    hooks:
+    -   id: forbid-html-img-without-alt-text
+    -   id: forbid-non-std-html-attributes
+    -   id: detect-missing-css-classes
+        args:
+        - --css-files-dir
+        - .
+        - --html-files-dir
+        - .
+    -   id: html-tags-blacklist
+    -   id: html-attributes-blacklist
