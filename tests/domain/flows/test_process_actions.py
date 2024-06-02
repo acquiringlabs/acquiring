@@ -30,7 +30,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentSagaRet
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
-    # given a valid payment attempt
+
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -72,7 +72,6 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentSagaRet
         after_confirm_blocks=[],
     ).process_action(payment_method, action_data={})
 
-    # then the payment flow returns a failed status Operation Response
     assert result.type == OperationTypeEnum.PROCESS_ACTION
     assert result.status == OperationStatusEnum.FAILED
 
@@ -119,7 +118,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentSaga
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
-    # given a valid payment attempt
+
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -160,7 +159,6 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentSaga
         after_confirm_blocks=[],
     ).process_action(payment_method, action_data={})
 
-    # then the payment flow returns a failed status Operation Response
     assert result.type == OperationTypeEnum.PAY
     assert result.status == OperationStatusEnum.COMPLETED
 
@@ -212,7 +210,7 @@ def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenP
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
-    # given a valid payment attempt
+
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -251,7 +249,6 @@ def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenP
         after_confirm_blocks=[],
     ).process_action(payment_method, action_data={})
 
-    # then the payment flow returns a failed status Operation Response
     assert result.type == OperationTypeEnum.PROCESS_ACTION
     assert result.status == OperationStatusEnum.NOT_PERFORMED
 
@@ -298,7 +295,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
-    # Given a payment method that cannot initialize
+
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -334,7 +331,6 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         after_confirm_blocks=[],
     ).process_action(payment_method, action_data={})
 
-    # then the payment flow returns a failed status operation response
     assert result.type == OperationTypeEnum.PROCESS_ACTION
     assert result.status == OperationStatusEnum.FAILED
     result.error_message == "PaymentMethod cannot go through this operation"

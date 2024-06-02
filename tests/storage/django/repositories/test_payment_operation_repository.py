@@ -20,25 +20,22 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOpera
     operation_type: enums.OperationTypeEnum,
     operation_status: enums.OperationStatusEnum,
 ) -> None:
-    # Given existing payment method row in payment methods table
+
     db_payment_attempt = PaymentAttemptFactory()
     db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
     payment_method = db_payment_method.to_domain()
 
-    # When calling PaymentOperationRepository.add_payment_operation
     storage.django.PaymentOperationRepository().add(
         payment_method=payment_method,
         type=operation_type,
         status=operation_status,
     )
 
-    # Then PaymentOperation gets created
     payment_operation = storage.django.models.PaymentOperation.objects.get(
         payment_method_id=db_payment_method.id,
         status=operation_status,
         type=operation_type,
     )
 
-    # And payment method gets the payment operation added after add_payment_operation
     assert len(payment_method.payment_operations) == 1
     assert payment_method.payment_operations[0] == payment_operation.to_domain()

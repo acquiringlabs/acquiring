@@ -59,7 +59,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentSagaReturns
     payment_operations_status: OperationStatusEnum,
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
-    # given a valid payment attempt
+
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -67,7 +67,6 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentSagaReturns
         id=payment_method_id,
     )
 
-    # when Initializing
     unit_of_work = fake_unit_of_work(
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         payment_operation_repository_class=fake_payment_operation_repository_class(
@@ -90,7 +89,6 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentSagaReturns
         after_confirm_blocks=[],
     ).initialize(payment_method)
 
-    # then the payment flow returns the correct Operation Response
     payment_operations = payment_method.payment_operations
     assert len(payment_operations) == 2
 
@@ -143,7 +141,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentSagaRetur
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
     payment_operations_status: OperationStatusEnum,
 ) -> None:
-    # given a valid payment attempt
+
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -151,7 +149,6 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentSagaRetur
         id=payment_method_id,
     )
 
-    # when Initializing
     unit_of_work = fake_unit_of_work(
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         payment_operation_repository_class=fake_payment_operation_repository_class(
@@ -178,7 +175,6 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentSagaRetur
         after_confirm_blocks=[],
     ).initialize(payment_method)
 
-    # then the payment flow returns the correct Operation Response
     payment_operations = payment_method.payment_operations
     assert len(payment_operations) == 4
 
@@ -225,7 +221,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentSag
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
-    # Given a payment method that cannot initialize
+
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -260,7 +256,6 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentSag
         after_confirm_blocks=[],
     ).initialize(payment_method)
 
-    # then the payment flow returns a failed status operation response
     assert result.type == OperationTypeEnum.INITIALIZE
     assert result.status == OperationStatusEnum.FAILED
     result.error_message == "PaymentMethod cannot go through this operation"

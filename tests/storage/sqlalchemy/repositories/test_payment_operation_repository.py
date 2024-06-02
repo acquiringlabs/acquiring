@@ -27,7 +27,6 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreat
     operation_status: enums.OperationStatusEnum,
 ) -> None:
 
-    # Given existing payment method row in payment methods table
     db_payment_attempt = factories.PaymentAttemptFactory()
     db_payment_method = factories.PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
     payment_method = db_payment_method.to_domain()

@@ -55,7 +55,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentSagaReturns
     operation_status: OperationStatusEnum,
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
-    # given a valid payment attempt
+
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -123,7 +123,6 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentSagaReturns
         after_confirm_blocks=[],
     ).confirm(payment_method)
 
-    # then the payment flow returns the correct Operation Response
     payment_operations = payment_method.payment_operations
     assert len(payment_operations) == 8
 
@@ -182,7 +181,7 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentSagaRetu
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
-    # Given a payment method that cannot initialize
+
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
@@ -205,7 +204,6 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentSagaRetu
         after_confirm_blocks=[],
     ).confirm(payment_method)
 
-    # then the payment flow returns a failed status operation response
     assert result.type == OperationTypeEnum.CONFIRM
     assert result.status == OperationStatusEnum.FAILED
     result.error_message == "PaymentMethod cannot go through this operation"
