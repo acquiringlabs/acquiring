@@ -37,7 +37,6 @@ services:
       dockerfile: docs/Dockerfile
     command: mkdocs serve --dev-addr 0.0.0.0:8008 --watch-theme
     volumes:
-      - ./docs:/app/docs
-      - ./material:/app/material
+      - .:/app
     ports:
       - 8008:8008
