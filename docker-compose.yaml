@@ -31,6 +31,18 @@ services:
     volumes:
       - .:/code
 
+  qa:
+    build:
+      context: ./qa
+      args:
+        DJANGO_VERSION: 4.2
+        ACQUIRING_VERSION: 0.4.1
+    volumes:
+      - ./qa:/code
+    ports:
+      - 8888:8888
+    command: python manage.py runserver 0.0.0.0:8888
+
   docs:
     build:
       context: .
