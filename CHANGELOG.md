@@ -2,6 +2,12 @@
 
 Follows the format of [Common-Changelog](https://common-changelog.org)
 
+## 0.4.2 - 2024-06-03 [Alpha Release]
+
+### Fixed
+
+- Fixed module import on Django app (alvaro)
+
 ## 0.4.1 - 2024-06-03 [Alpha Release]
 
 ### Added
