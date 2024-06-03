@@ -2,6 +2,12 @@
 
 Follows the format of [Common-Changelog](https://common-changelog.org)
 
+## 0.4.1 - 2024-06-03 [Alpha Release]
+
+### Added
+
+- Added package dependencies `deal` and `requests` explicitly in pyproject.toml (alvaro)
+
 ## 0.4.0 - 2024-06-01 [Alpha Release]
 
 ### Changed
