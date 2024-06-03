@@ -1,6 +1,11 @@
 """Apps contains a registry of installed applications that stores configuration and provides introspection."""
 
+from importlib import import_module
+
 from django.apps import AppConfig
+from django.utils.module_loading import module_has_submodule
+
+ACQUIRNG_MODELS_MODULE_NAME = "storage.django.models"
 
 
 class AcquiringConfig(AppConfig):
@@ -10,10 +15,17 @@ class AcquiringConfig(AppConfig):
     name = "acquiring"
     verbose_name = "Acquiring"
 
-    def ready(self) -> None:
+    def import_models(self) -> None:
         """
-        This imports models from acquiring/storage
-        instead of having the import on acquiring/models.py,
-        which can be now safely removed
+        Overrides Django's default model import to search for the models inside the storage folder
+
+        See https://github.com/django/django/blob/main/django/apps/config.py#L262
         """
-        import acquiring.storage.django.models  # noqa: F401
+
+        # Dictionary of models for this app, primarily maintained in the
+        # 'all_models' attribute of the Apps this AppConfig is attached to.
+        self.models = self.apps.all_models[self.label]
+
+        if module_has_submodule(self.module, ACQUIRNG_MODELS_MODULE_NAME):
+            models_module_name = "%s.%s" % (self.name, ACQUIRNG_MODELS_MODULE_NAME)
+            self.models_module = import_module(models_module_name)
