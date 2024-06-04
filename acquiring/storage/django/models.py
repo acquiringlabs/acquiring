@@ -227,7 +227,7 @@ class BlockEvent(django.db.models.Model):
     def to_domain(self) -> "protocols.BlockEvent":
         return domain.BlockEvent(
             status=self.status,
-            payment_method_id=self.payment_method.id,
+            payment_method_id=self.payment_method_id,
             block_name=self.block_name,
             created_at=self.created_at,
         )

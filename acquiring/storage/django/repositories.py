@@ -61,7 +61,6 @@ class BlockEventRepository:
     ) -> "protocols.BlockEvent":
         if block_event.payment_method_id != payment_method.id:
             raise ValueError("BlockEvent is not associated with provided PaymentMethod")
-        assert block_event.payment_method_id == payment_method.id
         db_block_event = models.BlockEvent(
             status=block_event.status,
             payment_method_id=payment_method.id,
