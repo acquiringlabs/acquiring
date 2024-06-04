@@ -37,6 +37,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreat
             type=operation_type,
             status=operation_status,
         )
+        session.commit()
 
     db_payment_operations = session.query(storage.sqlalchemy.models.PaymentOperation).all()
     assert len(db_payment_operations) == 1

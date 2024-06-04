@@ -63,6 +63,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
 
     with sqlalchemy_assert_num_queries(7):
         result = storage.sqlalchemy.PaymentMethodRepository(session=session).add(data)
+        session.commit()
 
     db_payment_methods = session.query(storage.sqlalchemy.models.PaymentMethod).all()
     assert len(db_payment_methods) == 1

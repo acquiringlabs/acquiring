@@ -21,7 +21,6 @@ class PaymentMethodRepository:
             confirmable=data.confirmable,
         )
         self.session.add(db_payment_method)
-        self.session.commit()
         return db_payment_method.to_domain()
 
     @deal.reason(
