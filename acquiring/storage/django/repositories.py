@@ -1,7 +1,6 @@
 from uuid import UUID
 
 import deal
-import django.db.transaction
 
 from acquiring import domain, enums, protocols
 from acquiring.storage.django import models
@@ -55,22 +54,21 @@ class PaymentOperationRepository:
     def get(self, id: UUID) -> "protocols.PaymentOperation": ...  # type: ignore[empty-body]
 
 
-# TODO Append block event to payment_method.block_events?
-# TODO Test when payment method id does not correspond to any existing payment method
 class BlockEventRepository:
 
-    @deal.raises(domain.BlockEvent.Duplicated)  # TODO Turn this into deal.reason
-    def add(self, block_event: "protocols.BlockEvent") -> "protocols.BlockEvent":
-        try:
-            db_block_event = models.BlockEvent(
-                status=block_event.status,
-                payment_method_id=block_event.payment_method_id,
-                block_name=block_event.block_name,
-            )
-            db_block_event.save()
-            return db_block_event.to_domain()
-        except django.db.utils.IntegrityError:
-            raise domain.BlockEvent.Duplicated
+    def add(
+        self, payment_method: "protocols.PaymentMethod", block_event: "protocols.BlockEvent"
+    ) -> "protocols.BlockEvent":
+        if block_event.payment_method_id != payment_method.id:
+            raise ValueError("BlockEvent is not associated with provided PaymentMethod")
+        assert block_event.payment_method_id == payment_method.id
+        db_block_event = models.BlockEvent(
+            status=block_event.status,
+            payment_method_id=payment_method.id,
+            block_name=block_event.block_name,
+        )
+        db_block_event.save()
+        return db_block_event.to_domain()
 
     def get(self, id: UUID) -> "protocols.BlockEvent": ...  # type: ignore[empty-body]
 
