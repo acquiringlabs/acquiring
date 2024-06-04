@@ -45,7 +45,7 @@ def upgrade() -> None:
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
         sa.Column('status', sa.String(), nullable=False),
-        sa.Column('name', sa.String(), nullable=False),
+        sa.Column('block_name', sa.String(), nullable=False),
         sa.Column('payment_method_id', sa.String(), nullable=False),
         sa.ForeignKeyConstraint(['payment_method_id'], ['acquiring_paymentmethods.id'], ),
         sa.Index('ix_acquiring_blockevents_status', 'status'),

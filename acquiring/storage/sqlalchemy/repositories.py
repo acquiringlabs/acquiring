@@ -65,3 +65,24 @@ class PaymentOperationRepository:
         return payment_operation
 
     def get(self, id: UUID) -> "protocols.PaymentOperation": ...  # type: ignore[empty-body]
+
+
+@dataclass
+class BlockEventRepository:
+
+    session: orm.Session
+
+    def add(
+        self, payment_method: "protocols.PaymentMethod", block_event: "protocols.BlockEvent"
+    ) -> "protocols.BlockEvent":
+        if block_event.payment_method_id != payment_method.id:
+            raise ValueError("BlockEvent is not associated with provided PaymentMethod")
+        db_block_event = models.BlockEvent(
+            status=block_event.status,
+            payment_method_id=payment_method.id,
+            block_name=block_event.block_name,
+        )
+        self.session.add(db_block_event)
+        return db_block_event.to_domain()
+
+    def get(self, id: UUID) -> "protocols.BlockEvent": ...  # type: ignore[empty-body]

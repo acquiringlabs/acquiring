@@ -130,7 +130,7 @@ class BlockEvent(Model):
     # Reason: I've worked with enums on the database itself and they are nightmare.
     status = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    block_name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
     payment_method_id = sqlalchemy.Column(
         sqlalchemy.String, sqlalchemy.ForeignKey("acquiring_paymentmethods.id"), nullable=False
@@ -145,7 +145,7 @@ class BlockEvent(Model):
     def to_domain(self) -> "protocols.BlockEvent":
         return domain.BlockEvent(
             status=self.status,
-            payment_method_id=self.payment_method.id,
+            payment_method_id=self.payment_method_id,
             block_name=self.block_name,
             created_at=self.created_at,
         )
