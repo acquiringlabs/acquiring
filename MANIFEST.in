@@ -1,6 +1,0 @@
-include LICENSE
-include README.rst
-recursive-include acquiring/static *
-recursive-include acquiring/templates *
-recursive-include acquiring/migrations *
-recursive-include acquiring/locale *
