@@ -21,6 +21,7 @@ class PaymentMethodRepository:
             confirmable=data.confirmable,
         )
         self.session.add(db_payment_method)
+        self.session.flush()
         return db_payment_method.to_domain()
 
     @deal.reason(
@@ -47,6 +48,7 @@ class PaymentOperationRepository:
 
     session: orm.Session
 
+    @deal.safe()
     def add(
         self,
         payment_method: "protocols.PaymentMethod",
@@ -59,7 +61,7 @@ class PaymentOperationRepository:
             status=status,
         )
         self.session.add(db_payment_operation)
-        self.session.commit()
+        self.session.flush()
         payment_operation = db_payment_operation.to_domain()
         payment_method.payment_operations.append(payment_operation)
         return payment_operation

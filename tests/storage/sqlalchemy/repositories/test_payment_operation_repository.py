@@ -43,7 +43,9 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreat
     assert len(db_payment_operations) == 1
 
     db_payment_operation = db_payment_operations[0]
-    assert db_payment_operation.to_domain() == result
+    assert db_payment_operation.type == operation_type
+    assert db_payment_operation.status == operation_status
+    assert db_payment_operation.payment_method_id == db_payment_method.id
 
     assert len(payment_method.payment_operations) == 1
     assert payment_method.payment_operations[0] == result

@@ -68,6 +68,7 @@ class PaymentMethod(Identifiable, Model):
 
     payment_operations = orm.relationship("PaymentOperation", back_populates="payment_method", cascade="all, delete")
     block_events = orm.relationship("BlockEvent", back_populates="payment_method", cascade="all, delete")
+    transactions = orm.relationship("Transaction", back_populates="payment_method", cascade="all, delete")
 
     def to_domain(self) -> "protocols.PaymentMethod":
         return domain.PaymentMethod(
@@ -75,7 +76,7 @@ class PaymentMethod(Identifiable, Model):
             created_at=self.created_at,
             tokens=[],  # TODO Fill
             payment_attempt=self.payment_attempt.to_domain(),
-            payment_operations=[],  # TODO Fill
+            payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations],
             confirmable=self.confirmable,
         )
 
@@ -148,4 +149,39 @@ class BlockEvent(Model):
             payment_method_id=self.payment_method_id,
             block_name=self.block_name,
             created_at=self.created_at,
+        )
+
+
+class Transaction(Model):
+    __tablename__ = "acquiring_transactions"
+
+    # The high amount of instances expected for this model justifies the use of UUID instead of Integer
+    # It is not identifiable, though, and the id doesn't get passed to the domain dataclass.
+    id = sqlalchemy.Column(sqlalchemy.String, primary_key=True, default=u)
+
+    external_id = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+
+    timestamp = sqlalchemy.Column(
+        sqlalchemy.TIMESTAMP(timezone=True), default=now, server_onupdate=None, nullable=False
+    )
+
+    raw_data = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+
+    provider_name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+
+    payment_method_id = sqlalchemy.Column(
+        sqlalchemy.String, sqlalchemy.ForeignKey("acquiring_paymentmethods.id"), nullable=False
+    )
+    payment_method = orm.relationship("PaymentMethod", back_populates="transactions", cascade="all, delete")
+
+    def __str__(self) -> str:
+        return f"[provider={self.provider_name}|payment_method={self.payment_method_id}|{self.external_id}]"
+
+    def to_domain(self) -> "protocols.Transaction":
+        return domain.Transaction(
+            external_id=self.external_id,
+            timestamp=self.timestamp,
+            raw_data=self.raw_data,
+            provider_name=self.provider_name,
+            payment_method_id=self.payment_method_id,
         )

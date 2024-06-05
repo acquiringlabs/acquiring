@@ -52,8 +52,20 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
+    op.create_table('acquiring_transactions',
+        sa.Column('id', sa.String(), nullable=False),
+        sa.Column('external_id', sa.String(), nullable=False),
+        sa.Column('timestamp', sa.TIMESTAMP(timezone=True), nullable=False),
+        sa.Column('raw_data', sa.String(), nullable=False),
+        sa.Column('provider_name', sa.String(), nullable=False),
+        sa.Column('payment_method_id', sa.String(), nullable=False),
+        sa.ForeignKeyConstraint(['payment_method_id'], ['acquiring_paymentmethods.id'], ),
+        sa.PrimaryKeyConstraint('id'),
+    )
+
 
 def downgrade() -> None:
+    op.drop_table('acquiring_transactions')
     op.drop_table('acquiring_blockevents')
     op.drop_table('acquiring_paymentoperations')
     op.drop_table('acquiring_paymentmethods')
