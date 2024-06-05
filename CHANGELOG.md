@@ -2,6 +2,12 @@
 
 Follows the format of [Common-Changelog](https://common-changelog.org)
 
+## 0.4.3 - 2024-06-05 [Alpha Release]
+
+### Fixed
+
+- Only include the acquiring folder in the release (alvaro)
+
 ## 0.4.2 - 2024-06-03 [Alpha Release]
 
 ### Fixed
