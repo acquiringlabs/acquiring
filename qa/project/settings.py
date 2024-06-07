@@ -42,11 +42,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "acquiring",
+    "acquiring",  # obviously
+    # Useful third party apps
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "silk",
+    # QA apps
+    "freecodecamp",
 ]
 
 MIDDLEWARE = [

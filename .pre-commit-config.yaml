@@ -62,7 +62,7 @@ repos:
     -   id: mypy
         additional_dependencies: [types-requests]
         args: ["--python-version", "3.12", --ignore-missing-imports, --disallow-any-explicit, --disallow-untyped-defs, --warn-redundant-casts, --warn-unused-ignores, --warn-unreachable, --strict-equality, --check-untyped-defs]
-        exclude: "(manage.py)"
+        exclude: "(manage.py|qa/)"
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.3.0
     hooks:
