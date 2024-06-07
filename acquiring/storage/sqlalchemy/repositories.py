@@ -14,7 +14,7 @@ class PaymentMethodRepository:
 
     session: orm.Session
 
-    @deal.safe()
+    @deal.safe
     def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
         db_payment_method = models.PaymentMethod(
             payment_attempt_id=data.payment_attempt.id,
@@ -48,7 +48,7 @@ class PaymentOperationRepository:
 
     session: orm.Session
 
-    @deal.safe()
+    @deal.safe
     def add(
         self,
         payment_method: "protocols.PaymentMethod",
@@ -74,6 +74,10 @@ class BlockEventRepository:
 
     session: orm.Session
 
+    @deal.reason(
+        ValueError,
+        lambda payment_method, block_event: block_event.payment_method_id != payment_method.id,
+    )
     def add(
         self, payment_method: "protocols.PaymentMethod", block_event: "protocols.BlockEvent"
     ) -> "protocols.BlockEvent":
@@ -86,5 +90,28 @@ class BlockEventRepository:
         )
         self.session.add(db_block_event)
         return db_block_event.to_domain()
+
+    def get(self, id: UUID) -> "protocols.BlockEvent": ...  # type: ignore[empty-body]
+
+
+@dataclass
+class TransactionRepository:
+
+    session: orm.Session
+
+    @deal.safe
+    def add(
+        self,
+        transaction: "protocols.Transaction",
+    ) -> "protocols.Transaction":
+        db_transaction = models.Transaction(
+            external_id=transaction.external_id,
+            timestamp=transaction.timestamp,
+            raw_data=transaction.raw_data,
+            provider_name=transaction.provider_name,
+            payment_method_id=transaction.payment_method_id,
+        )
+        self.session.add(db_transaction)
+        return db_transaction.to_domain()
 
     def get(self, id: UUID) -> "protocols.BlockEvent": ...  # type: ignore[empty-body]

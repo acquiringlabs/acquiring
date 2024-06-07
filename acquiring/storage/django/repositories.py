@@ -8,7 +8,7 @@ from acquiring.storage.django import models
 
 class PaymentMethodRepository:
 
-    @deal.safe()
+    @deal.safe
     def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
         db_payment_method = models.PaymentMethod(
             payment_attempt_id=data.payment_attempt.id,
@@ -35,6 +35,7 @@ class PaymentMethodRepository:
 
 class PaymentOperationRepository:
 
+    @deal.safe
     def add(
         self,
         payment_method: "protocols.PaymentMethod",
@@ -56,6 +57,10 @@ class PaymentOperationRepository:
 
 class BlockEventRepository:
 
+    @deal.reason(
+        ValueError,
+        lambda payment_method, block_event: block_event.payment_method_id != payment_method.id,
+    )
     def add(
         self, payment_method: "protocols.PaymentMethod", block_event: "protocols.BlockEvent"
     ) -> "protocols.BlockEvent":
@@ -76,7 +81,7 @@ class BlockEventRepository:
 # TODO Test when payment method id does not correspond to any existing payment method
 class TransactionRepository:
 
-    @deal.safe()
+    @deal.safe
     def add(
         self,
         transaction: "protocols.Transaction",

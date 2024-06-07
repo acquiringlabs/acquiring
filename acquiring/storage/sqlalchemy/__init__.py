@@ -1,5 +1,10 @@
 from . import models
-from .repositories import BlockEventRepository, PaymentMethodRepository, PaymentOperationRepository
+from .repositories import (
+    BlockEventRepository,
+    PaymentMethodRepository,
+    PaymentOperationRepository,
+    TransactionRepository,
+)
 from .unit_of_work import SqlAlchemyUnitOfWork
 
 __all__ = [
@@ -8,4 +13,5 @@ __all__ = [
     "PaymentMethodRepository",
     "PaymentOperationRepository",
     "SqlAlchemyUnitOfWork",
+    "TransactionRepository",
 ]
