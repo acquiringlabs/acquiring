@@ -1,1 +1,2 @@
 django-allauth[socialaccount]
+django-silk
