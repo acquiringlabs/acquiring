@@ -1,2 +1,7 @@
 django-allauth[socialaccount]
 django-silk
+
+# App specific requirements
+
+## Shop
+django-simple-history  # to keep track of the history of Products and Variants

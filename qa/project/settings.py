@@ -48,8 +48,9 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "silk",
+    "simple_history",
     # QA apps
-    "freecodecamp",
+    "shop",
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "silk.middleware.SilkyMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 ROOT_URLCONF = "project.urls"
