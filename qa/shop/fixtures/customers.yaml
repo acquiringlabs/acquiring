@@ -1,0 +1,6 @@
+- model: shop.customer
+  pk: 1
+  fields:
+    name: Test
+    phone_number: 423-555-987
+    email: test@example.com

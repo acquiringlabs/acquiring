@@ -31,6 +31,16 @@ services:
     volumes:
       - .:/code
 
+  docs:
+    build:
+      context: .
+      dockerfile: docs/Dockerfile
+    command: mkdocs serve --dev-addr 0.0.0.0:8008 --watch-theme
+    volumes:
+      - .:/app
+    ports:
+      - 8008:8008
+
   qa:
     build:
       context: ./qa
@@ -41,14 +51,18 @@ services:
       - ./qa:/code
     ports:
       - 8888:8888
+    depends_on:
+      - postgres
     command: python manage.py runserver 0.0.0.0:8888
 
-  docs:
-    build:
-      context: .
-      dockerfile: docs/Dockerfile
-    command: mkdocs serve --dev-addr 0.0.0.0:8008 --watch-theme
-    volumes:
-      - .:/app
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "trust"
     ports:
-      - 8008:8008
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

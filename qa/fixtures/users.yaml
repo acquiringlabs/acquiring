@@ -1,0 +1,15 @@
+- model: auth.user
+  pk: 1
+  fields:
+    password: pbkdf2_sha256$600000$ItwB9D4QitTKz1SScse5fF$Gr8OJUHIb1fD6wmYtM4UbcnP2DzTKOyEdYsoXQUOiu0=
+    last_login: null
+    is_superuser: true
+    username: root
+    first_name: ''
+    last_name: ''
+    email: ''
+    is_staff: true
+    is_active: true
+    date_joined: 2024-06-08 21:23:10.930375+00:00
+    groups: []
+    user_permissions: []

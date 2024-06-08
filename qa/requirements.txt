@@ -1,8 +1,5 @@
-django-allauth[socialaccount]
-django-silk
-
-# App specific requirements
-
-## Shop
-django-simple-history  # to keep track of the history of Products and Variants
+django-allauth[socialaccount]  # social login
+django-silk  # performance profile
+django-simple-history  # to keep track of the history of model changes
+psycopg  # postgres connection
 PyYaml  # format fixtures in YAML

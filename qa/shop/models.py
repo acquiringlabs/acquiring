@@ -4,6 +4,8 @@ Structure of the models is taken from Pizza Place Payments
 See https://news.alvaroduran.com/p/pizza-place-payments
 """
 
+import decimal
+
 import django
 import simple_history
 
@@ -31,6 +33,9 @@ class Product(django.db.models.Model):
     history = simple_history.models.HistoricalRecords()
     available = django.db.models.BooleanField(default=True)
 
+    def __str__(self) -> str:
+        return f"Product: {self.name}"
+
 
 class Variant(django.db.models.Model):
     """A Product can have multiple Variants (size, gluten-free, extra cheese)"""
@@ -42,14 +47,28 @@ class Variant(django.db.models.Model):
     history = simple_history.models.HistoricalRecords()
     available = django.db.models.BooleanField(default=True)
 
+    def __str__(self) -> str:
+        return f"{self.product}, Variant: {self.name} | {self.currency}{self.price}"
+
 
 class Order(django.db.models.Model):
     """An Order is associated with multiple Items and a PaymentAttempt"""
 
     customers = django.db.models.ManyToManyField(Customer)
     payment_attempt = django.db.models.OneToOneField(
-        acquiring.storage.django.models.PaymentAttempt, on_delete=django.db.models.PROTECT
+        acquiring.storage.django.models.PaymentAttempt,
+        on_delete=django.db.models.PROTECT,
+        null=True,
+        blank=True,
     )
+    currency = django.db.models.CharField(max_length=3)
+
+    def __str__(self) -> str:
+        return f"Order id={self.id} | {self.currency}{self.total}"
+
+    @property
+    def total(self) -> decimal.Decimal:
+        return sum([item.total for item in self.items])
 
     @property
     def invoice(self) -> dict:
@@ -67,11 +86,15 @@ class Item(django.db.models.Model):
     """
 
     variant = django.db.models.ForeignKey(Variant, on_delete=django.db.models.PROTECT)
-    order = django.db.models.ForeignKey(Order, on_delete=django.db.models.PROTECT)
+    order = django.db.models.ForeignKey(Order, on_delete=django.db.models.PROTECT, related_name="items")
     quantity = django.db.models.IntegerField()
     note = django.db.models.TextField()
     price = django.db.models.DecimalField(decimal_places=2, max_digits=9)
     currency = django.db.models.CharField(max_length=3)
+
+    @property
+    def total(self) -> decimal.Decimal:
+        return self.quantity * self.price
 
 
 class Receipt(django.db.models.Model):
