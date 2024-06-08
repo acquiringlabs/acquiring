@@ -38,7 +38,11 @@ class Product(django.db.models.Model):
 
 
 class Variant(django.db.models.Model):
-    """A Product can have multiple Variants (size, gluten-free, extra cheese)"""
+    """
+    A Product can have multiple Variants (size, gluten-free, extra cheese)
+
+    There must be at least one Variant so that a Product gets associated with an Item (and therefore an Order)
+    """
 
     product = django.db.models.ForeignKey(Product, on_delete=django.db.models.PROTECT)
     name = django.db.models.CharField(max_length=100)
@@ -52,7 +56,12 @@ class Variant(django.db.models.Model):
 
 
 class Order(django.db.models.Model):
-    """An Order is associated with multiple Items and a PaymentAttempt"""
+    """
+    An Order is associated with multiple Items and a PaymentAttempt
+
+    It gets created empty, associated to a Customer.
+    Then, Items get added to it.
+    """
 
     customers = django.db.models.ManyToManyField(Customer)
     payment_attempt = django.db.models.OneToOneField(
@@ -61,14 +70,17 @@ class Order(django.db.models.Model):
         null=True,
         blank=True,
     )
-    currency = django.db.models.CharField(max_length=3)
 
     def __str__(self) -> str:
-        return f"Order id={self.id} | {self.currency}{self.total}"
+        return f"Order id={self.id} | Total price {self.currency}{self.total} {'| Payment: ' + str(self.payment_attempt) if self.payment_attempt else ''}"
 
     @property
     def total(self) -> decimal.Decimal:
-        return sum([item.total for item in self.items])
+        return sum([item.total for item in self.items.all()])
+
+    @property
+    def currency(self) -> str:
+        return self.items.first().currency
 
     @property
     def invoice(self) -> dict:
@@ -83,14 +95,19 @@ class Item(django.db.models.Model):
     """
     An Order consists of multiple Items, which are *denormalized* copies of Product
     and can be checked against Product and Variant history.
+
+    An Item can only be created by associating it with an existing Variant.
     """
 
     variant = django.db.models.ForeignKey(Variant, on_delete=django.db.models.PROTECT)
     order = django.db.models.ForeignKey(Order, on_delete=django.db.models.PROTECT, related_name="items")
     quantity = django.db.models.IntegerField()
-    note = django.db.models.TextField()
+    note = django.db.models.TextField(null=True, blank=True)
     price = django.db.models.DecimalField(decimal_places=2, max_digits=9)
     currency = django.db.models.CharField(max_length=3)
+
+    def __str__(self) -> str:
+        return f"Item in Order[{self.order_id}]: {self.variant} | Quantity {self.quantity}, Total price {self.total}"
 
     @property
     def total(self) -> decimal.Decimal:

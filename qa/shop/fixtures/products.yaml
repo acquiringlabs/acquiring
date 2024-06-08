@@ -1,1 +1,13 @@
-[{"model": "shop.product", "pk": 1, "fields": {"name": "Peperoni Pizza", "available": true}}]
+- model: shop.product
+  pk: 1
+  fields:
+    name: Peperoni Pizza
+    available: true
+- model: shop.variant
+  pk: 1
+  fields:
+    product: 1
+    name: XL
+    price: '10.00'
+    currency: USD
+    available: true
