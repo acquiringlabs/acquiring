@@ -5,3 +5,4 @@ django-silk
 
 ## Shop
 django-simple-history  # to keep track of the history of Products and Variants
+PyYaml  # format fixtures in YAML

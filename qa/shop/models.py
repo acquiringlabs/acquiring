@@ -17,6 +17,9 @@ class Customer(django.db.models.Model):
     phone_number = django.db.models.CharField(max_length=15)
     email = django.db.models.CharField(max_length=30)
 
+    def __str__(self) -> str:
+        return f"Customer {self.name}"
+
 
 class Product(django.db.models.Model):
     """
