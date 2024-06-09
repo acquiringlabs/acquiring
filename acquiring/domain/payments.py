@@ -84,8 +84,16 @@ class DraftItem:
     quantity_unit: Optional[str] = None
 
 
+# TODO PaymentAttempt must have status exposed
+
+
 @dataclass
 class PaymentAttempt:
+    """
+    From Old French atempter: "seek or try to do, make an effort to perform"
+    See https://www.etymonline.com/word/attempt#etymonline_v_41850
+    """
+
     id: UUID
     created_at: datetime
     amount: int
