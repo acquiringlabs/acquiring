@@ -3,11 +3,9 @@ from acquiring import utils
 # TODO models must be exposed, rather than having to access storage.***.models
 
 if utils.is_django_installed():
-    from . import django
-
-    __all__ = ["django"]
+    from .django import models
 
 elif utils.is_sqlalchemy_installed():
-    from . import sqlalchemy
+    from .sqlalchemy import models  # type:ignore[no-redef]
 
-    __all__ = ["sqlalchemy"]
+__all__ = ["models"]
