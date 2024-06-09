@@ -59,7 +59,7 @@ class BlockEventRepository:
 
     @deal.reason(
         ValueError,
-        lambda payment_method, block_event: block_event.payment_method_id != payment_method.id,
+        lambda self, payment_method, block_event: block_event.payment_method_id != payment_method.id,
     )
     def add(
         self, payment_method: "protocols.PaymentMethod", block_event: "protocols.BlockEvent"
