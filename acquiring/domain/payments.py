@@ -117,6 +117,16 @@ class PaymentAttempt:
 
 @dataclass
 class DraftPaymentAttempt:
+    """
+    Dataclass passed as an argument to PaymentAttempt repository in order to create an instance of PaymentAttempt.
+
+    Unlike an actual PaymentAttempt, no id or created_at attributes are specified. They belong to already created
+    instances.
+
+    This separation ensures that we don't have to check for Optional attributes in a dataclass
+    shared both as the input and the output of the Repository.add method.
+    """
+
     amount: int
     currency: str
     items: Sequence["protocols.DraftItem"] = field(default_factory=list)
@@ -124,6 +134,15 @@ class DraftPaymentAttempt:
 
 @dataclass
 class DraftToken:
+    """
+    Dataclass passed as an argument to Token repository in order to create an instance of Token.
+
+    Unlike an actual Token, no payment_method_id attribute is specified.
+
+    This separation ensures that we don't have to check for Optional attributes in a dataclass
+    shared both as the input and the output of the Repository.add method.
+    """
+
     timestamp: datetime
     token: str
     metadata: Optional[dict[str, str | int]] = field(default_factory=dict)

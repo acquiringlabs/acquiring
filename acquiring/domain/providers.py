@@ -9,6 +9,10 @@ from acquiring import domain, protocols
 
 @dataclass(frozen=True)
 class Transaction:
+    """
+    Represents the interaction with an external payment provider.
+    """
+
     external_id: str
     timestamp: datetime
     raw_data: str

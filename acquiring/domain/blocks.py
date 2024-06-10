@@ -1,3 +1,5 @@
+"""Blocks contains the functionality associated with the Block Layer of the domain"""
+
 import functools
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -7,8 +9,13 @@ from acquiring import domain, protocols
 from acquiring.enums import OperationStatusEnum
 
 
+# TODO Can I separate a nonFailed from a Failed BlockResponse? (error message Optionality is code smell)
 @dataclass
 class BlockResponse:
+    """
+    Specifies the data meant to be the output of the Block.run method.
+    """
+
     status: OperationStatusEnum
     actions: list[dict] = field(default_factory=list)
     error_message: Optional[str] = None
@@ -29,6 +36,7 @@ def wrapped_by_block_events(  # type:ignore[misc]
         *args: Sequence,
         **kwargs: dict,
     ) -> "protocols.BlockResponse":
+        """Wrapper meant to be called when method gets decorated with this function"""
         block_name = self.__class__.__name__
 
         with unit_of_work as uow:
