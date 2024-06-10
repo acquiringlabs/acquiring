@@ -188,7 +188,7 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentSagaRe
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
         pay_blocks=[],
-        after_pay_blocks=[],
+        after_pay_blocks=[fake_block()],
         confirm_block=None,
         after_confirm_blocks=[],
     ).after_pay(payment_method)

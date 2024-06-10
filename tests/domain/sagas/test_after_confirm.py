@@ -225,7 +225,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
         pay_blocks=[],
         after_pay_blocks=[],
         confirm_block=fake_block(),
-        after_confirm_blocks=[],
+        after_confirm_blocks=[fake_block()],
     ).after_confirm(payment_method)
 
     assert result.type == OperationTypeEnum.AFTER_CONFIRM

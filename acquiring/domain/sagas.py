@@ -1,7 +1,7 @@
 import functools
 from dataclasses import dataclass, field
 from typing import Callable, Optional, Sequence
-
+import deal
 import acquiring.domain.decision_logic as dl
 from acquiring import domain, protocols
 from acquiring.enums import OperationStatusEnum, OperationTypeEnum
@@ -51,6 +51,9 @@ def implements_blocks(  # type:ignore[misc]
     """
     This decorator verifies that the class implements the blocks used in the decorated function.
 
+    When calling Klass.confirm, then Klass must implement confirm_block or confirm_blocks
+    and it cannot be "falsy" (None or empty list).
+
     Raises a TypeError otherwise.
     """
 
@@ -61,10 +64,17 @@ def implements_blocks(  # type:ignore[misc]
         *args: Sequence,
         **kwargs: dict,
     ) -> "protocols.OperationResponse":
-        if hasattr(self, f"{function.__name__.strip('_')}_block") or hasattr(
-            self, f"{function.__name__.strip('_')}_blocks"
+
+        # Some of the types have blocks, other just block. Need to check for both.
+        operation_type_name = function.__name__.strip("_")
+        if (
+            hasattr(self, f"{operation_type_name}_block")
+            and getattr(self, f"{operation_type_name}_block")
+            or hasattr(self, f"{operation_type_name}_blocks")
+            and getattr(self, f"{operation_type_name}_blocks")
         ):
             return function(self, payment_method, *args, **kwargs)
+
         raise TypeError("This PaymentSaga does not implement blocks for this operation type")
 
     return wrapper
@@ -121,17 +131,17 @@ class PaymentSaga:
 
     unit_of_work: "protocols.UnitOfWork"
 
-    initialize_block: Optional["protocols.Block"]
-    process_action_block: Optional["protocols.Block"]
+    initialize_block: Optional["protocols.Block"]  # If not provided, it will create a PO with status NOT_PERFORMED
+    process_action_block: Optional["protocols.Block"]  # Only required when payment method requires customer actions
 
-    pay_blocks: list["protocols.Block"]
-    after_pay_blocks: list["protocols.Block"]
+    pay_blocks: list["protocols.Block"]  # TODO Ensure that this list is non empty, or make it a mandatory single Block
+    after_pay_blocks: list["protocols.Block"]  # Only required when payment method is paid asynchronously
 
-    confirm_block: Optional["protocols.Block"]
-    after_confirm_blocks: list["protocols.Block"]
+    confirm_block: Optional["protocols.Block"]  # Only required for dual message payments
+    after_confirm_blocks: list["protocols.Block"]  # Only required when payment method is confirmed asynchronously
 
+    @deal.safe  # TODO Implement deal.has to consider database access
     @operation_type
-    @implements_blocks
     @refresh_payment_method
     def initialize(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # Verify that the payment can go through this operation type
@@ -219,6 +229,7 @@ class PaymentSaga:
             type=OperationTypeEnum.INITIALIZE,
         )
 
+    @deal.reason(TypeError, lambda self, payment_method, action_data: not self.process_action_block)
     @operation_type
     @implements_blocks
     @refresh_payment_method
@@ -303,8 +314,8 @@ class PaymentSaga:
             type=OperationTypeEnum.PROCESS_ACTION,
         )
 
+    @deal.pure
     @operation_type
-    @implements_blocks
     def __pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # No need to refresh from DB
 
@@ -359,6 +370,7 @@ class PaymentSaga:
             ),
         )
 
+    @deal.safe  # TODO Implement deal.has to consider database access
     @operation_type
     @implements_blocks
     @refresh_payment_method
@@ -420,6 +432,7 @@ class PaymentSaga:
             type=OperationTypeEnum.AFTER_PAY,
         )
 
+    @deal.safe  # TODO Implement deal.has to consider database access
     @operation_type
     @implements_blocks
     @refresh_payment_method
@@ -498,6 +511,7 @@ class PaymentSaga:
             error_message=block_response.error_message,
         )
 
+    @deal.safe  # TODO Implement deal.has to consider database access
     @operation_type
     @implements_blocks
     @refresh_payment_method
