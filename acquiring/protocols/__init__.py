@@ -25,7 +25,7 @@ class PaymentSaga(Protocol):
     initialize_block: Optional["Block"]
     process_action_block: Optional["Block"]
 
-    pay_blocks: list["Block"]
+    pay_block: "Block"
     after_pay_blocks: list["Block"]
 
     confirm_block: Optional["Block"]

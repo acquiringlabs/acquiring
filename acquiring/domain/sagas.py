@@ -134,7 +134,7 @@ class PaymentSaga:
     initialize_block: Optional["protocols.Block"]  # If not provided, it will create a PO with status NOT_PERFORMED
     process_action_block: Optional["protocols.Block"]  # Only required when payment method requires customer actions
 
-    pay_blocks: list["protocols.Block"]  # TODO Ensure that this list is non empty, or make it a mandatory single Block
+    pay_block: "protocols.Block"
     after_pay_blocks: list["protocols.Block"]  # Only required when payment method is paid asynchronously
 
     confirm_block: Optional["protocols.Block"]  # Only required for dual message payments
@@ -330,44 +330,24 @@ class PaymentSaga:
             )
             uow.commit()
 
-        # Run Operation Blocks
-        responses = []
-        actions = []
-        for block in self.pay_blocks:
-            response = block.run(unit_of_work=self.unit_of_work, payment_method=payment_method)
-            responses.append(response)
-            actions += response.actions
-
-        has_completed = all([response.status == OperationStatusEnum.COMPLETED for response in responses])
-
-        is_pending = any([response.status == OperationStatusEnum.PENDING for response in responses])
-
-        if has_completed:
-            status = OperationStatusEnum.COMPLETED
-        elif not has_completed and is_pending:
-            status = OperationStatusEnum.PENDING
-        else:
-            # TODO Allow for the possibility of any block forcing the response to be failed
-            status = OperationStatusEnum.FAILED
+        # Run Operation Block
+        block_response = self.pay_block.run(unit_of_work=self.unit_of_work, payment_method=payment_method)
 
         # Create PaymentOperation with the outcome
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
                 type=OperationTypeEnum.PAY,
-                status=status,
+                status=block_response.status,
             )
             uow.commit()
 
         # Return Response
         return OperationResponse(
-            status=status,
+            status=block_response.status,
             payment_method=payment_method,
-            actions=actions,
             type=OperationTypeEnum.PAY,
-            error_message=", ".join(
-                [response.error_message for response in responses if response.error_message is not None]
-            ),
+            error_message=block_response.error_message,
         )
 
     @deal.safe  # TODO Implement deal.has to consider database access

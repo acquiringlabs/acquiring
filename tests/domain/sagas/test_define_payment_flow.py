@@ -37,9 +37,7 @@ def test_givenCorrectInformation_paymentSagaGetsDefined(
             ),
             initialize_block=fake_block(),
             process_action_block=fake_process_action_block(),
-            pay_blocks=[
-                fake_block(),
-            ],
+            pay_block=fake_block(),
             after_pay_blocks=[
                 fake_block(),
             ],

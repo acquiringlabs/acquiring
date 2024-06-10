@@ -66,7 +66,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentSagaRet
         process_action_block=fake_process_action_block(  # type:ignore[call-arg]
             fake_response_status=OperationStatusEnum.FAILED
         ),
-        pay_blocks=[],
+        pay_block=fake_block(),
         after_pay_blocks=[],
         confirm_block=None,
         after_confirm_blocks=[],
@@ -153,7 +153,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentSaga
         process_action_block=fake_process_action_block(
             fake_response_status=OperationStatusEnum.COMPLETED
         ),  # type:ignore[call-arg]
-        pay_blocks=[fake_block(fake_response_status=OperationStatusEnum.COMPLETED)],  # type:ignore[call-arg]
+        pay_block=fake_block(fake_response_status=OperationStatusEnum.COMPLETED),  # type:ignore[call-arg]
         after_pay_blocks=[],
         confirm_block=None,
         after_confirm_blocks=[],
@@ -245,7 +245,7 @@ def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenP
             unit_of_work=unit_of_work,
             initialize_block=fake_block(),
             process_action_block=None,  # not present
-            pay_blocks=[],
+            pay_block=fake_block(),
             after_pay_blocks=[],
             confirm_block=None,
             after_confirm_blocks=[],
@@ -303,7 +303,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         process_action_block=fake_process_action_block(
             fake_response_status=OperationStatusEnum.COMPLETED
         ),  # type:ignore[call-arg]
-        pay_blocks=[],
+        pay_block=fake_block(),
         after_pay_blocks=[],
         confirm_block=None,
         after_confirm_blocks=[],

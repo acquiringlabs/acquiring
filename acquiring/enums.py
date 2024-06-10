@@ -35,6 +35,10 @@ class OperationTypeEnum(StrEnum):
     AFTER_REFUND = "after_refund"
 
 
+# TODO Create a better division of status, some OperationTypes cannot be defined with all of them.
+# TODO For example, started cannot be the status of a BlockResponse
+# TODO Or OperationResponse cannot have status NOT_PERFORMED when the operation type is pay.
+# TODO Preserve that knowledge in the type system
 class OperationStatusEnum(StrEnum):
     """
     Stacked Payment Operations have different statuses

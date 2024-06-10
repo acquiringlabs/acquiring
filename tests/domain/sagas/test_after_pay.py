@@ -13,7 +13,6 @@ from tests.domain import factories
 COMPLETED_STATUS = [OperationStatusEnum.COMPLETED]
 
 FAILED_STATUS = [
-    OperationStatusEnum.STARTED,
     OperationStatusEnum.REQUIRES_ACTION,
     OperationStatusEnum.FAILED,
     OperationStatusEnum.PENDING,
@@ -22,7 +21,9 @@ FAILED_STATUS = [
 
 
 def test_statusListsAreComplete() -> None:
-    assert set(COMPLETED_STATUS + FAILED_STATUS) == set(OperationStatusEnum)
+    assert set(COMPLETED_STATUS + FAILED_STATUS) == {
+        status for status in OperationStatusEnum if status != OperationStatusEnum.STARTED
+    }
 
 
 @pytest.mark.parametrize(
@@ -100,7 +101,7 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentSagaReturnsTheCorre
         unit_of_work=unit_of_work,
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
-        pay_blocks=[],
+        pay_block=fake_block(),
         after_pay_blocks=[
             fake_block(fake_response_status=operation_status)  # type:ignore[call-arg]
         ],
@@ -187,7 +188,7 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentSagaRe
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
-        pay_blocks=[],
+        pay_block=fake_block(),
         after_pay_blocks=[fake_block()],
         confirm_block=None,
         after_confirm_blocks=[],

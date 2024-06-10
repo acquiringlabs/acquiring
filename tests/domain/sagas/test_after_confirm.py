@@ -15,7 +15,6 @@ COMPLETED_STATUS = [OperationStatusEnum.COMPLETED]
 PENDING_STATUS = [OperationStatusEnum.PENDING]
 
 FAILED_STATUS = [
-    OperationStatusEnum.STARTED,
     OperationStatusEnum.REQUIRES_ACTION,
     OperationStatusEnum.FAILED,
     OperationStatusEnum.NOT_PERFORMED,
@@ -23,7 +22,9 @@ FAILED_STATUS = [
 
 
 def test_statusListsAreComplete() -> None:
-    assert set(COMPLETED_STATUS + PENDING_STATUS + FAILED_STATUS) == set(OperationStatusEnum)
+    assert set(COMPLETED_STATUS + PENDING_STATUS + FAILED_STATUS) == {
+        status for status in OperationStatusEnum if status != OperationStatusEnum.STARTED
+    }
 
 
 @pytest.mark.parametrize(
@@ -129,7 +130,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentSagaRe
             fake_response_actions=[],
         ),
         process_action_block=fake_process_action_block(),
-        pay_blocks=[],
+        pay_block=fake_block(),
         after_pay_blocks=[],
         confirm_block=None,
         after_confirm_blocks=[
@@ -222,7 +223,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
         ),
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
-        pay_blocks=[],
+        pay_block=fake_block(),
         after_pay_blocks=[],
         confirm_block=fake_block(),
         after_confirm_blocks=[fake_block()],
