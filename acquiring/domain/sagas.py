@@ -1,17 +1,18 @@
 import functools
 from dataclasses import dataclass, field
 from typing import Callable, Optional, Sequence
+
 import deal
+
 import acquiring.domain.decision_logic as dl
-from acquiring import domain, protocols
-from acquiring.enums import OperationStatusEnum, OperationTypeEnum
+from acquiring import domain, enums, protocols
 
 
 def operation_type(  # type:ignore[misc]
     function: Callable[..., "protocols.OperationResponse"]
 ) -> Callable[..., "protocols.OperationResponse"]:
     """
-    This decorator verifies that the name of this function belongs to one of the OperationTypeEnums
+    This decorator verifies that the name of this function belongs to one of the enums.OperationTypeEnums
 
     >>> def initialize(): pass
     >>> operation_type(initialize)()
@@ -38,7 +39,7 @@ def operation_type(  # type:ignore[misc]
         *args: Sequence,
         **kwargs: dict,
     ) -> "protocols.OperationResponse":
-        if function.__name__.strip("_") not in OperationTypeEnum:
+        if function.__name__.strip("_") not in enums.OperationTypeEnum:
             raise TypeError("This function cannot be a payment type")
         return function(*args, **kwargs)
 
@@ -99,10 +100,10 @@ def refresh_payment_method(  # type:ignore[misc]
                 payment_method = uow.payment_methods.get(id=payment_method.id)
         except domain.PaymentMethod.DoesNotExist:
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=None,
                 error_message="PaymentMethod not found",
-                type=OperationTypeEnum(function.__name__),  # already valid thanks to @operation_type
+                type=enums.OperationTypeEnum(function.__name__),  # already valid thanks to @operation_type
             )
         return function(self, payment_method, *args, **kwargs)
 
@@ -113,9 +114,9 @@ def refresh_payment_method(  # type:ignore[misc]
 class OperationResponse:
     """Represents the outcome of a PaymentSaga operation type method execution"""
 
-    status: OperationStatusEnum
+    status: enums.OperationStatusEnum
     payment_method: Optional["protocols.PaymentMethod"]
-    type: OperationTypeEnum
+    type: enums.OperationTypeEnum
     error_message: Optional[str] = None
     actions: list[dict] = field(default_factory=list)
 
@@ -147,18 +148,18 @@ class PaymentSaga:
         # Verify that the payment can go through this operation type
         if not dl.can_initialize(payment_method):
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=None,
                 error_message="PaymentMethod cannot go through this operation",
-                type=OperationTypeEnum.INITIALIZE,
+                type=enums.OperationTypeEnum.INITIALIZE,
             )
 
         # Create Started PaymentOperation
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.INITIALIZE,
-                status=OperationStatusEnum.STARTED,
+                type=enums.OperationTypeEnum.INITIALIZE,
+                status=enums.OperationStatusEnum.STARTED,
             )
             uow.commit()
 
@@ -167,8 +168,8 @@ class PaymentSaga:
             with self.unit_of_work as uow:
                 uow.payment_operations.add(
                     payment_method=payment_method,
-                    type=OperationTypeEnum.INITIALIZE,
-                    status=OperationStatusEnum.NOT_PERFORMED,
+                    type=enums.OperationTypeEnum.INITIALIZE,
+                    status=enums.OperationStatusEnum.NOT_PERFORMED,
                 )
                 uow.commit()
             return self.__pay(payment_method)
@@ -177,35 +178,35 @@ class PaymentSaga:
 
         # Validate that status is one of the expected ones
         if block_response.status not in [
-            OperationStatusEnum.COMPLETED,
-            OperationStatusEnum.FAILED,
-            OperationStatusEnum.REQUIRES_ACTION,
+            enums.OperationStatusEnum.COMPLETED,
+            enums.OperationStatusEnum.FAILED,
+            enums.OperationStatusEnum.REQUIRES_ACTION,
         ]:
             with self.unit_of_work as uow:
                 uow.payment_operations.add(
                     payment_method=payment_method,
-                    type=OperationTypeEnum.INITIALIZE,  # TODO Refer to function name rather than explicit input in all cases
-                    status=OperationStatusEnum.FAILED,
+                    type=enums.OperationTypeEnum.INITIALIZE,  # TODO Refer to function name rather than explicit input in all cases
+                    status=enums.OperationStatusEnum.FAILED,
                 )
                 uow.commit()
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=payment_method,
-                type=OperationTypeEnum.INITIALIZE,  # TODO Refer to function name rather than explicit input in all cases
+                type=enums.OperationTypeEnum.INITIALIZE,  # TODO Refer to function name rather than explicit input in all cases
                 error_message=f"Invalid status {block_response.status}",
             )
-        if block_response.status == OperationStatusEnum.REQUIRES_ACTION and not block_response.actions:
+        if block_response.status == enums.OperationStatusEnum.REQUIRES_ACTION and not block_response.actions:
             with self.unit_of_work as uow:
                 uow.payment_operations.add(
                     payment_method=payment_method,
-                    type=OperationTypeEnum.INITIALIZE,
-                    status=OperationStatusEnum.FAILED,
+                    type=enums.OperationTypeEnum.INITIALIZE,
+                    status=enums.OperationStatusEnum.FAILED,
                 )
                 uow.commit()
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=payment_method,
-                type=OperationTypeEnum.INITIALIZE,
+                type=enums.OperationTypeEnum.INITIALIZE,
                 error_message="Status is require actions, but no actions were provided",
             )
 
@@ -213,20 +214,20 @@ class PaymentSaga:
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.INITIALIZE,
+                type=enums.OperationTypeEnum.INITIALIZE,
                 status=block_response.status,
             )
             uow.commit()
 
         # Return Response
-        if block_response.status == OperationStatusEnum.COMPLETED:
+        if block_response.status == enums.OperationStatusEnum.COMPLETED:
             return self.__pay(payment_method)
 
         return OperationResponse(
             status=block_response.status,
             actions=block_response.actions,
             payment_method=payment_method,
-            type=OperationTypeEnum.INITIALIZE,
+            type=enums.OperationTypeEnum.INITIALIZE,
         )
 
     @deal.reason(TypeError, lambda self, payment_method, action_data: not self.process_action_block)
@@ -240,18 +241,18 @@ class PaymentSaga:
 
         if not dl.can_process_action(payment_method):
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=None,
                 error_message="PaymentMethod cannot go through this operation",
-                type=OperationTypeEnum.PROCESS_ACTION,
+                type=enums.OperationTypeEnum.PROCESS_ACTION,
             )
 
         # Create Started PaymentOperation
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.PROCESS_ACTION,
-                status=OperationStatusEnum.STARTED,
+                type=enums.OperationTypeEnum.PROCESS_ACTION,
+                status=enums.OperationStatusEnum.STARTED,
             )
             uow.commit()
 
@@ -259,14 +260,14 @@ class PaymentSaga:
             with self.unit_of_work as uow:
                 uow.payment_operations.add(
                     payment_method=payment_method,
-                    type=OperationTypeEnum.PROCESS_ACTION,
-                    status=OperationStatusEnum.NOT_PERFORMED,
+                    type=enums.OperationTypeEnum.PROCESS_ACTION,
+                    status=enums.OperationStatusEnum.NOT_PERFORMED,
                 )
                 uow.commit()
             return OperationResponse(
-                status=OperationStatusEnum.NOT_PERFORMED,
+                status=enums.OperationStatusEnum.NOT_PERFORMED,
                 payment_method=payment_method,
-                type=OperationTypeEnum.PROCESS_ACTION,
+                type=enums.OperationTypeEnum.PROCESS_ACTION,
                 error_message="PaymentSaga does not include a block for this operation type",
             )
 
@@ -277,20 +278,20 @@ class PaymentSaga:
 
         # Validate that status is one of the expected ones
         if block_response.status not in [
-            OperationStatusEnum.COMPLETED,
-            OperationStatusEnum.FAILED,
+            enums.OperationStatusEnum.COMPLETED,
+            enums.OperationStatusEnum.FAILED,
         ]:
             with self.unit_of_work as uow:
                 uow.payment_operations.add(
                     payment_method=payment_method,
-                    type=OperationTypeEnum.PROCESS_ACTION,
-                    status=OperationStatusEnum.FAILED,
+                    type=enums.OperationTypeEnum.PROCESS_ACTION,
+                    status=enums.OperationStatusEnum.FAILED,
                 )
                 uow.commit()
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=payment_method,
-                type=OperationTypeEnum.PROCESS_ACTION,
+                type=enums.OperationTypeEnum.PROCESS_ACTION,
                 error_message=f"Invalid status {block_response.status}",
             )
 
@@ -298,20 +299,20 @@ class PaymentSaga:
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.PROCESS_ACTION,
+                type=enums.OperationTypeEnum.PROCESS_ACTION,
                 status=block_response.status,
             )
             uow.commit()
 
         # Return Response
-        if block_response.status == OperationStatusEnum.COMPLETED:
+        if block_response.status == enums.OperationStatusEnum.COMPLETED:
             return self.__pay(payment_method)
 
         return OperationResponse(
             status=block_response.status,
             actions=block_response.actions,
             payment_method=payment_method,
-            type=OperationTypeEnum.PROCESS_ACTION,
+            type=enums.OperationTypeEnum.PROCESS_ACTION,
         )
 
     @deal.pure
@@ -325,8 +326,8 @@ class PaymentSaga:
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.PAY,
-                status=OperationStatusEnum.STARTED,
+                type=enums.OperationTypeEnum.PAY,
+                status=enums.OperationStatusEnum.STARTED,
             )
             uow.commit()
 
@@ -337,7 +338,7 @@ class PaymentSaga:
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.PAY,
+                type=enums.OperationTypeEnum.PAY,
                 status=block_response.status,
             )
             uow.commit()
@@ -346,7 +347,7 @@ class PaymentSaga:
         return OperationResponse(
             status=block_response.status,
             payment_method=payment_method,
-            type=OperationTypeEnum.PAY,
+            type=enums.OperationTypeEnum.PAY,
             error_message=block_response.error_message,
         )
 
@@ -358,18 +359,18 @@ class PaymentSaga:
         # Verify that the payment can go through this operation type
         if not dl.can_after_pay(payment_method):
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=None,
                 error_message="PaymentMethod cannot go through this operation",
-                type=OperationTypeEnum.AFTER_PAY,
+                type=enums.OperationTypeEnum.AFTER_PAY,
             )
 
         # Create Started PaymentOperation
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.AFTER_PAY,
-                status=OperationStatusEnum.STARTED,
+                type=enums.OperationTypeEnum.AFTER_PAY,
+                status=enums.OperationStatusEnum.STARTED,
             )
             uow.commit()
 
@@ -378,29 +379,29 @@ class PaymentSaga:
             block.run(unit_of_work=self.unit_of_work, payment_method=payment_method) for block in self.after_pay_blocks
         ]
 
-        has_completed = all([response.status == OperationStatusEnum.COMPLETED for response in responses])
+        has_completed = all([response.status == enums.OperationStatusEnum.COMPLETED for response in responses])
 
         if not has_completed:
             with self.unit_of_work as uow:
                 uow.payment_operations.add(
                     payment_method=payment_method,
-                    type=OperationTypeEnum.AFTER_PAY,
-                    status=OperationStatusEnum.FAILED,
+                    type=enums.OperationTypeEnum.AFTER_PAY,
+                    status=enums.OperationStatusEnum.FAILED,
                 )
                 uow.commit()
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=payment_method,
-                type=OperationTypeEnum.AFTER_PAY,
+                type=enums.OperationTypeEnum.AFTER_PAY,
             )
 
-        status = OperationStatusEnum.COMPLETED if has_completed else OperationStatusEnum.FAILED
+        status = enums.OperationStatusEnum.COMPLETED if has_completed else enums.OperationStatusEnum.FAILED
 
         # Create PaymentOperation with the outcome
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.AFTER_PAY,
+                type=enums.OperationTypeEnum.AFTER_PAY,
                 status=status,
             )
             uow.commit()
@@ -409,7 +410,7 @@ class PaymentSaga:
         return OperationResponse(
             status=status,
             payment_method=payment_method,
-            type=OperationTypeEnum.AFTER_PAY,
+            type=enums.OperationTypeEnum.AFTER_PAY,
         )
 
     @deal.reason(TypeError, lambda self, payment_method, action_data: not self.confirm_block)
@@ -420,18 +421,18 @@ class PaymentSaga:
         # Verify that the payment can go through this operation type
         if not dl.can_confirm(payment_method):
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=None,
                 error_message="PaymentMethod cannot go through this operation",
-                type=OperationTypeEnum.CONFIRM,
+                type=enums.OperationTypeEnum.CONFIRM,
             )
 
         # Create Started PaymentOperation
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.CONFIRM,
-                status=OperationStatusEnum.STARTED,
+                type=enums.OperationTypeEnum.CONFIRM,
+                status=enums.OperationStatusEnum.STARTED,
             )
             uow.commit()
 
@@ -440,14 +441,14 @@ class PaymentSaga:
             with self.unit_of_work as uow:
                 uow.payment_operations.add(
                     payment_method=payment_method,
-                    type=OperationTypeEnum.CONFIRM,
-                    status=OperationStatusEnum.NOT_PERFORMED,
+                    type=enums.OperationTypeEnum.CONFIRM,
+                    status=enums.OperationStatusEnum.NOT_PERFORMED,
                 )
                 uow.commit()
             return OperationResponse(
-                status=OperationStatusEnum.NOT_PERFORMED,
+                status=enums.OperationStatusEnum.NOT_PERFORMED,
                 payment_method=payment_method,
-                type=OperationTypeEnum.CONFIRM,
+                type=enums.OperationTypeEnum.CONFIRM,
                 error_message="PaymentSaga does not include a block for this operation type",
             )
 
@@ -456,21 +457,21 @@ class PaymentSaga:
 
         # Validate that status is one of the expected ones
         if block_response.status not in [
-            OperationStatusEnum.COMPLETED,
-            OperationStatusEnum.FAILED,
-            OperationStatusEnum.PENDING,
+            enums.OperationStatusEnum.COMPLETED,
+            enums.OperationStatusEnum.FAILED,
+            enums.OperationStatusEnum.PENDING,
         ]:
             with self.unit_of_work as uow:
                 uow.payment_operations.add(
                     payment_method=payment_method,
-                    type=OperationTypeEnum.CONFIRM,
-                    status=OperationStatusEnum.FAILED,
+                    type=enums.OperationTypeEnum.CONFIRM,
+                    status=enums.OperationStatusEnum.FAILED,
                 )
                 uow.commit()
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=payment_method,
-                type=OperationTypeEnum.CONFIRM,
+                type=enums.OperationTypeEnum.CONFIRM,
                 error_message=f"Invalid status {block_response.status}",
             )
 
@@ -478,7 +479,7 @@ class PaymentSaga:
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.CONFIRM,
+                type=enums.OperationTypeEnum.CONFIRM,
                 status=block_response.status,
             )
             uow.commit()
@@ -487,7 +488,7 @@ class PaymentSaga:
         return OperationResponse(
             status=block_response.status,
             payment_method=payment_method,
-            type=OperationTypeEnum.CONFIRM,
+            type=enums.OperationTypeEnum.CONFIRM,
             error_message=block_response.error_message,
         )
 
@@ -499,18 +500,18 @@ class PaymentSaga:
         # Verify that the payment can go through this operation type
         if not dl.can_after_confirm(payment_method):
             return OperationResponse(
-                status=OperationStatusEnum.FAILED,
+                status=enums.OperationStatusEnum.FAILED,
                 payment_method=None,
                 error_message="PaymentMethod cannot go through this operation",
-                type=OperationTypeEnum.AFTER_CONFIRM,
+                type=enums.OperationTypeEnum.AFTER_CONFIRM,
             )
 
         # Create Started PaymentOperation
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.AFTER_CONFIRM,
-                status=OperationStatusEnum.STARTED,
+                type=enums.OperationTypeEnum.AFTER_CONFIRM,
+                status=enums.OperationStatusEnum.STARTED,
             )
             uow.commit()
 
@@ -520,23 +521,23 @@ class PaymentSaga:
             for block in self.after_confirm_blocks
         ]
 
-        has_completed = all([response.status == OperationStatusEnum.COMPLETED for response in responses])
+        has_completed = all([response.status == enums.OperationStatusEnum.COMPLETED for response in responses])
 
-        is_pending = any([response.status == OperationStatusEnum.PENDING for response in responses])
+        is_pending = any([response.status == enums.OperationStatusEnum.PENDING for response in responses])
 
         if has_completed:
-            status = OperationStatusEnum.COMPLETED
+            status = enums.OperationStatusEnum.COMPLETED
         elif not has_completed and is_pending:
-            status = OperationStatusEnum.PENDING
+            status = enums.OperationStatusEnum.PENDING
         else:
             # TODO Allow for the possibility of any block forcing the response to be failed
-            status = OperationStatusEnum.FAILED
+            status = enums.OperationStatusEnum.FAILED
 
         # Create PaymentOperation with the outcome
         with self.unit_of_work as uow:
             uow.payment_operations.add(
                 payment_method=payment_method,
-                type=OperationTypeEnum.AFTER_CONFIRM,
+                type=enums.OperationTypeEnum.AFTER_CONFIRM,
                 status=status,
             )
             uow.commit()
@@ -545,7 +546,7 @@ class PaymentSaga:
         return OperationResponse(
             status=status,
             payment_method=payment_method,
-            type=OperationTypeEnum.AFTER_CONFIRM,
+            type=enums.OperationTypeEnum.AFTER_CONFIRM,
             error_message=", ".join(
                 [response.error_message for response in responses if response.error_message is not None]
             ),

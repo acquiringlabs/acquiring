@@ -5,8 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Callable, Optional, Sequence
 
-from acquiring import domain, protocols
-from acquiring.enums import OperationStatusEnum
+from acquiring import domain, enums, protocols
 
 
 # TODO Can I separate a nonFailed from a Failed BlockResponse? (error message Optionality is code smell)
@@ -16,7 +15,7 @@ class BlockResponse:
     Specifies the data meant to be the output of the Block.run method.
     """
 
-    status: OperationStatusEnum
+    status: enums.OperationStatusEnum
     actions: list[dict] = field(default_factory=list)
     error_message: Optional[str] = None
 
@@ -43,7 +42,7 @@ def wrapped_by_block_events(  # type:ignore[misc]
             uow.block_events.add(
                 block_event=domain.BlockEvent(
                     created_at=datetime.now(),
-                    status=OperationStatusEnum.STARTED,
+                    status=enums.OperationStatusEnum.STARTED,
                     payment_method_id=payment_method.id,
                     block_name=block_name,
                 )

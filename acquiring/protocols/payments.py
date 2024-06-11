@@ -9,8 +9,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, Protocol, Sequence, runtime_checkable
 from uuid import UUID
+from acquiring import enums
 
-from acquiring.enums import OperationStatusEnum, OperationTypeEnum
 
 from .storage import UnitOfWork
 
@@ -19,8 +19,8 @@ from .storage import UnitOfWork
 class PaymentOperation(Protocol):
     created_at: datetime
     payment_method_id: UUID
-    type: OperationTypeEnum
-    status: OperationStatusEnum
+    type: enums.OperationTypeEnum
+    status: enums.OperationStatusEnum
 
     def __repr__(self) -> str: ...
 
@@ -88,14 +88,14 @@ class PaymentMethod(Protocol):
 
     def has_payment_operation(
         self: "PaymentMethod",
-        type: OperationTypeEnum,
-        status: OperationStatusEnum,
+        type: enums.OperationTypeEnum,
+        status: enums.OperationStatusEnum,
     ) -> bool: ...
 
     def count_payment_operation(
         self: "PaymentMethod",
-        type: OperationTypeEnum,
-        status: OperationStatusEnum,
+        type: enums.OperationTypeEnum,
+        status: enums.OperationStatusEnum,
     ) -> int: ...
 
 
@@ -112,15 +112,15 @@ class DraftPaymentAttempt(Protocol):
 
 
 class OperationResponse(Protocol):
-    status: OperationStatusEnum
+    status: enums.OperationStatusEnum
     payment_method: Optional["PaymentMethod"]
-    type: OperationTypeEnum
+    type: enums.OperationTypeEnum
     error_message: Optional[str]
     actions: list[dict]
 
 
 class BlockResponse(Protocol):
-    status: OperationStatusEnum
+    status: enums.OperationStatusEnum
     actions: list[dict] = field(default_factory=list)
     error_message: Optional[str] = None
 

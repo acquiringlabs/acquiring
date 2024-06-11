@@ -2,22 +2,23 @@ import uuid
 from typing import Callable, Optional
 
 import pytest
-from acquiring import domain, protocols
-from acquiring.enums import OperationStatusEnum, OperationTypeEnum
+
+from acquiring import domain, enums, protocols
 from tests import protocols as test_protocols
 from tests.domain import factories
 
-COMPLETED_STATUS = [OperationStatusEnum.COMPLETED]
+COMPLETED_STATUS = [enums.OperationStatusEnum.COMPLETED]
 
-PENDING_STATUS = [OperationStatusEnum.PENDING]
+PENDING_STATUS = [enums.OperationStatusEnum.PENDING]
 
 FAILED_STATUS = [
-    OperationStatusEnum.FAILED,
+    enums.OperationStatusEnum.FAILED,
 ]
 
 
 @pytest.mark.parametrize(
-    "operation_status", [OperationStatusEnum.COMPLETED, OperationStatusEnum.PENDING, OperationStatusEnum.FAILED]
+    "operation_status",
+    [enums.OperationStatusEnum.COMPLETED, enums.OperationStatusEnum.PENDING, enums.OperationStatusEnum.FAILED],
 )
 def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPayAndReturnsTheCorrectOperationResponse(
     fake_block: type[protocols.Block],
@@ -39,7 +40,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPa
         type[test_protocols.FakeRepository],
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
-    operation_status: OperationStatusEnum,
+    operation_status: enums.OperationStatusEnum,
 ) -> None:
 
     payment_attempt = factories.PaymentAttemptFactory()
@@ -60,7 +61,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPa
     result = domain.PaymentSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
-            fake_response_status=OperationStatusEnum.COMPLETED,
+            fake_response_status=enums.OperationStatusEnum.COMPLETED,
             fake_response_actions=[],
         ),
         process_action_block=fake_process_action_block(),
@@ -73,19 +74,19 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPa
     payment_operations = payment_method.payment_operations
     assert len(payment_operations) == 4
 
-    assert payment_operations[0].type == OperationTypeEnum.INITIALIZE
-    assert payment_operations[0].status == OperationStatusEnum.STARTED
+    assert payment_operations[0].type == enums.OperationTypeEnum.INITIALIZE
+    assert payment_operations[0].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[1].type == OperationTypeEnum.INITIALIZE
-    assert payment_operations[1].status == OperationStatusEnum.COMPLETED
+    assert payment_operations[1].type == enums.OperationTypeEnum.INITIALIZE
+    assert payment_operations[1].status == enums.OperationStatusEnum.COMPLETED
 
-    assert payment_operations[2].type == OperationTypeEnum.PAY
-    assert payment_operations[2].status == OperationStatusEnum.STARTED
+    assert payment_operations[2].type == enums.OperationTypeEnum.PAY
+    assert payment_operations[2].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[3].type == OperationTypeEnum.PAY
+    assert payment_operations[3].type == enums.OperationTypeEnum.PAY
     assert payment_operations[3].status == operation_status
 
-    assert result.type == OperationTypeEnum.PAY
+    assert result.type == enums.OperationTypeEnum.PAY
     assert result.status == operation_status
     assert result.actions == []
     assert result.payment_method is not None

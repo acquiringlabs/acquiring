@@ -3,8 +3,7 @@ from datetime import datetime
 
 import pytest
 from faker import Faker
-
-from acquiring.enums import OperationStatusEnum
+from acquiring import enums
 from acquiring.utils import is_django_installed
 from tests.storage.utils import skip_if_django_not_installed
 
@@ -17,9 +16,9 @@ fake = Faker()
 
 @skip_if_django_not_installed
 @pytest.mark.django_db
-@pytest.mark.parametrize("status", OperationStatusEnum)
+@pytest.mark.parametrize("status", enums.OperationStatusEnum)
 def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
-    status: OperationStatusEnum,
+    status: enums.OperationStatusEnum,
 ) -> None:
 
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
@@ -41,9 +40,9 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
 
 @skip_if_django_not_installed
 @pytest.mark.django_db
-@pytest.mark.parametrize("status", OperationStatusEnum)
+@pytest.mark.parametrize("status", enums.OperationStatusEnum)
 def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
-    status: OperationStatusEnum,
+    status: enums.OperationStatusEnum,
 ) -> None:
     block_name = fake.name()
 
@@ -71,7 +70,7 @@ def test_givenPaymentMethodWithDifferentIdThanTheOneStoredInBlockEvent_thenError
     db_payment_method = PaymentMethodFactory(payment_attempt=PaymentAttemptFactory())
     block_event = domain.BlockEvent(
         created_at=datetime.now(),
-        status=OperationStatusEnum.PENDING,
+        status=enums.OperationStatusEnum.PENDING,
         payment_method_id=uuid.uuid4(),
         block_name=block_name,
     )

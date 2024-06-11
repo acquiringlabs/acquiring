@@ -5,8 +5,7 @@ from typing import Callable
 import pytest
 from faker import Faker
 
-from acquiring import utils
-from acquiring.enums import OperationStatusEnum
+from acquiring import enums, utils
 from tests.storage.utils import skip_if_sqlalchemy_not_installed
 
 if utils.is_sqlalchemy_installed():
@@ -19,11 +18,11 @@ fake = Faker()
 
 
 @skip_if_sqlalchemy_not_installed
-@pytest.mark.parametrize("status", OperationStatusEnum)
+@pytest.mark.parametrize("status", enums.OperationStatusEnum)
 def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
     session: "orm.Session",
     sqlalchemy_assert_num_queries: Callable,
-    status: OperationStatusEnum,
+    status: enums.OperationStatusEnum,
 ) -> None:
 
     db_payment_method = factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory())
@@ -50,9 +49,9 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
 
 
 @skip_if_sqlalchemy_not_installed
-@pytest.mark.parametrize("status", OperationStatusEnum)
+@pytest.mark.parametrize("status", enums.OperationStatusEnum)
 def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
-    status: OperationStatusEnum,
+    status: enums.OperationStatusEnum,
     sqlalchemy_assert_num_queries: Callable,
     session: "orm.Session",
 ) -> None:
@@ -92,7 +91,7 @@ def test_givenPaymentMethodWithDifferentIdThanTheOneStoredInBlockEvent_thenError
     db_payment_method = factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory())
     block_event = domain.BlockEvent(
         created_at=datetime.now(),
-        status=OperationStatusEnum.PENDING,
+        status=enums.OperationStatusEnum.PENDING,
         payment_method_id=uuid.uuid4(),
         block_name=block_name,
     )

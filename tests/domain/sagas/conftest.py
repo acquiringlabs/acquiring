@@ -2,8 +2,7 @@ from typing import Sequence
 
 import pytest
 
-from acquiring import domain, protocols
-from acquiring.enums import OperationStatusEnum
+from acquiring import domain, enums, protocols
 
 # TODO Define these two to accept block_event_repository as an optional argument
 
@@ -17,8 +16,8 @@ def fake_block() -> type[protocols.Block]:
             *args: Sequence,
             **kwargs: dict,
         ):
-            fake_response_status: OperationStatusEnum = kwargs.get(
-                "fake_response_status", OperationStatusEnum.COMPLETED
+            fake_response_status: enums.OperationStatusEnum = kwargs.get(
+                "fake_response_status", enums.OperationStatusEnum.COMPLETED
             )  # type:ignore[assignment]
 
             fake_response_actions: list[dict] = kwargs.get("fake_response_actions", [])  # type:ignore[assignment]
@@ -48,7 +47,7 @@ def fake_process_action_block() -> type[protocols.Block]:
 
         def __init__(
             self,
-            fake_response_status: OperationStatusEnum = OperationStatusEnum.COMPLETED,
+            fake_response_status: enums.OperationStatusEnum = enums.OperationStatusEnum.COMPLETED,
         ):
             self.response_status = fake_response_status
 
