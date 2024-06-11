@@ -350,7 +350,7 @@ class PaymentSaga:
             error_message=block_response.error_message,
         )
 
-    @deal.safe  # TODO Implement deal.has to consider database access
+    @deal.reason(TypeError, lambda self, payment_method: not self.after_pay_blocks)
     @operation_type
     @implements_blocks
     @refresh_payment_method
@@ -412,7 +412,7 @@ class PaymentSaga:
             type=OperationTypeEnum.AFTER_PAY,
         )
 
-    @deal.safe  # TODO Implement deal.has to consider database access
+    @deal.reason(TypeError, lambda self, payment_method, action_data: not self.confirm_block)
     @operation_type
     @implements_blocks
     @refresh_payment_method
@@ -491,7 +491,7 @@ class PaymentSaga:
             error_message=block_response.error_message,
         )
 
-    @deal.safe  # TODO Implement deal.has to consider database access
+    @deal.reason(TypeError, lambda self, payment_method, action_data: not self.after_confirm_blocks)
     @operation_type
     @implements_blocks
     @refresh_payment_method
