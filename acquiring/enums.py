@@ -50,5 +50,18 @@ class OperationStatusEnum(StrEnum):
     FAILED = "failed"
     COMPLETED = "completed"
     REQUIRES_ACTION = "requires_action"
-    PENDING = "pending"
+    PENDING = "pending"  # awaiting action or a decision from the provider. See https://thecontentauthority.com/blog/processing-vs-pending
     NOT_PERFORMED = "not_performed"
+
+
+class AtemptStatusEnum(StrEnum):
+    """Possible statuses in which a PaymentAttempt may be, based on the PaymentOperations of its PaymentMethods"""
+
+    REQUIRES_PAYMENT_METHOD = "requires_payment_method"  # also functions as "failed", which allows for retries.
+    SUCCEEDED = "succeeded"
+    PROCESSING = "processing"  # being worked on or under review.
+
+    REQUIRES_ACTION = "requires_action"
+    REQUIRES_CONFIRMATION = "requires_confirmation"
+
+    CANCELED = "canceled"
