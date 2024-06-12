@@ -54,8 +54,18 @@ class OperationStatusEnum(StrEnum):
     NOT_PERFORMED = "not_performed"
 
 
+class MilestoneTypeEnum(StrEnum):
+    """Possible types of Milestones associated with a PaymentAttempt for a given PaymentMethod"""
+
+    PAYMENT_METHOD_ADDED = "payment_method_added"
+    PAYMENT_METHOD_COMPLETED = "payment_method_completed"
+    PAYMENT_METHOD_FAILED = "payment_method_failed"
+    PAYMENT_METHOD_REQUIRES_ACTION = "payment_method_requires_action"
+    PAYMENT_METHOD_REQUIRES_CONFIRMATION = "payment_method_requires_confirmation"
+
+
 class AtemptStatusEnum(StrEnum):
-    """Possible statuses in which a PaymentAttempt may be, based on the PaymentOperations of its PaymentMethods"""
+    """Possible statuses in which a PaymentAttempt may be, based on the Milestones of its PaymentMethods"""
 
     REQUIRES_PAYMENT_METHOD = "requires_payment_method"  # also functions as "failed", which allows for retries.
     SUCCEEDED = "succeeded"

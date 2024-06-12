@@ -25,6 +25,14 @@ class PaymentOperation(Protocol):
     def __repr__(self) -> str: ...
 
 
+@dataclass(frozen=True, match_args=False)
+class PaymentMilestone(Protocol):
+    created_at: datetime
+    payment_method_id: UUID
+    payment_attempt_id: UUID
+    type: enums.MilestoneTypeEnum
+
+
 class DraftToken(Protocol):
     timestamp: datetime
     token: str
@@ -64,7 +72,6 @@ class Item(Protocol):
 
 
 # TODO Have this class the DoesNotExist internal class
-@dataclass(match_args=False)
 class PaymentAttempt(Protocol):
     id: UUID
     created_at: datetime
