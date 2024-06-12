@@ -6,6 +6,22 @@ from acquiring import domain, enums, protocols
 from acquiring.storage.django import models
 
 
+class PaymentAttemptRepository:
+
+    def add(self, data: "protocols.DraftPaymentAttempt") -> "protocols.PaymentAttempt": ...  # type: ignore[empty-body]
+
+    @deal.reason(
+        domain.PaymentAttempt.DoesNotExist,
+        lambda _, id: models.PaymentAttempt.objects.filter(id=id).count() == 0,
+    )
+    def get(self, id: UUID) -> "protocols.PaymentAttempt":
+        try:
+            payment_attempt = models.PaymentAttempt.objects.prefetch_related("payment_methods").get(id=id)
+            return payment_attempt.to_domain()
+        except models.PaymentAttempt.DoesNotExist:
+            raise domain.PaymentAttempt.DoesNotExist
+
+
 class PaymentMethodRepository:
 
     @deal.safe

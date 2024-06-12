@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 from typing import Callable
 
 import pytest
@@ -49,7 +48,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
 
 @skip_if_django_not_installed
 @pytest.mark.django_db
-def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
+def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentMethodGetsRetrieved(
     django_assert_num_queries: Callable,
 ) -> None:
     db_payment_attempt = PaymentAttemptFactory()
@@ -81,20 +80,6 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsR
 def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotExistGetsRaise(
     django_assert_num_queries: Callable,
 ) -> None:
-    payment_attempt = domain.PaymentAttempt(
-        id=uuid.uuid4(),
-        created_at=datetime.now(),
-        amount=10,
-        currency="USD",
-        payment_methods=[],
-    )
-
-    payment_method = domain.PaymentMethod(
-        id=uuid.uuid4(),
-        payment_attempt_id=payment_attempt.id,
-        created_at=datetime.now(),
-        confirmable=False,
-    )
 
     with django_assert_num_queries(2), pytest.raises(domain.PaymentMethod.DoesNotExist):
-        storage.django.PaymentMethodRepository().get(id=payment_method.id)
+        storage.django.PaymentMethodRepository().get(id=uuid.uuid4())

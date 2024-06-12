@@ -15,7 +15,7 @@ if utils.is_sqlalchemy_installed():
 
 
 @skip_if_sqlalchemy_not_installed
-def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsRetrieved(
+def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentMethodGetsRetrieved(
     session: "orm.Session",
     sqlalchemy_assert_num_queries: Callable,
 ) -> None:
