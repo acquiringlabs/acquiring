@@ -64,12 +64,13 @@ class Item(Protocol):
 
 
 # TODO Have this class the DoesNotExist internal class
+@dataclass(match_args=False)
 class PaymentAttempt(Protocol):
     id: UUID
     created_at: datetime
     amount: int
     currency: str
-    payment_method_ids: list[UUID]
+    payment_methods: list["PaymentMethod"]
     items: Sequence[Item] = field(default_factory=list)
 
     def __repr__(self) -> str: ...
@@ -80,7 +81,7 @@ class PaymentMethod(Protocol):
     id: UUID
     created_at: datetime
     tokens: list[Token]
-    payment_attempt: PaymentAttempt
+    payment_attempt_id: UUID
     confirmable: bool
     payment_operations: list[PaymentOperation]
 
@@ -100,7 +101,7 @@ class PaymentMethod(Protocol):
 
 
 class DraftPaymentMethod(Protocol):
-    payment_attempt: PaymentAttempt
+    payment_attempt_id: UUID
     confirmable: bool
     tokens: list[DraftToken]
 

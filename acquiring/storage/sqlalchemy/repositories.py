@@ -17,7 +17,7 @@ class PaymentMethodRepository:
     @deal.safe
     def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
         db_payment_method = models.PaymentMethod(
-            payment_attempt_id=data.payment_attempt.id,
+            payment_attempt_id=data.payment_attempt_id,
             confirmable=data.confirmable,
         )
         self.session.add(db_payment_method)

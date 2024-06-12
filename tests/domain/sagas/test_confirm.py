@@ -59,7 +59,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentSagaReturns
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
         confirmable=True,
         payment_operations=[
@@ -185,7 +185,7 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentSagaRetu
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
-        payment_attempt=payment_attempt, id=payment_method_id, confirmable=False
+        payment_attempt_id=payment_attempt.id, id=payment_method_id, confirmable=False
     )
     assert dl.can_confirm(payment_method) is False
 

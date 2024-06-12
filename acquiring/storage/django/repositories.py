@@ -11,7 +11,7 @@ class PaymentMethodRepository:
     @deal.safe
     def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
         db_payment_method = models.PaymentMethod(
-            payment_attempt_id=data.payment_attempt.id,
+            payment_attempt_id=data.payment_attempt_id,
             confirmable=data.confirmable,
         )
         db_payment_method.save()
@@ -23,11 +23,7 @@ class PaymentMethodRepository:
     )
     def get(self, id: UUID) -> "protocols.PaymentMethod":
         try:
-            payment_method = (
-                models.PaymentMethod.objects.prefetch_related("payment_operations", "tokens")
-                .select_related("payment_attempt")
-                .get(id=id)
-            )
+            payment_method = models.PaymentMethod.objects.prefetch_related("payment_operations", "tokens").get(id=id)
             return payment_method.to_domain()
         except models.PaymentMethod.DoesNotExist:
             raise domain.PaymentMethod.DoesNotExist

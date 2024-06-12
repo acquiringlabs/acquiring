@@ -46,7 +46,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPa
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
     )
 

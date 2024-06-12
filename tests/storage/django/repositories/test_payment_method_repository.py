@@ -31,11 +31,11 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
 
     payment_attempt = PaymentAttemptFactory()
     data = domain.DraftPaymentMethod(
-        payment_attempt=payment_attempt.to_domain(),
+        payment_attempt_id=payment_attempt.id,
         confirmable=True,
     )
 
-    with django_assert_num_queries(6):
+    with django_assert_num_queries(3):
         result = storage.django.PaymentMethodRepository().add(data)
 
     db_payment_methods = storage.django.models.PaymentMethod.objects.all()
@@ -53,7 +53,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsR
     django_assert_num_queries: Callable,
 ) -> None:
     db_payment_attempt = PaymentAttemptFactory()
-    db_payment_method = PaymentMethodFactory(payment_attempt=db_payment_attempt)
+    db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
     TokenFactory.create(
         token=fake.sha256(),
         timestamp=timezone.now(),
@@ -70,7 +70,7 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsR
         type=enums.OperationTypeEnum.INITIALIZE,
     )
 
-    with django_assert_num_queries(5):
+    with django_assert_num_queries(3):
         result = storage.django.PaymentMethodRepository().get(id=db_payment_method.id)
 
     assert result == db_payment_method.to_domain()
@@ -86,12 +86,12 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
         created_at=datetime.now(),
         amount=10,
         currency="USD",
-        payment_method_ids=[],
+        payment_methods=[],
     )
 
     payment_method = domain.PaymentMethod(
         id=uuid.uuid4(),
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         created_at=datetime.now(),
         confirmable=False,
     )

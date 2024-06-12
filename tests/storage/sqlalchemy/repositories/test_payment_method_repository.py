@@ -20,14 +20,14 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryGet_thenPaymentGetsR
     sqlalchemy_assert_num_queries: Callable,
 ) -> None:
     payment_attempt = factories.PaymentAttemptFactory()
-    payment_method = factories.PaymentMethodFactory(payment_attempt=payment_attempt)
+    payment_method = factories.PaymentMethodFactory(payment_attempt_id=payment_attempt.id)
 
     with sqlalchemy_assert_num_queries(5):
         result = storage.sqlalchemy.PaymentMethodRepository(
             session=session,
         ).get(id=payment_method.id)
 
-    assert result.payment_attempt == payment_attempt.to_domain()
+    assert result.payment_attempt_id == payment_attempt.id
     assert result == payment_method.to_domain()
 
 
@@ -39,7 +39,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryGet_thenDoesNotEx
     from tests.domain import factories as domain_factories
 
     payment_method = domain_factories.PaymentMethodFactory(
-        payment_attempt=domain_factories.PaymentAttemptFactory(),
+        payment_attempt_id=domain_factories.PaymentAttemptFactory().id,
     )
 
     with sqlalchemy_assert_num_queries(5), pytest.raises(domain.PaymentMethod.DoesNotExist):
@@ -57,7 +57,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
 
     payment_attempt = factories.PaymentAttemptFactory()
     data = domain.DraftPaymentMethod(
-        payment_attempt=payment_attempt.to_domain(),
+        payment_attempt_id=payment_attempt.id,
         confirmable=True,
     )
 

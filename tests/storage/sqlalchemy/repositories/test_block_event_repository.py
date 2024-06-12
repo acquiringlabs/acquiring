@@ -25,7 +25,7 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
     status: enums.OperationStatusEnum,
 ) -> None:
 
-    db_payment_method = factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory())
+    db_payment_method = factories.PaymentMethodFactory(payment_attempt_id=factories.PaymentAttemptFactory().id)
     block_event = domain.BlockEvent(
         created_at=datetime.now(),
         status=status,
@@ -57,7 +57,7 @@ def test_givenAllData_whenCallingRepositoryAdd_thenBlockEventGetsCreated(
 ) -> None:
     block_name = fake.name()
 
-    db_payment_method = factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory())
+    db_payment_method = factories.PaymentMethodFactory(payment_attempt_id=factories.PaymentAttemptFactory().id)
     block_event = domain.BlockEvent(
         created_at=datetime.now(),
         status=status,
@@ -88,7 +88,7 @@ def test_givenPaymentMethodWithDifferentIdThanTheOneStoredInBlockEvent_thenError
 ) -> None:
     block_name = fake.name()
 
-    db_payment_method = factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory())
+    db_payment_method = factories.PaymentMethodFactory(payment_attempt_id=factories.PaymentAttemptFactory().id)
     block_event = domain.BlockEvent(
         created_at=datetime.now(),
         status=enums.OperationStatusEnum.PENDING,

@@ -58,12 +58,12 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAdd_thenDoesNotEx
         created_at=datetime.now(),
         amount=10,
         currency="USD",
-        payment_method_ids=[],
+        payment_methods=[],
     )
 
     payment_method = domain.PaymentMethod(
         id=uuid.uuid4(),
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         created_at=datetime.now(),
         confirmable=False,
     )

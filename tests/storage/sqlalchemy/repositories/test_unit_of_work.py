@@ -82,7 +82,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
-                payment_attempt_id=data.payment_attempt.id,
+                payment_attempt_id=data.payment_attempt_id,
                 confirmable=data.confirmable,
             )
             self.session.add(db_payment_method)
@@ -93,7 +93,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
             return db_payment_method.to_domain()
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
-            return factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory()).to_domain()
+            return factories.PaymentMethodFactory(payment_attempt_id=factories.PaymentAttemptFactory().id).to_domain()
 
     payment_attempt = factories.PaymentAttemptFactory().to_domain()
 
@@ -106,7 +106,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
-                    payment_attempt=payment_attempt,
+                    payment_attempt_id=payment_attempt.id,
                     confirmable=False,
                 )
             )
@@ -137,7 +137,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
-                payment_attempt_id=data.payment_attempt.id,
+                payment_attempt_id=data.payment_attempt_id,
                 confirmable=data.confirmable,
             )
             self.session.add(db_payment_method)
@@ -148,7 +148,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
             raise TestException
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
-            return factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory()).to_domain()
+            return factories.PaymentMethodFactory(payment_attempt_id=factories.PaymentAttemptFactory().id).to_domain()
 
     payment_attempt = factories.PaymentAttemptFactory().to_domain()
 
@@ -161,7 +161,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
-                    payment_attempt=payment_attempt,
+                    payment_attempt_id=payment_attempt.id,
                     confirmable=False,
                 )
             )
@@ -187,7 +187,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
-                payment_attempt_id=data.payment_attempt.id,
+                payment_attempt_id=data.payment_attempt_id,
                 confirmable=data.confirmable,
             )
             self.session.add(db_payment_method)
@@ -198,7 +198,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
             return db_payment_method.to_domain()
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
-            return factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory()).to_domain()
+            return factories.PaymentMethodFactory(payment_attempt_id=factories.PaymentAttemptFactory().id).to_domain()
 
     @dataclass
     class FakeModelRepository:
@@ -208,7 +208,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
             raise TestException
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
-            return factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory()).to_domain()
+            return factories.PaymentMethodFactory(payment_attempt_id=factories.PaymentAttemptFactory().id).to_domain()
 
     payment_attempt = factories.PaymentAttemptFactory().to_domain()
     with sqlalchemy_assert_num_queries(5), pytest.raises(TestException):
@@ -220,7 +220,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
-                    payment_attempt=payment_attempt,
+                    payment_attempt_id=payment_attempt.id,
                     confirmable=False,
                 )
             )
@@ -243,7 +243,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
 
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
-                payment_attempt_id=data.payment_attempt.id,
+                payment_attempt_id=data.payment_attempt_id,
                 confirmable=data.confirmable,
             )
             self.session.add(db_payment_method)
@@ -254,7 +254,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
             return db_payment_method.to_domain()
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
-            return factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory()).to_domain()
+            return factories.PaymentMethodFactory(payment_attempt_id=factories.PaymentAttemptFactory().id).to_domain()
 
     @dataclass
     class FakeModelRepository:
@@ -264,7 +264,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
             pass
 
         def get(self, id: uuid.UUID) -> "protocols.PaymentMethod":
-            return factories.PaymentMethodFactory(payment_attempt=factories.PaymentAttemptFactory()).to_domain()
+            return factories.PaymentMethodFactory(payment_attempt_id=factories.PaymentAttemptFactory().id).to_domain()
 
     payment_attempt = factories.PaymentAttemptFactory().to_domain()
     with sqlalchemy_assert_num_queries(5):
@@ -276,7 +276,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
         ) as uow:
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
-                    payment_attempt=payment_attempt,
+                    payment_attempt_id=payment_attempt.id,
                     confirmable=False,
                 )
             )

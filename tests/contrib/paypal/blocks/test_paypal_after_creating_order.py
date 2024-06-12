@@ -36,12 +36,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
     payment_method = domain.PaymentMethod(
         id=uuid.uuid4(),
         created_at=datetime.now(),
-        payment_attempt=domain.PaymentAttempt(
-            id=uuid.uuid4(),
-            created_at=datetime.now(),
-            amount=30,
-            currency="USD",
-        ),
+        payment_attempt_id=uuid.uuid4(),
         confirmable=False,
     )
 

@@ -59,7 +59,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentSagaRe
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
         confirmable=True,
         payment_operations=[
@@ -207,7 +207,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
         confirmable=False,
     )

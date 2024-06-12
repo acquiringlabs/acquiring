@@ -52,7 +52,7 @@ class PaymentAttempt(Identifiable, Model):
             amount=0,  # TODO Fill
             currency="FAKE",  # TODO Fill
             items=[],
-            payment_method_ids=[payment_method.id for payment_method in self.payment_methods],
+            payment_methods=[payment_method.to_domain() for payment_method in self.payment_methods],
         )
 
 
@@ -75,7 +75,7 @@ class PaymentMethod(Identifiable, Model):
             id=self.id,
             created_at=self.created_at,
             tokens=[],  # TODO Fill
-            payment_attempt=self.payment_attempt.to_domain(),
+            payment_attempt_id=self.payment_attempt_id,
             payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations],
             confirmable=self.confirmable,
         )

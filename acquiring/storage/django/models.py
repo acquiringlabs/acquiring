@@ -49,7 +49,7 @@ class PaymentAttempt(Identifiable, django.db.models.Model):
             amount=self.amount,
             currency=self.currency,
             items=[item.to_domain() for item in self.items.all()],
-            payment_method_ids=[payment_method.id for payment_method in self.payment_methods.all()],
+            payment_methods=[payment_method.to_domain() for payment_method in self.payment_methods.all()],
         )
 
     # TODO Verify that total amount by items equals amount of the PaymentAttempt
@@ -124,7 +124,7 @@ class PaymentMethod(Identifiable, django.db.models.Model):
             id=self.id,
             created_at=self.created_at,
             tokens=[token.to_domain() for token in self.tokens.all()],
-            payment_attempt=self.payment_attempt.to_domain(),
+            payment_attempt_id=self.payment_attempt_id,
             payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations.all()],
             confirmable=self.confirmable,
         )

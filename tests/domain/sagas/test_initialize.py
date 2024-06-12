@@ -62,7 +62,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentSagaReturns
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
     )
 
@@ -148,7 +148,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentSagaRetur
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
     )
 
@@ -228,7 +228,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentSag
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
         payment_operations=[
             domain.PaymentOperation(
@@ -289,7 +289,7 @@ def test_givenAPaymentSagaWithoutInitializeBlock_whenInitializing_thenPaymentSag
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = uuid.uuid4()
     payment_method = factories.PaymentMethodFactory(
-        payment_attempt=payment_attempt,
+        payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
     )
 
