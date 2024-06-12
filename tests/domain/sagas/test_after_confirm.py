@@ -32,7 +32,7 @@ def test_statusListsAreComplete() -> None:
     + [(enums.OperationStatusEnum.PENDING, status) for status in PENDING_STATUS]
     + [(enums.OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
-def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentSagaReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentMethodSagaReturnsTheCorrectOperationResponse(
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
@@ -127,7 +127,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentSagaRe
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentSaga(
+    result = domain.PaymentMethodSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=enums.OperationStatusEnum.COMPLETED,
@@ -187,7 +187,7 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentSagaRe
     assert len(db_payment_operations) == 10
 
 
-def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPaymentSagaReturnsAFailedStatusOperationResponse(
+def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPaymentMethodSagaReturnsAFailedStatusOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_attempt_repository_class: Callable[
@@ -222,7 +222,7 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
     )
     assert dl.can_after_confirm(payment_method) is False
 
-    result = domain.PaymentSaga(
+    result = domain.PaymentMethodSaga(
         unit_of_work=fake_unit_of_work(
             payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),

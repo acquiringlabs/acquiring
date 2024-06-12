@@ -30,9 +30,9 @@ def test_givenCorrectInformation_paymentSagaGetsDefined(
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
 
-    def fake_payment_flow() -> protocols.PaymentSaga:
+    def fake_payment_flow() -> protocols.PaymentMethodSaga:
 
-        return domain.PaymentSaga(
+        return domain.PaymentMethodSaga(
             unit_of_work=fake_unit_of_work(
                 payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
                 payment_method_repository_class=fake_payment_method_repository_class([]),

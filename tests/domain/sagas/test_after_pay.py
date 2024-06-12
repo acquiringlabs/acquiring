@@ -30,7 +30,7 @@ def test_statusListsAreComplete() -> None:
     [(enums.OperationStatusEnum.COMPLETED, status) for status in COMPLETED_STATUS]
     + [(enums.OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
-def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentSagaReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentMethodSagaReturnsTheCorrectOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_attempt_repository_class: Callable[
@@ -101,7 +101,7 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentSagaReturnsTheCorre
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentSaga(
+    result = domain.PaymentMethodSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(),
         process_action_block=fake_process_action_block(),
@@ -144,7 +144,7 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentSagaReturnsTheCorre
     assert len(db_payment_operations) == 6
 
 
-def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentSagaReturnsAFailedStatusOperationResponse(
+def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentMethodSagaReturnsAFailedStatusOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_attempt_repository_class: Callable[
@@ -187,7 +187,7 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentSagaRe
     )
     assert dl.can_after_pay(payment_method) is False
 
-    result = domain.PaymentSaga(
+    result = domain.PaymentMethodSaga(
         unit_of_work=fake_unit_of_work(
             payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),

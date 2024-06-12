@@ -32,7 +32,7 @@ def test_statusListsAreComplete() -> None:
     + [(enums.OperationStatusEnum.PENDING, status) for status in PENDING_STATUS]
     + [(enums.OperationStatusEnum.FAILED, status) for status in FAILED_STATUS],
 )
-def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentSagaReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentMethodSagaReturnsTheCorrectOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_attempt_repository_class: Callable[
@@ -115,7 +115,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentSagaReturns
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentSaga(
+    result = domain.PaymentMethodSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=enums.OperationStatusEnum.COMPLETED,
@@ -165,7 +165,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentSagaReturns
     assert len(db_payment_operations) == 8
 
 
-def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentSagaReturnsAFailedStatusOperationResponse(
+def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentMethodSagaReturnsAFailedStatusOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_attempt_repository_class: Callable[
@@ -198,7 +198,7 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentSagaRetu
     )
     assert dl.can_confirm(payment_method) is False
 
-    result = domain.PaymentSaga(
+    result = domain.PaymentMethodSaga(
         unit_of_work=fake_unit_of_work(
             payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
             payment_method_repository_class=fake_payment_method_repository_class([payment_method]),

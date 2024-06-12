@@ -12,7 +12,7 @@ The word "acquiring" is the industry term that means collecting and processing p
 
 Some reasons you might want to check it out:
 
-- Stable interface via single PaymentSaga class.
+- Stable interface via single PaymentMethodSaga class.
 - Flexible internals that can be customized for any payment method, existing AND non-existing.
 - Platform agnostic (really!), meant to be plugged into your existing Django project easily.
 - Support for all database engines under the Django umbrella.

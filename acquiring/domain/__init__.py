@@ -12,7 +12,7 @@ from .payments import (
     Token,
 )
 from .providers import Transaction, wrapped_by_transaction
-from .sagas import PaymentSaga
+from .sagas import PaymentMethodSaga
 
 __all__ = [
     "BlockEvent",
@@ -23,7 +23,7 @@ __all__ = [
     "DraftToken",
     "Item",
     "PaymentAttempt",
-    "PaymentSaga",
+    "PaymentMethodSaga",
     "PaymentMethod",
     "PaymentOperation",
     "Token",

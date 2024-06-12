@@ -20,7 +20,7 @@ FAILED_STATUS = [
     "operation_status",
     [enums.OperationStatusEnum.COMPLETED, enums.OperationStatusEnum.PENDING, enums.OperationStatusEnum.FAILED],
 )
-def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPayAndReturnsTheCorrectOperationResponse(
+def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentMethodSagaCallsPayAndReturnsTheCorrectOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
     fake_payment_attempt_repository_class: Callable[
@@ -63,7 +63,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPa
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
-    result = domain.PaymentSaga(
+    result = domain.PaymentMethodSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
             fake_response_status=enums.OperationStatusEnum.COMPLETED,
