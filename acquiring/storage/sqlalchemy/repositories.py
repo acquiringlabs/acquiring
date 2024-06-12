@@ -10,6 +10,30 @@ from . import models
 
 
 @dataclass
+class PaymentAttemptRepository:
+
+    session: orm.Session
+
+    def add(self, data: "protocols.DraftPaymentAttempt") -> "protocols.PaymentAttempt": ...  # type:ignore[empty-body]
+
+    @deal.reason(
+        domain.PaymentAttempt.DoesNotExist,
+        lambda self, id: self.session.query(models.PaymentAttempt).filter_by(id=id).count() == 0,
+    )
+    def get(self, id: UUID) -> "protocols.PaymentAttempt":
+        try:
+            return (
+                self.session.query(models.PaymentAttempt)
+                .outerjoin(models.PaymentMethod, models.PaymentMethod.payment_attempt_id == models.PaymentAttempt.id)
+                .filter(models.PaymentAttempt.id == id)
+                .one()
+                .to_domain()
+            )
+        except orm.exc.NoResultFound:
+            raise domain.PaymentAttempt.DoesNotExist
+
+
+@dataclass
 class PaymentMethodRepository:
 
     session: orm.Session
