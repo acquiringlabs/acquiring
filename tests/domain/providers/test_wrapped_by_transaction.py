@@ -13,6 +13,10 @@ fake = Faker()
 
 
 def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransactionGetsCorrectlyCreated(
+    fake_payment_attempt_repository_class: Callable[
+        [Optional[list[protocols.PaymentAttempt]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -75,6 +79,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
     )
 
     unit_of_work = fake_unit_of_work(
+        payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([]),
         payment_operation_repository_class=fake_payment_operation_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),

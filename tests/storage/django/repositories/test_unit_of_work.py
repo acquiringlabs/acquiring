@@ -93,6 +93,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
 
     with django_assert_num_queries(6):
         with storage.django.DjangoUnitOfWork(
+            payment_attempt_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
             payment_operation_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
@@ -142,6 +143,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
 
     with django_assert_num_queries(4), pytest.raises(TestException):
         with storage.django.DjangoUnitOfWork(
+            payment_attempt_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
             payment_operation_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
@@ -193,6 +195,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
 
     with django_assert_num_queries(7), pytest.raises(TestException):
         with storage.django.DjangoUnitOfWork(
+            payment_attempt_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
             payment_operation_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
@@ -242,6 +245,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
 
     with django_assert_num_queries(5):
         with storage.django.DjangoUnitOfWork(
+            payment_attempt_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
             payment_operation_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,

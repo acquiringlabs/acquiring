@@ -23,9 +23,8 @@ class PayPalCreateOrder:
     ) -> "protocols.BlockResponse":
         external_id = uuid.uuid4()
 
-        # TODO Obtain payment attempt from database
         with unit_of_work as uow:
-            payment_attempt = uow.payment_attempts.get(payment_method.payment_attempt_id)  # type:ignore[attr-defined]
+            payment_attempt = uow.payment_attempts.get(payment_method.payment_attempt_id)
 
         items = payment_attempt.items
         order = Order(

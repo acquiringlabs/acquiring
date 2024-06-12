@@ -17,6 +17,9 @@ class SqlAlchemyUnitOfWork:
     See Unit of Work pattern here: https://martinfowler.com/eaaCatalog/unitOfWork.html
     """
 
+    payment_attempt_repository_class: type[protocols.Repository]
+    payment_attempts: protocols.Repository = field(init=False, repr=False)
+
     payment_method_repository_class: type[protocols.Repository]
     payment_methods: protocols.Repository = field(init=False, repr=False)
 
@@ -37,6 +40,7 @@ class SqlAlchemyUnitOfWork:
     def __enter__(self) -> Self:
         self.session = self.session_factory()
 
+        self.payment_attempts = self.payment_attempt_repository_class(session=self.session)  # type: ignore[call-arg]
         self.payment_methods = self.payment_method_repository_class(session=self.session)  # type: ignore[call-arg]
         self.payment_operations = self.payment_operation_repository_class(session=self.session)  # type: ignore[call-arg]
         self.block_events = self.block_event_repository_class(session=self.session)  # type: ignore[call-arg]

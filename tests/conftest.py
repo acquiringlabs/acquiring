@@ -46,6 +46,36 @@ def fake_os_environ() -> Generator:
 
 
 @pytest.fixture()
+def fake_payment_attempt_repository_class() -> (
+    Callable[[Optional[list[protocols.PaymentAttempt]]], type[protocols.Repository]]
+):
+
+    def func(payment_attempts: Optional[list[protocols.PaymentAttempt]]) -> type[protocols.Repository]:
+
+        class FakePaymentAttemptRepository:
+
+            def __init__(self) -> None:
+                """
+                Cloning the list into units attribute to simulate the independence of database versus objects in memory
+                """
+                self.units = payment_attempts.copy() if payment_attempts is not None else []
+
+            def add(  # type:ignore[empty-body]
+                self, data: protocols.DraftPaymentAttempt
+            ) -> protocols.PaymentAttempt: ...
+
+            def get(self, id: uuid.UUID) -> protocols.PaymentAttempt:
+                for unit in self.units:
+                    if unit.id == id:
+                        return unit
+                raise domain.PaymentAttempt.DoesNotExist
+
+        return FakePaymentAttemptRepository
+
+    return func
+
+
+@pytest.fixture()
 def fake_payment_method_repository_class() -> (
     Callable[[Optional[list[protocols.PaymentMethod]]], type[protocols.Repository]]
 ):
@@ -210,6 +240,9 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
 
     @dataclass
     class FakeUnitOfWork:
+        payment_attempt_repository_class: type[protocols.Repository]
+        payment_attempts: protocols.Repository = field(init=False, repr=False)
+
         payment_method_repository_class: type[protocols.Repository]
         payment_methods: protocols.Repository = field(init=False, repr=False)
 
@@ -229,6 +262,8 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
         transaction_units: set[protocols.Transaction] = field(default_factory=set)
 
         def __enter__(self) -> Self:
+            self.payment_attempts = self.payment_attempt_repository_class()
+
             self.payment_methods = self.payment_method_repository_class()
             self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]
 

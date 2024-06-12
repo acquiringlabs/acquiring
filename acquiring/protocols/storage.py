@@ -14,6 +14,9 @@ class Repository(Protocol):
 
 @dataclass(match_args=False)
 class UnitOfWork(Protocol):
+    payment_attempt_repository_class: type[Repository]
+    payment_attempts: Repository = field(init=False, repr=False)
+
     payment_method_repository_class: type[Repository]
     payment_methods: Repository = field(init=False, repr=False)
 

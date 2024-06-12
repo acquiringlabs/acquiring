@@ -17,6 +17,10 @@ fake = Faker()
 @responses.activate
 def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRedirectAction(
     fake_os_environ: Generator,
+    fake_payment_attempt_repository_class: Callable[
+        [Optional[list[protocols.PaymentAttempt]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -35,10 +39,16 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
+    payment_attempt = domain.PaymentAttempt(
+        id=uuid.uuid4(),
+        created_at=datetime.now(),
+        amount=10,
+        currency="USD",
+    )
     payment_method = domain.PaymentMethod(
         id=uuid.uuid4(),
         created_at=datetime.now(),
-        payment_attempt_id=uuid.uuid4(),
+        payment_attempt_id=payment_attempt.id,
         confirmable=False,
     )
 
@@ -58,6 +68,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
     )
 
     unit_of_work = fake_unit_of_work(
+        payment_attempt_repository_class=fake_payment_attempt_repository_class([payment_attempt]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         payment_operation_repository_class=fake_payment_operation_repository_class(
             set(payment_method.payment_operations)

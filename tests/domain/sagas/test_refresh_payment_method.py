@@ -13,6 +13,10 @@ from tests.domain import factories
 
 def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecorator_thenPMGetsLatestData(
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
+    fake_payment_attempt_repository_class: Callable[
+        [Optional[list[protocols.PaymentAttempt]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -83,6 +87,7 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
 
     result = FakeSaga(
         unit_of_work=fake_unit_of_work(
+            payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
             payment_method_repository_class=fake_payment_method_repository_class([db_payment_method]),
             payment_operation_repository_class=fake_payment_operation_repository_class(
                 set(db_payment_method.payment_operations)
@@ -97,6 +102,10 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
 
 def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecorator_thenMethodReturnsFailedResponse(
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
+    fake_payment_attempt_repository_class: Callable[
+        [Optional[list[protocols.PaymentAttempt]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -146,6 +155,7 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
 
     result = FakeSaga(
         unit_of_work=fake_unit_of_work(
+            payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
             payment_method_repository_class=fake_payment_method_repository_class([]),
             payment_operation_repository_class=fake_payment_operation_repository_class(set()),
             block_event_repository_class=fake_block_event_repository_class(set()),
@@ -160,6 +170,10 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
 
 def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPaymentMethodDecorator_thenErrorGetsRaised(
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
+    fake_payment_attempt_repository_class: Callable[
+        [Optional[list[protocols.PaymentAttempt]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -210,6 +224,7 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
     with pytest.raises(ValueError):
         FakeSaga(
             unit_of_work=fake_unit_of_work(
+                payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
                 payment_method_repository_class=fake_payment_method_repository_class([]),
                 payment_operation_repository_class=fake_payment_operation_repository_class(set()),
                 block_event_repository_class=fake_block_event_repository_class(set()),

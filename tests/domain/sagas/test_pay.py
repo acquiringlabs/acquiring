@@ -23,6 +23,10 @@ FAILED_STATUS = [
 def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPayAndReturnsTheCorrectOperationResponse(
     fake_block: type[protocols.Block],
     fake_process_action_block: type[protocols.Block],
+    fake_payment_attempt_repository_class: Callable[
+        [Optional[list[protocols.PaymentAttempt]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -51,6 +55,7 @@ def test_givenAValidPaymentMethod_whenInitializeCompletes_thenPaymentSagaCallsPa
     )
 
     unit_of_work = fake_unit_of_work(
+        payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         payment_operation_repository_class=fake_payment_operation_repository_class(
             set(payment_method.payment_operations)
