@@ -51,7 +51,16 @@ def upgrade() -> None:
         sa.Index('ix_acquiring_blockevents_status', 'status'),
         sa.PrimaryKeyConstraint('id'),
     )
-
+    op.create_table('acquiring_paymentmilestones',
+        sa.Column('id', sa.String(), nullable=False),
+        sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
+        sa.Column('type', sa.String(), nullable=False),
+        sa.Column('payment_method_id', sa.String(), nullable=False),
+        sa.ForeignKeyConstraint(['payment_method_id'], ['acquiring_paymentmethods.id'], ),
+        sa.Column('payment_attempt_id', sa.String(), nullable=False),
+        sa.ForeignKeyConstraint(['payment_attempt_id'], ['acquiring_paymentattempts.id'], ),
+        sa.PrimaryKeyConstraint('id'),
+    )
     op.create_table('acquiring_transactions',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('external_id', sa.String(), nullable=False),
@@ -67,6 +76,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_table('acquiring_transactions')
     op.drop_table('acquiring_blockevents')
+    op.drop_table('acquiring_paymentmilestones')
     op.drop_table('acquiring_paymentoperations')
     op.drop_table('acquiring_paymentmethods')
     op.drop_table('acquiring_paymentattempts')

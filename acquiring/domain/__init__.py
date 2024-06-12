@@ -8,6 +8,7 @@ from .payments import (
     Item,
     PaymentAttempt,
     PaymentMethod,
+    PaymentMilestone,
     PaymentOperation,
     Token,
 )
@@ -26,6 +27,7 @@ __all__ = [
     "PaymentMethodSaga",
     "PaymentMethod",
     "PaymentOperation",
+    "PaymentMilestone",
     "Token",
     "Transaction",
     "wrapped_by_block_events",

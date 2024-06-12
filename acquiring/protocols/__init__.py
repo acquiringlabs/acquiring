@@ -12,6 +12,7 @@ from .payments import (
     OperationResponse,
     PaymentAttempt,
     PaymentMethod,
+    PaymentMilestone,
     PaymentOperation,
     Token,
 )
@@ -60,6 +61,7 @@ __all__ = [
     "PaymentMethodSaga",
     "PaymentMethod",
     "PaymentOperation",
+    "PaymentMilestone",
     "Repository",
     "Token",
     "Transaction",

@@ -81,6 +81,43 @@ class PaymentMethod(Identifiable, Model):
         )
 
 
+class PaymentMilestone(Model):
+    __tablename__ = "acquiring_paymentmilestones"
+
+    # The high amount of instances expected for this model justifies the use of UUID instead of Integer
+    # It is not identifiable, though, and the id doesn't get passed to the domain dataclass.
+    id = sqlalchemy.Column(sqlalchemy.String, primary_key=True, default=u)
+
+    created_at = sqlalchemy.Column(
+        sqlalchemy.TIMESTAMP(timezone=True), default=now, server_onupdate=None, nullable=False
+    )
+
+    # Unlike Django, enum values are validated only at the domain layer
+    # Reason: I've worked with enums on the database itself and they are nightmare.
+    type = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+
+    payment_method_id = sqlalchemy.Column(
+        sqlalchemy.String, sqlalchemy.ForeignKey("acquiring_paymentmethods.id"), nullable=False
+    )
+    payment_method = orm.relationship("PaymentMethod", cascade="all, delete")
+
+    payment_attempt_id = sqlalchemy.Column(
+        sqlalchemy.String, sqlalchemy.ForeignKey("acquiring_paymentattempts.id"), nullable=False
+    )
+    payment_attempt = orm.relationship("PaymentAttempt", cascade="all, delete")
+
+    def __str__(self) -> str:
+        return f"[type={self.type}, payment_attempt_id={self.payment_attempt_id}]"
+
+    def to_domain(self) -> protocols.PaymentMilestone:
+        return domain.PaymentMilestone(
+            created_at=self.created_at,
+            type=self.type,
+            payment_attempt_id=self.payment_attempt_id,
+            payment_method_id=self.payment_method.id,
+        )
+
+
 class PaymentOperation(Model):
     __tablename__ = "acquiring_paymentoperations"
 

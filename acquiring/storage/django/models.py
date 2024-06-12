@@ -52,8 +52,6 @@ class PaymentAttempt(Identifiable, django.db.models.Model):
             payment_methods=[payment_method.to_domain() for payment_method in self.payment_methods.all()],
         )
 
-    # TODO Verify that total amount by items equals amount of the PaymentAttempt
-
 
 class Item(Identifiable, django.db.models.Model):
 
@@ -127,6 +125,42 @@ class PaymentMethod(Identifiable, django.db.models.Model):
             payment_attempt_id=self.payment_attempt_id,
             payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations.all()],
             confirmable=self.confirmable,
+        )
+
+
+class MilestoneTypeChoices(django.db.models.TextChoices):
+    PAYMENT_METHOD_ADDED = "payment_method_added"
+    PAYMENT_METHOD_COMPLETED = "payment_method_completed"
+    PAYMENT_METHOD_FAILED = "payment_method_failed"
+    PAYMENT_METHOD_REQUIRES_ACTION = "payment_method_requires_action"
+    PAYMENT_METHOD_REQUIRES_CONFIRMATION = "payment_method_requires_confirmation"
+
+
+class PaymentMilestone(django.db.models.Model):
+    created_at = django.db.models.DateTimeField(auto_now_add=True)
+
+    type = django.db.models.CharField(max_length=40, choices=MilestoneTypeChoices.choices)
+
+    payment_method = django.db.models.ForeignKey(
+        PaymentMethod,
+        on_delete=django.db.models.CASCADE,
+        related_name="payment_milestones",
+    )
+    payment_attempt = django.db.models.ForeignKey(
+        PaymentAttempt,
+        on_delete=django.db.models.CASCADE,
+        related_name="payment_milestones",
+    )
+
+    def __str__(self) -> str:
+        return f"[type={self.type}, payment_attempt_id={self.payment_attempt_id}]"
+
+    def to_domain(self) -> protocols.PaymentMilestone:
+        return domain.PaymentMilestone(
+            created_at=self.created_at,
+            type=self.type,
+            payment_attempt_id=self.payment_attempt_id,
+            payment_method_id=self.payment_method.id,
         )
 
 

@@ -23,3 +23,11 @@ def test_StatusChoices_match_OperationStatusEnum() -> None:
     status_enums = set(item.value for item in enums.OperationStatusEnum)
 
     assert choices == status_enums
+
+
+@skip_if_django_not_installed
+def test_MilestoneTypeChoices_match_MilestoneTypeEnum() -> None:
+    choices = set(member.value for member in storage.django.models.MilestoneTypeChoices)  # type:ignore[attr-defined]
+    type_enums = set(item.value for item in enums.MilestoneTypeEnum)
+
+    assert choices == type_enums

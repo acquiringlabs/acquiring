@@ -9,6 +9,8 @@ from acquiring import enums, protocols
 
 @dataclass(frozen=True)
 class PaymentOperation:
+    """Used to decide if the associated PaymentMethod can enter a given operation type in the PaymentMethodSaga"""
+
     created_at: datetime
     type: "enums.OperationTypeEnum"
     status: "enums.OperationStatusEnum"
@@ -19,8 +21,20 @@ class PaymentOperation:
         return f"{self.__class__.__name__}:{self.type}|{self.status}"
 
 
+@dataclass(frozen=True)
+class PaymentMilestone:
+    """Checkpoints being created after a certain threshold on the lifecycle of a PaymentMethod is reached"""
+
+    created_at: datetime
+    type: "enums.MilestoneTypeEnum"
+    payment_method_id: UUID
+    payment_attempt_id: UUID
+
+
 @dataclass
 class PaymentMethod:
+    """Represents how a PaymentAttempt gets paid"""
+
     id: UUID
     created_at: datetime
     payment_attempt_id: UUID
@@ -55,6 +69,8 @@ class PaymentMethod:
 
 @dataclass
 class DraftPaymentMethod:
+    """Parses the data needed to create a PaymentMethod via its Repository"""
+
     payment_attempt_id: UUID
     confirmable: bool
     tokens: list["protocols.DraftToken"] = field(default_factory=list)
