@@ -45,6 +45,7 @@ class PaymentMethodRepository:
             raise domain.PaymentMethod.DoesNotExist
 
 
+# TODO Control for IntegrityError when PaymentMethod does not exist when adding PaymentOperation
 class PaymentOperationRepository:
 
     @deal.safe
@@ -65,6 +66,31 @@ class PaymentOperationRepository:
         return payment_operation
 
     def get(self, id: UUID) -> "protocols.PaymentOperation": ...  # type: ignore[empty-body]
+
+
+# TODO Control for IntegrityError when PaymentMethod or PaymentAttempt do not exist when adding PaymentMilestone
+
+
+class PaymentMilestoneRepository:
+
+    @deal.safe
+    def add(
+        self,
+        payment_method: "protocols.PaymentMethod",
+        type: enums.AtemptStatusEnum,
+    ) -> "protocols.PaymentMilestone":
+        db_payment_milestone = models.PaymentMilestone(
+            payment_method_id=payment_method.id,
+            payment_attempt_id=payment_method.payment_attempt_id,
+            type=type,
+        )
+        db_payment_milestone.save()
+        return db_payment_milestone.to_domain()
+
+    def get(self, id: UUID) -> "protocols.PaymentMilestone": ...  # type:ignore[empty-body]
+
+
+# TODO Control for IntegrityError when PaymentMethod does not exist when adding BlockEvent
 
 
 class BlockEventRepository:
