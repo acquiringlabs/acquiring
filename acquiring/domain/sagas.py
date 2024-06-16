@@ -86,7 +86,7 @@ def refresh_payment_method(  # type:ignore[misc]
                 status=enums.OperationStatusEnum.FAILED,
                 payment_method=None,
                 error_message="PaymentMethod not found",
-                type=enums.OperationTypeEnum(function.__name__),  # already valid thanks to @operation_type
+                type=enums.OperationTypeEnum(function.__name__.strip("_")),  # already valid thanks to @operation_type
             )
         return function(self, payment_method, *args, **kwargs)
 
@@ -114,7 +114,9 @@ def verified_with_decision_logic(  # type:ignore[misc]
                     status=enums.OperationStatusEnum.FAILED,
                     payment_method=None,
                     error_message="PaymentMethod cannot go through this operation",
-                    type=enums.OperationTypeEnum(function.__name__),  # already valid thanks to @operation_type
+                    type=enums.OperationTypeEnum(
+                        function.__name__.strip("_")
+                    ),  # already valid thanks to @operation_type
                 )
 
             return function(self, payment_method, *args, **kwargs)
@@ -122,6 +124,33 @@ def verified_with_decision_logic(  # type:ignore[misc]
         return wrapper
 
     return decorator
+
+
+def with_started_operation_event_before_running(  # type:ignore[misc]
+    function: Callable[..., "protocols.OperationResponse"]
+) -> Callable[..., "protocols.OperationResponse"]:
+    """
+    Create An OperationEvent with current operation type and status started
+    to prevent other processes from running this method concurrently.
+    """
+
+    @functools.wraps(function)
+    def wrapper(
+        self: "protocols.PaymentMethodSaga",
+        payment_method: "protocols.PaymentMethod",
+        *args: Sequence,
+        **kwargs: dict,
+    ) -> "protocols.OperationResponse":
+        with self.unit_of_work as uow:
+            uow.operation_events.add(
+                payment_method=payment_method,
+                type=enums.OperationTypeEnum(function.__name__.strip("_")),  # already valid thanks to @operation_type
+                status=enums.OperationStatusEnum.STARTED,
+            )
+            uow.commit()
+        return function(self, payment_method, *args, **kwargs)
+
+    return wrapper
 
 
 # TODO Decorate this class to ensure that all operation_types are implemented as methods
@@ -148,16 +177,8 @@ class PaymentMethodSaga:
     @operation_type
     @refresh_payment_method
     @verified_with_decision_logic(dl.can_initialize)
+    @with_started_operation_event_before_running
     def initialize(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
-
-        # Create Started OperationEvent
-        with self.unit_of_work as uow:
-            uow.operation_events.add(
-                payment_method=payment_method,
-                type=enums.OperationTypeEnum.INITIALIZE,
-                status=enums.OperationStatusEnum.STARTED,
-            )
-            uow.commit()
 
         # Run Operation Block if it exists
         if self.initialize_block is None:
@@ -231,18 +252,10 @@ class PaymentMethodSaga:
     @implements_blocks
     @refresh_payment_method
     @verified_with_decision_logic(dl.can_process_action)
+    @with_started_operation_event_before_running
     def process_action(
         self, payment_method: "protocols.PaymentMethod", action_data: dict
     ) -> "protocols.OperationResponse":
-
-        # Create Started OperationEvent
-        with self.unit_of_work as uow:
-            uow.operation_events.add(
-                payment_method=payment_method,
-                type=enums.OperationTypeEnum.PROCESS_ACTION,
-                status=enums.OperationStatusEnum.STARTED,
-            )
-            uow.commit()
 
         if self.process_action_block is None:
             with self.unit_of_work as uow:
@@ -305,19 +318,11 @@ class PaymentMethodSaga:
 
     @deal.pure
     @operation_type
+    @with_started_operation_event_before_running
     def __pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
         # No need to refresh from DB
 
         # No need to verify if payment can go through a private method
-
-        # Create Started OperationEvent
-        with self.unit_of_work as uow:
-            uow.operation_events.add(
-                payment_method=payment_method,
-                type=enums.OperationTypeEnum.PAY,
-                status=enums.OperationStatusEnum.STARTED,
-            )
-            uow.commit()
 
         # Run Operation Block
         block_response = self.pay_block.run(unit_of_work=self.unit_of_work, payment_method=payment_method)
@@ -344,16 +349,8 @@ class PaymentMethodSaga:
     @implements_blocks
     @refresh_payment_method
     @verified_with_decision_logic(dl.can_after_pay)
+    @with_started_operation_event_before_running
     def after_pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
-
-        # Create Started OperationEvent
-        with self.unit_of_work as uow:
-            uow.operation_events.add(
-                payment_method=payment_method,
-                type=enums.OperationTypeEnum.AFTER_PAY,
-                status=enums.OperationStatusEnum.STARTED,
-            )
-            uow.commit()
 
         # Run Operation Blocks
         responses = [
@@ -399,16 +396,8 @@ class PaymentMethodSaga:
     @implements_blocks
     @refresh_payment_method
     @verified_with_decision_logic(dl.can_confirm)
+    @with_started_operation_event_before_running
     def confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
-
-        # Create Started OperationEvent
-        with self.unit_of_work as uow:
-            uow.operation_events.add(
-                payment_method=payment_method,
-                type=enums.OperationTypeEnum.CONFIRM,
-                status=enums.OperationStatusEnum.STARTED,
-            )
-            uow.commit()
 
         # Run Operation Blocks
         if self.confirm_block is None:
@@ -471,16 +460,8 @@ class PaymentMethodSaga:
     @implements_blocks
     @refresh_payment_method
     @verified_with_decision_logic(dl.can_after_confirm)
+    @with_started_operation_event_before_running
     def after_confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
-
-        # Create Started OperationEvent
-        with self.unit_of_work as uow:
-            uow.operation_events.add(
-                payment_method=payment_method,
-                type=enums.OperationTypeEnum.AFTER_CONFIRM,
-                status=enums.OperationStatusEnum.STARTED,
-            )
-            uow.commit()
 
         # Run Operation Blocks
         responses = [
