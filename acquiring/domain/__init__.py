@@ -1,7 +1,7 @@
 from .blocks import BlockResponse, wrapped_by_block_events
-from .events import BlockEvent
+from .events import BlockEvent, OperationEvent
 from .payment_attempts import DraftItem, DraftPaymentAttempt, Item, Milestone, PaymentAttempt
-from .payment_methods import DraftPaymentMethod, DraftToken, OperationEvent, PaymentMethod, Token
+from .payment_methods import DraftPaymentMethod, DraftToken, PaymentMethod, Token
 from .providers import Transaction, wrapped_by_transaction
 from .sagas import PaymentMethodSaga
 

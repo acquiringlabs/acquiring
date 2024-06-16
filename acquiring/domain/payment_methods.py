@@ -42,20 +42,6 @@ class PaymentMethod:
         pass
 
 
-@dataclass(frozen=True)
-class OperationEvent:
-    """Used to decide if the associated PaymentMethod can enter a given operation type in the PaymentMethodSaga"""
-
-    created_at: datetime
-    type: "enums.OperationTypeEnum"
-    status: "enums.OperationStatusEnum"
-    payment_method_id: protocols.ExistingPaymentMethodId
-
-    def __repr__(self) -> str:
-        """String representation of the class"""
-        return f"{self.__class__.__name__}:{self.type}|{self.status}"
-
-
 @dataclass
 class DraftPaymentMethod:
     """Parses the data needed to create a PaymentMethod via its Repository"""

@@ -64,6 +64,11 @@ class DraftPaymentAttempt:
 
 @dataclass
 class Item:
+    """
+    Items are associated to the PaymentAttempt so that payment functionalities
+    that require purchase information (tokenization, fraud, etc) has a clear interface to work.
+    """
+
     id: UUID
     created_at: datetime
     payment_attempt_id: protocols.ExistingPaymentAttemptId
@@ -79,6 +84,13 @@ class Item:
 
 @dataclass
 class DraftItem:
+    """
+    Dataclass passed as an argument to PaymentAttempt repository in order to create an instance of Item.
+
+    This separation ensures that we don't have to check for Optional attributes in a dataclass
+    shared both as the input and the output of the Repository.add method.
+    """
+
     reference: str
     name: str
     quantity: int
