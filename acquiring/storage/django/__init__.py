@@ -1,10 +1,10 @@
 from . import models
 from .repositories import (
     BlockEventRepository,
+    OperationEventRepository,
     PaymentAttemptRepository,
     PaymentMethodRepository,
     PaymentMilestoneRepository,
-    PaymentOperationRepository,
     TokenRepository,
     TransactionRepository,
 )
@@ -17,7 +17,7 @@ __all__ = [
     "PaymentAttemptRepository",
     "PaymentMethodRepository",
     "PaymentMilestoneRepository",
-    "PaymentOperationRepository",
+    "OperationEventRepository",
     "TransactionRepository",
     "TokenRepository",
 ]

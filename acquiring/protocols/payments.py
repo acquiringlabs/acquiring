@@ -19,7 +19,7 @@ ExistingPaymentAttemptId = NewType("ExistingPaymentAttemptId", UUID)
 
 
 @dataclass(frozen=True, match_args=False)
-class PaymentOperation(Protocol):
+class OperationEvent(Protocol):
     created_at: datetime
     payment_method_id: ExistingPaymentMethodId
     type: enums.OperationTypeEnum
@@ -93,17 +93,17 @@ class PaymentMethod(Protocol):
     tokens: list[Token]
     payment_attempt_id: ExistingPaymentAttemptId
     confirmable: bool
-    payment_operations: list[PaymentOperation]
+    operation_events: list[OperationEvent]
 
     def __repr__(self) -> str: ...
 
-    def has_payment_operation(
+    def has_operation_event(
         self: "PaymentMethod",
         type: enums.OperationTypeEnum,
         status: enums.OperationStatusEnum,
     ) -> bool: ...
 
-    def count_payment_operation(
+    def count_operation_event(
         self: "PaymentMethod",
         type: enums.OperationTypeEnum,
         status: enums.OperationStatusEnum,

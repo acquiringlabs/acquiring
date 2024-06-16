@@ -28,13 +28,13 @@ class FakeUnitOfWork(protocols.UnitOfWork, Protocol):
 
     """
     Payment methods cannot be associated with a FakeRepository
-    since they are mutable by definition (contain payment_operations)
+    since they are mutable by definition (contain operation_events)
     """
     payment_method_repository_class: type[protocols.Repository]
     payment_methods: protocols.Repository = field(init=False, repr=False)
 
-    payment_operation_repository_class: type[FakeRepository]
-    payment_operations: FakeRepository = field(init=False, repr=False)
+    operation_event_repository_class: type[FakeRepository]
+    operation_events: FakeRepository = field(init=False, repr=False)
 
     block_event_repository_class: type[FakeRepository]
     block_events: FakeRepository = field(init=False, repr=False)
@@ -43,7 +43,7 @@ class FakeUnitOfWork(protocols.UnitOfWork, Protocol):
     transactions: FakeRepository = field(init=False, repr=False)
 
     payment_method_units: list[protocols.PaymentMethod] = field(init=False, repr=False)
-    payment_operation_units: set[protocols.PaymentOperation] = field(init=False, repr=False)
+    operation_event_units: set[protocols.OperationEvent] = field(init=False, repr=False)
     block_event_units: set[protocols.BlockEvent] = field(init=False, repr=False)
 
     transaction_units: set[protocols.Transaction] = field(init=False, repr=False)

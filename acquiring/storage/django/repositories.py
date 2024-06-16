@@ -39,13 +39,13 @@ class PaymentMethodRepository:
     )
     def get(self, id: UUID) -> "protocols.PaymentMethod":
         try:
-            payment_method = models.PaymentMethod.objects.prefetch_related("payment_operations", "tokens").get(id=id)
+            payment_method = models.PaymentMethod.objects.prefetch_related("operation_events", "tokens").get(id=id)
             return payment_method.to_domain()
         except models.PaymentMethod.DoesNotExist:
             raise domain.PaymentMethod.DoesNotExist
 
 
-class PaymentOperationRepository:
+class OperationEventRepository:
 
     @deal.safe
     def add(
@@ -53,18 +53,18 @@ class PaymentOperationRepository:
         payment_method: "protocols.PaymentMethod",
         type: enums.OperationTypeEnum,
         status: enums.OperationStatusEnum,
-    ) -> "protocols.PaymentOperation":
-        db_payment_operation = models.PaymentOperation(
+    ) -> "protocols.OperationEvent":
+        db_operation_event = models.OperationEvent(
             payment_method_id=payment_method.id,
             type=type,
             status=status,
         )
-        db_payment_operation.save()
-        payment_operation = db_payment_operation.to_domain()
-        payment_method.payment_operations.append(payment_operation)
-        return payment_operation
+        db_operation_event.save()
+        operation_event = db_operation_event.to_domain()
+        payment_method.operation_events.append(operation_event)
+        return operation_event
 
-    def get(self, id: UUID) -> "protocols.PaymentOperation": ...  # type: ignore[empty-body]
+    def get(self, id: UUID) -> "protocols.OperationEvent": ...  # type: ignore[empty-body]
 
 
 # TODO Control for IntegrityError when PaymentAttempt do not exist when adding PaymentMilestone

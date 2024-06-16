@@ -21,8 +21,8 @@ class DjangoUnitOfWork:
     payment_method_repository_class: type[protocols.Repository]
     payment_methods: protocols.Repository = field(init=False, repr=False)
 
-    payment_operation_repository_class: type[protocols.Repository]
-    payment_operations: protocols.Repository = field(init=False, repr=False)
+    operation_event_repository_class: type[protocols.Repository]
+    operation_events: protocols.Repository = field(init=False, repr=False)
 
     block_event_repository_class: type[protocols.Repository]
     block_events: protocols.Repository = field(init=False, repr=False)
@@ -44,7 +44,7 @@ class DjangoUnitOfWork:
         self.transaction.__enter__()
         self.payment_attempts = self.payment_attempt_repository_class()
         self.payment_methods = self.payment_method_repository_class()
-        self.payment_operations = self.payment_operation_repository_class()
+        self.operation_events = self.operation_event_repository_class()
         self.block_events = self.block_event_repository_class()
         self.transactions = self.transaction_repository_class()
 

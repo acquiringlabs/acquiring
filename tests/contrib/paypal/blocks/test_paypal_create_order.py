@@ -29,8 +29,8 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         [Optional[set[protocols.Transaction]]],
         type[test_protocols.FakeRepository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -70,9 +70,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([payment_attempt]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(
-            set(payment_method.payment_operations)
-        ),
+        operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )

@@ -21,8 +21,8 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -54,8 +54,8 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
         confirmable=False,
-        payment_operations=[
-            factories.PaymentOperationFactory(
+        operation_events=[
+            factories.OperationEventFactory(
                 created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -69,14 +69,14 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=payment_method.created_at,
         confirmable=payment_method.confirmable,
-        payment_operations=[
-            factories.PaymentOperationFactory(
+        operation_events=[
+            factories.OperationEventFactory(
                 created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,
             ),
-            factories.PaymentOperationFactory(
+            factories.OperationEventFactory(
                 created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -89,8 +89,8 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         unit_of_work=fake_unit_of_work(
             payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
             payment_method_repository_class=fake_payment_method_repository_class([db_payment_method]),
-            payment_operation_repository_class=fake_payment_operation_repository_class(
-                set(db_payment_method.payment_operations)
+            operation_event_repository_class=fake_operation_event_repository_class(
+                set(db_payment_method.operation_events)
             ),
             block_event_repository_class=fake_block_event_repository_class(set()),
             transaction_repository_class=fake_transaction_repository_class(set()),
@@ -110,8 +110,8 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -143,8 +143,8 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
         payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
         confirmable=False,
-        payment_operations=[
-            factories.PaymentOperationFactory(
+        operation_events=[
+            factories.OperationEventFactory(
                 created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -157,7 +157,7 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
         unit_of_work=fake_unit_of_work(
             payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
             payment_method_repository_class=fake_payment_method_repository_class([]),
-            payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+            operation_event_repository_class=fake_operation_event_repository_class(set()),
             block_event_repository_class=fake_block_event_repository_class(set()),
             transaction_repository_class=fake_transaction_repository_class(set()),
         )
@@ -178,8 +178,8 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -211,8 +211,8 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
         payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
         confirmable=False,
-        payment_operations=[
-            factories.PaymentOperationFactory(
+        operation_events=[
+            factories.OperationEventFactory(
                 created_at=datetime.now(),
                 payment_method_id=payment_method_id,
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -226,7 +226,7 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
             unit_of_work=fake_unit_of_work(
                 payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
                 payment_method_repository_class=fake_payment_method_repository_class([]),
-                payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+                operation_event_repository_class=fake_operation_event_repository_class(set()),
                 block_event_repository_class=fake_block_event_repository_class(set()),
                 transaction_repository_class=fake_transaction_repository_class(set()),
             )

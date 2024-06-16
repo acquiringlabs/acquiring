@@ -16,9 +16,9 @@ if is_django_installed():
 
     from acquiring import domain, storage
     from tests.storage.django.factories import (
+        OperationEventFactory,
         PaymentAttemptFactory,
         PaymentMethodFactory,
-        PaymentOperationFactory,
         TokenFactory,
     )
 
@@ -35,12 +35,12 @@ def test_givenExistingPaymentAttemptRow_whenCallingRepositoryGet_thenPaymentAtte
         timestamp=timezone.now(),
         payment_method=db_payment_method,
     )
-    PaymentOperationFactory.create(
+    OperationEventFactory.create(
         payment_method_id=db_payment_method.id,
         status=enums.OperationStatusEnum.STARTED,
         type=enums.OperationTypeEnum.INITIALIZE,
     )
-    PaymentOperationFactory.create(
+    OperationEventFactory.create(
         payment_method_id=db_payment_method.id,
         status=enums.OperationStatusEnum.COMPLETED,
         type=enums.OperationTypeEnum.INITIALIZE,

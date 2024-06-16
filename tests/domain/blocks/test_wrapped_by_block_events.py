@@ -30,8 +30,8 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -48,7 +48,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+        operation_event_repository_class=fake_operation_event_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )

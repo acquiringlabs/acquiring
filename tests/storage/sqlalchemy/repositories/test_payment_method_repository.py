@@ -72,4 +72,4 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     assert db_payment_method.id == result.id
     assert db_payment_method.payment_attempt_id == payment_attempt.id
     assert db_payment_method.confirmable == data.confirmable
-    assert db_payment_method.payment_operations == []
+    assert db_payment_method.operation_events == []

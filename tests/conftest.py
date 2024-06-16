@@ -108,7 +108,7 @@ def fake_payment_method_repository_class() -> (
                         )
                         for token in data.tokens
                     ],
-                    payment_operations=[],
+                    operation_events=[],
                 )
                 self.units.append(payment_method)
                 return payment_method
@@ -125,41 +125,41 @@ def fake_payment_method_repository_class() -> (
 
 
 @pytest.fixture
-def fake_payment_operation_repository_class() -> (
-    Callable[[Optional[set[protocols.PaymentOperation]]], type[test_protocols.FakeRepository]]
+def fake_operation_event_repository_class() -> (
+    Callable[[Optional[set[protocols.OperationEvent]]], type[test_protocols.FakeRepository]]
 ):
 
-    def func(payment_operations: Optional[set[protocols.PaymentOperation]]) -> type[test_protocols.FakeRepository]:
+    def func(operation_events: Optional[set[protocols.OperationEvent]]) -> type[test_protocols.FakeRepository]:
 
         @dataclass
-        class FakePaymentOperationRepository:
+        class FakeOperationEventRepository:
             def __init__(self) -> None:
                 """
                 Cloning the list into units attribute to simulate the independence of database versus objects in memory
                 """
-                self.units = payment_operations.copy() if payment_operations is not None else set()
+                self.units = operation_events.copy() if operation_events is not None else set()
 
             def add(
                 self,
                 payment_method: protocols.PaymentMethod,
                 type: enums.OperationTypeEnum,
                 status: enums.OperationStatusEnum,
-            ) -> protocols.PaymentOperation:
-                payment_operation = domain.PaymentOperation(
+            ) -> protocols.OperationEvent:
+                operation_event = domain.OperationEvent(
                     created_at=datetime.now(),
                     type=type,
                     status=status,
                     payment_method_id=payment_method.id,
                 )
-                payment_method.payment_operations.append(payment_operation)
-                self.units.add(payment_operation)
-                return payment_operation
+                payment_method.operation_events.append(operation_event)
+                self.units.add(operation_event)
+                return operation_event
 
             def get(  # type:ignore[empty-body]
                 self, id: uuid.UUID
-            ) -> protocols.PaymentOperation: ...
+            ) -> protocols.OperationEvent: ...
 
-        return FakePaymentOperationRepository
+        return FakeOperationEventRepository
 
     return func
 
@@ -246,8 +246,8 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
         payment_method_repository_class: type[protocols.Repository]
         payment_methods: protocols.Repository = field(init=False, repr=False)
 
-        payment_operation_repository_class: type[test_protocols.FakeRepository]
-        payment_operations: test_protocols.FakeRepository = field(init=False, repr=False)
+        operation_event_repository_class: type[test_protocols.FakeRepository]
+        operation_events: test_protocols.FakeRepository = field(init=False, repr=False)
 
         block_event_repository_class: type[test_protocols.FakeRepository]
         block_events: test_protocols.FakeRepository = field(init=False, repr=False)
@@ -256,7 +256,7 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
         transactions: test_protocols.FakeRepository = field(init=False, repr=False)
 
         payment_method_units: list[protocols.PaymentMethod] = field(default_factory=list)
-        payment_operation_units: set[protocols.PaymentOperation] = field(default_factory=set)
+        operation_event_units: set[protocols.OperationEvent] = field(default_factory=set)
         block_event_units: set[protocols.BlockEvent] = field(default_factory=set)
 
         transaction_units: set[protocols.Transaction] = field(default_factory=set)
@@ -267,8 +267,8 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
             self.payment_methods = self.payment_method_repository_class()
             self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]
 
-            self.payment_operations = self.payment_operation_repository_class()
-            self.payment_operation_units.update(unit for unit in self.payment_operations.units)
+            self.operation_events = self.operation_event_repository_class()
+            self.operation_event_units.update(unit for unit in self.operation_events.units)
 
             self.block_events = self.block_event_repository_class()
             self.block_event_units.update(unit for unit in self.block_events.units)
@@ -289,7 +289,7 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
             """Refreshes the units with those inside the repository"""
             self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]
 
-            self.payment_operation_units.update(unit for unit in self.payment_operations.units)
+            self.operation_event_units.update(unit for unit in self.operation_events.units)
 
             self.block_event_units.update(unit for unit in self.block_events.units)
 

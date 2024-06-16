@@ -21,8 +21,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentMethodS
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -42,14 +42,14 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentMethodS
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
         confirmable=True,
-        payment_operations=[
-            domain.PaymentOperation(
+        operation_events=[
+            domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
                 created_at=datetime.now(),
             ),
-            domain.PaymentOperation(
+            domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.REQUIRES_ACTION,
                 payment_method_id=payment_method_id,
@@ -61,7 +61,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentMethodS
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+        operation_event_repository_class=fake_operation_event_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
@@ -84,23 +84,23 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentMethodS
     assert result.payment_method is not None
     assert result.payment_method.id == payment_method.id
 
-    payment_operations = payment_method.payment_operations
-    assert len(payment_operations) == 4
+    operation_events = payment_method.operation_events
+    assert len(operation_events) == 4
 
-    assert payment_operations[0].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[0].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[0].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[0].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[1].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[1].status == enums.OperationStatusEnum.REQUIRES_ACTION
+    assert operation_events[1].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[1].status == enums.OperationStatusEnum.REQUIRES_ACTION
 
-    assert payment_operations[2].type == enums.OperationTypeEnum.PROCESS_ACTION
-    assert payment_operations[2].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[2].type == enums.OperationTypeEnum.PROCESS_ACTION
+    assert operation_events[2].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[3].type == enums.OperationTypeEnum.PROCESS_ACTION
-    assert payment_operations[3].status == enums.OperationStatusEnum.FAILED
+    assert operation_events[3].type == enums.OperationTypeEnum.PROCESS_ACTION
+    assert operation_events[3].status == enums.OperationStatusEnum.FAILED
 
-    payment_operations = unit_of_work.payment_operation_units
-    len(payment_operations) == 4
+    operation_events = unit_of_work.operation_event_units
+    len(operation_events) == 4
 
 
 def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentMethodSagaReturnsTheCorrectOperationResponseAndCallsPay(
@@ -114,8 +114,8 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentMeth
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -135,14 +135,14 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentMeth
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
         confirmable=True,
-        payment_operations=[
-            domain.PaymentOperation(
+        operation_events=[
+            domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
                 created_at=datetime.now(),
             ),
-            domain.PaymentOperation(
+            domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.REQUIRES_ACTION,
                 payment_method_id=payment_method_id,
@@ -154,7 +154,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentMeth
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+        operation_event_repository_class=fake_operation_event_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
@@ -176,29 +176,29 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentMeth
     assert result.payment_method is not None
     assert result.payment_method.id == payment_method.id
 
-    payment_operations = payment_method.payment_operations
-    assert len(payment_operations) == 6
+    operation_events = payment_method.operation_events
+    assert len(operation_events) == 6
 
-    assert payment_operations[0].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[0].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[0].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[0].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[1].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[1].status == enums.OperationStatusEnum.REQUIRES_ACTION
+    assert operation_events[1].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[1].status == enums.OperationStatusEnum.REQUIRES_ACTION
 
-    assert payment_operations[2].type == enums.OperationTypeEnum.PROCESS_ACTION
-    assert payment_operations[2].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[2].type == enums.OperationTypeEnum.PROCESS_ACTION
+    assert operation_events[2].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[3].type == enums.OperationTypeEnum.PROCESS_ACTION
-    assert payment_operations[3].status == enums.OperationStatusEnum.COMPLETED
+    assert operation_events[3].type == enums.OperationTypeEnum.PROCESS_ACTION
+    assert operation_events[3].status == enums.OperationStatusEnum.COMPLETED
 
-    assert payment_operations[4].type == enums.OperationTypeEnum.PAY
-    assert payment_operations[4].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[4].type == enums.OperationTypeEnum.PAY
+    assert operation_events[4].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[5].type == enums.OperationTypeEnum.PAY
-    assert payment_operations[5].status == enums.OperationStatusEnum.COMPLETED
+    assert operation_events[5].type == enums.OperationTypeEnum.PAY
+    assert operation_events[5].status == enums.OperationStatusEnum.COMPLETED
 
-    payment_operations = unit_of_work.payment_operation_units
-    len(payment_operations) == 4
+    operation_events = unit_of_work.operation_event_units
+    len(operation_events) == 4
 
 
 def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenPaymentMethodSagaReturnsFailedOperationResponse(
@@ -211,8 +211,8 @@ def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenP
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -232,14 +232,14 @@ def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenP
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
         confirmable=True,
-        payment_operations=[
-            domain.PaymentOperation(
+        operation_events=[
+            domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
                 created_at=datetime.now(),
             ),
-            domain.PaymentOperation(
+            domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.REQUIRES_ACTION,
                 payment_method_id=payment_method_id,
@@ -251,7 +251,7 @@ def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenP
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+        operation_event_repository_class=fake_operation_event_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
@@ -279,8 +279,8 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -300,8 +300,8 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
         confirmable=True,
-        payment_operations=[
-            domain.PaymentOperation(
+        operation_events=[
+            domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
@@ -314,7 +314,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(set()),
+        operation_event_repository_class=fake_operation_event_repository_class(set()),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )

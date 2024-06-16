@@ -24,9 +24,9 @@ if is_django_installed():
         class Meta:
             model = "acquiring.PaymentMethod"
 
-    class PaymentOperationFactory(factory.django.DjangoModelFactory):
+    class OperationEventFactory(factory.django.DjangoModelFactory):
         class Meta:
-            model = "acquiring.PaymentOperation"
+            model = "acquiring.OperationEvent"
 
     class TokenFactory(factory.django.DjangoModelFactory):
         class Meta:

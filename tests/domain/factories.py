@@ -28,6 +28,6 @@ class PaymentMethodFactory(factory.Factory):
         model = domain.PaymentMethod
 
 
-class PaymentOperationFactory(factory.Factory):
+class OperationEventFactory(factory.Factory):
     class Meta:
-        model = domain.PaymentOperation
+        model = domain.OperationEvent

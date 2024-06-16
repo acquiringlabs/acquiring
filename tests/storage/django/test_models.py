@@ -8,9 +8,9 @@ if is_django_installed():
 
 
 @skip_if_django_not_installed
-def test_PaymentOperationTypeChoices_match_OperationTypeEnum() -> None:
+def test_OperationEventTypeChoices_match_OperationTypeEnum() -> None:
     choices = set(
-        member.value for member in storage.django.models.PaymentOperationTypeChoices  # type:ignore[attr-defined]
+        member.value for member in storage.django.models.OperationEventTypeChoices  # type:ignore[attr-defined]
     )
     type_enums = set(item.value for item in enums.OperationTypeEnum)
 

@@ -10,12 +10,12 @@ and DDD's [Ubiquitous Langugage](https://martinfowler.com/bliki/UbiquitousLangua
 An important consequence of avoiding Maybe functions is that the exceptions raised inside a function that does not
 return None can express concepts related to the domain.
 
-An Integrity error in the database may signal that the `PaymentOperation` being added already exists! Therefore, the error
+An Integrity error in the database may signal that the `OperationEvent` being added already exists! Therefore, the error
 raised needs to express that, rather than bubbling up an error associated with the database engine or the ORM.
 
 The error must be defined as part of the domain.
 
 In this project, error definition is inspired by Django's approach: they belong to the entity. That is, in the previous
-example, a `PaymentOperation.Duplicated` error would be raised.
+example, a `OperationEvent.Duplicated` error would be raised.
 
 Being rigorous about domain concepts also means being specific about what software errors imply for the domain model.

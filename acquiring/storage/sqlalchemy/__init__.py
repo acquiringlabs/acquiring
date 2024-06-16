@@ -1,9 +1,9 @@
 from . import models
 from .repositories import (
     BlockEventRepository,
+    OperationEventRepository,
     PaymentAttemptRepository,
     PaymentMethodRepository,
-    PaymentOperationRepository,
     TransactionRepository,
 )
 from .unit_of_work import SqlAlchemyUnitOfWork
@@ -13,7 +13,7 @@ __all__ = [
     "BlockEventRepository",
     "PaymentAttemptRepository",
     "PaymentMethodRepository",
-    "PaymentOperationRepository",
+    "OperationEventRepository",
     "SqlAlchemyUnitOfWork",
     "TransactionRepository",
 ]

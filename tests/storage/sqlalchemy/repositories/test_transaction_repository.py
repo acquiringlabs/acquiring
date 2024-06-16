@@ -18,7 +18,7 @@ if utils.is_sqlalchemy_installed():
 
 @skip_if_sqlalchemy_not_installed
 @pytest.mark.django_db
-def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
+def test_givenCorrectData_whenCallingRepositoryAdd_thenOperationEventGetsCreated(
     session: "orm.Session",
     sqlalchemy_assert_num_queries: Callable,
 ) -> None:

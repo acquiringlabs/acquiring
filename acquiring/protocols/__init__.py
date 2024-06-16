@@ -11,11 +11,11 @@ from .payments import (
     ExistingPaymentAttemptId,
     ExistingPaymentMethodId,
     Item,
+    OperationEvent,
     OperationResponse,
     PaymentAttempt,
     PaymentMethod,
     PaymentMilestone,
-    PaymentOperation,
     Token,
 )
 from .providers import Adapter, AdapterResponse, Transaction
@@ -64,7 +64,7 @@ __all__ = [
     "PaymentAttempt",
     "PaymentMethodSaga",
     "PaymentMethod",
-    "PaymentOperation",
+    "OperationEvent",
     "PaymentMilestone",
     "Repository",
     "Token",

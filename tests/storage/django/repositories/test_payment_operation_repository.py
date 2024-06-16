@@ -16,7 +16,7 @@ if is_django_installed():
 @pytest.mark.parametrize(
     "operation_type, operation_status", product(enums.OperationTypeEnum, enums.OperationStatusEnum)
 )
-def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
+def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenOperationEventGetsCreated(
     operation_type: enums.OperationTypeEnum,
     operation_status: enums.OperationStatusEnum,
 ) -> None:
@@ -25,17 +25,17 @@ def test_givenExistingPaymentMethodRow_whenCallingRepositoryAdd_thenPaymentOpera
     db_payment_method = PaymentMethodFactory(payment_attempt_id=db_payment_attempt.id)
     payment_method = db_payment_method.to_domain()
 
-    storage.django.PaymentOperationRepository().add(
+    storage.django.OperationEventRepository().add(
         payment_method=payment_method,
         type=operation_type,
         status=operation_status,
     )
 
-    payment_operation = storage.django.models.PaymentOperation.objects.get(
+    operation_event = storage.django.models.OperationEvent.objects.get(
         payment_method_id=db_payment_method.id,
         status=operation_status,
         type=operation_type,
     )
 
-    assert len(payment_method.payment_operations) == 1
-    assert payment_method.payment_operations[0] == payment_operation.to_domain()
+    assert len(payment_method.operation_events) == 1
+    assert payment_method.operation_events[0] == operation_event.to_domain()

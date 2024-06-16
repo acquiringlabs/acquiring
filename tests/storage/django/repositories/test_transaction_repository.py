@@ -18,7 +18,7 @@ if is_django_installed():
 
 @skip_if_django_not_installed
 @pytest.mark.django_db
-def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
+def test_givenCorrectData_whenCallingRepositoryAdd_thenOperationEventGetsCreated(
     django_assert_num_queries: Callable,
 ) -> None:
     db_payment_attempt = PaymentAttemptFactory()

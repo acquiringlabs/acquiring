@@ -123,7 +123,7 @@ class PaymentMethod(Identifiable, django.db.models.Model):
             created_at=self.created_at,
             tokens=[token.to_domain() for token in self.tokens.all()],
             payment_attempt_id=self.payment_attempt_id,
-            payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations.all()],
+            operation_events=[operation_event.to_domain() for operation_event in self.operation_events.all()],
             confirmable=self.confirmable,
         )
 
@@ -203,7 +203,7 @@ class Token(django.db.models.Model):
         )
 
 
-class PaymentOperationTypeChoices(django.db.models.TextChoices):
+class OperationEventTypeChoices(django.db.models.TextChoices):
     INITIALIZE = "initialize"
     PROCESS_ACTION = "process_action"
     PAY = "pay"
@@ -226,22 +226,22 @@ class StatusChoices(django.db.models.TextChoices):
 
 
 # TODO Add failure reason to Payment Operation as an optional string
-class PaymentOperation(django.db.models.Model):
+class OperationEvent(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
 
-    type = django.db.models.CharField(max_length=16, choices=PaymentOperationTypeChoices.choices)
+    type = django.db.models.CharField(max_length=16, choices=OperationEventTypeChoices.choices)
     status = django.db.models.CharField(max_length=15, choices=StatusChoices.choices, db_index=True)
     payment_method = django.db.models.ForeignKey(
         PaymentMethod,
         on_delete=django.db.models.CASCADE,
-        related_name="payment_operations",
+        related_name="operation_events",
     )
 
     def __str__(self) -> str:
         return f"[type={self.type}, status={self.status}]"
 
-    def to_domain(self) -> "protocols.PaymentOperation":
-        return domain.PaymentOperation(
+    def to_domain(self) -> "protocols.OperationEvent":
+        return domain.OperationEvent(
             type=self.type,
             status=self.status,
             payment_method_id=self.payment_method_id,

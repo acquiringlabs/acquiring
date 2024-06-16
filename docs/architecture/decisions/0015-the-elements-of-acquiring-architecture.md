@@ -71,7 +71,7 @@ You shouldn't trust payment providers. Their trade-offs are not yours, and you h
 
 Everything that happens in acquiring is recorded. For example, a PaymentMethod is associated with the following
 wide events:
-- `PaymentOperation`s record the history of a `PaymentMethod` throughout the operation types.
+- `OperationEvent`s record the history of a `PaymentMethod` throughout the operation types.
 - `BlockEvent`s record the history of a `PaymentMethod` during the execution of every `Block`'s `run` method.
 - `Transaction`s record the interaction with third party providers.
 
@@ -83,7 +83,7 @@ use it for traceability, of course, but we can use it for something more interes
 Payment providers are designed with `at least once delivery` mechanisms. Our system gets notified of payments going
 through more than once!
 
-To prevent double charges, before running the Blocks, the system creates a `PaymentOperation` with status `started`. In
+To prevent double charges, before running the Blocks, the system creates a `OperationEvent` with status `started`. In
 this manner, we can implement [decision logic](acquiring/domain/decision_logic.py), a set of functions that let in or bounce out instances of `PaymentMethod` running in parallel in the system.
 
 That is a domain-driven mutual exclusion mechanism.

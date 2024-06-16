@@ -66,7 +66,7 @@ class PaymentMethod(Identifiable, Model):
     )
     payment_attempt = orm.relationship("PaymentAttempt", back_populates="payment_methods", cascade="all, delete")
 
-    payment_operations = orm.relationship("PaymentOperation", back_populates="payment_method", cascade="all, delete")
+    operation_events = orm.relationship("OperationEvent", back_populates="payment_method", cascade="all, delete")
     block_events = orm.relationship("BlockEvent", back_populates="payment_method", cascade="all, delete")
     transactions = orm.relationship("Transaction", back_populates="payment_method", cascade="all, delete")
 
@@ -76,7 +76,7 @@ class PaymentMethod(Identifiable, Model):
             created_at=self.created_at,
             tokens=[],  # TODO Fill
             payment_attempt_id=self.payment_attempt_id,
-            payment_operations=[payment_operation.to_domain() for payment_operation in self.payment_operations],
+            operation_events=[operation_event.to_domain() for operation_event in self.operation_events],
             confirmable=self.confirmable,
         )
 
@@ -118,7 +118,7 @@ class PaymentMilestone(Model):
         )
 
 
-class PaymentOperation(Model):
+class OperationEvent(Model):
     __tablename__ = "acquiring_paymentoperations"
 
     # The high amount of instances expected for this model justifies the use of UUID instead of Integer
@@ -137,15 +137,15 @@ class PaymentOperation(Model):
     payment_method_id = sqlalchemy.Column(
         sqlalchemy.String, sqlalchemy.ForeignKey("acquiring_paymentmethods.id"), nullable=False
     )
-    payment_method = orm.relationship("PaymentMethod", back_populates="payment_operations", cascade="all, delete")
+    payment_method = orm.relationship("PaymentMethod", back_populates="operation_events", cascade="all, delete")
 
     __table_args__ = (sqlalchemy.Index("ix_acquiring_paymentoperations_status", "status"),)
 
     def __str__(self) -> str:
         return f"[type={self.type}, status={self.status}]"
 
-    def to_domain(self) -> "protocols.PaymentOperation":
-        return domain.PaymentOperation(
+    def to_domain(self) -> "protocols.OperationEvent":
+        return domain.OperationEvent(
             type=self.type,
             status=self.status,
             payment_method_id=self.payment_method_id,

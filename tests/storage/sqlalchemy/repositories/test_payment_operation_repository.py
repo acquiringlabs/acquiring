@@ -20,7 +20,7 @@ if utils.is_sqlalchemy_installed():
 @pytest.mark.parametrize(
     "operation_type, operation_status", product(enums.OperationTypeEnum, enums.OperationStatusEnum)
 )
-def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreated(
+def test_givenCorrectData_whenCallingRepositoryAdd_thenOperationEventGetsCreated(
     session: "orm.Session",
     sqlalchemy_assert_num_queries: Callable,
     operation_type: enums.OperationTypeEnum,
@@ -32,20 +32,20 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentOperationGetsCreat
     payment_method = db_payment_method.to_domain()
 
     with sqlalchemy_assert_num_queries(5):
-        result = storage.sqlalchemy.PaymentOperationRepository(session=session).add(
+        result = storage.sqlalchemy.OperationEventRepository(session=session).add(
             payment_method=payment_method,
             type=operation_type,
             status=operation_status,
         )
         session.commit()
 
-    db_payment_operations = session.query(storage.sqlalchemy.models.PaymentOperation).all()
-    assert len(db_payment_operations) == 1
+    db_operation_events = session.query(storage.sqlalchemy.models.OperationEvent).all()
+    assert len(db_operation_events) == 1
 
-    db_payment_operation = db_payment_operations[0]
-    assert db_payment_operation.type == operation_type
-    assert db_payment_operation.status == operation_status
-    assert db_payment_operation.payment_method_id == db_payment_method.id
+    db_operation_event = db_operation_events[0]
+    assert db_operation_event.type == operation_type
+    assert db_operation_event.status == operation_status
+    assert db_operation_event.payment_method_id == db_payment_method.id
 
-    assert len(payment_method.payment_operations) == 1
-    assert payment_method.payment_operations[0] == result
+    assert len(payment_method.operation_events) == 1
+    assert payment_method.operation_events[0] == result

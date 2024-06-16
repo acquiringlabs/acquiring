@@ -20,8 +20,8 @@ class UnitOfWork(Protocol):
     payment_method_repository_class: type[Repository]
     payment_methods: Repository = field(init=False, repr=False)
 
-    payment_operation_repository_class: type[Repository]
-    payment_operations: Repository = field(init=False, repr=False)
+    operation_event_repository_class: type[Repository]
+    operation_events: Repository = field(init=False, repr=False)
 
     block_event_repository_class: type[Repository]
     block_events: Repository = field(init=False, repr=False)

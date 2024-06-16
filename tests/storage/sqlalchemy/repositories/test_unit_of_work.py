@@ -101,7 +101,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
         with storage.sqlalchemy.SqlAlchemyUnitOfWork(
             payment_attempt_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
-            payment_operation_repository_class=TemporaryRepository,
+            operation_event_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
             transaction_repository_class=TemporaryRepository,
         ) as uow:
@@ -157,7 +157,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
         with storage.sqlalchemy.SqlAlchemyUnitOfWork(
             payment_attempt_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
-            payment_operation_repository_class=TemporaryRepository,
+            operation_event_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
             transaction_repository_class=TemporaryRepository,
         ) as uow:
@@ -217,7 +217,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
         with storage.sqlalchemy.SqlAlchemyUnitOfWork(
             payment_attempt_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
-            payment_operation_repository_class=TemporaryRepository,
+            operation_event_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
             transaction_repository_class=TemporaryRepository,
         ) as uow:
@@ -274,7 +274,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
         with storage.sqlalchemy.SqlAlchemyUnitOfWork(
             payment_attempt_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
-            payment_operation_repository_class=TemporaryRepository,
+            operation_event_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
             transaction_repository_class=TemporaryRepository,
         ) as uow:

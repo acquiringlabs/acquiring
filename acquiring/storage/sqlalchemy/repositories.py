@@ -68,7 +68,7 @@ class PaymentMethodRepository:
 
 
 @dataclass
-class PaymentOperationRepository:
+class OperationEventRepository:
 
     session: orm.Session
 
@@ -78,19 +78,19 @@ class PaymentOperationRepository:
         payment_method: "protocols.PaymentMethod",
         type: enums.OperationTypeEnum,
         status: enums.OperationStatusEnum,
-    ) -> "protocols.PaymentOperation":
-        db_payment_operation = models.PaymentOperation(
+    ) -> "protocols.OperationEvent":
+        db_operation_event = models.OperationEvent(
             payment_method_id=payment_method.id,
             type=type,
             status=status,
         )
-        self.session.add(db_payment_operation)
+        self.session.add(db_operation_event)
         self.session.flush()
-        payment_operation = db_payment_operation.to_domain()
-        payment_method.payment_operations.append(payment_operation)
-        return payment_operation
+        operation_event = db_operation_event.to_domain()
+        payment_method.operation_events.append(operation_event)
+        return operation_event
 
-    def get(self, id: UUID) -> "protocols.PaymentOperation": ...  # type: ignore[empty-body]
+    def get(self, id: UUID) -> "protocols.OperationEvent": ...  # type: ignore[empty-body]
 
 
 @dataclass

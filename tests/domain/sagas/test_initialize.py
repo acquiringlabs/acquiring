@@ -17,7 +17,7 @@ VALID_RESPONSE_STATUS = [
 
 
 @pytest.mark.parametrize(
-    "block_response_actions, payment_operations_status",
+    "block_response_actions, operation_events_status",
     [
         (
             [{"action_data": "test"}],
@@ -46,8 +46,8 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentMethodSagaR
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -59,7 +59,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentMethodSagaR
         type[test_protocols.FakeRepository],
     ],
     block_response_actions: list[dict],
-    payment_operations_status: enums.OperationStatusEnum,
+    operation_events_status: enums.OperationStatusEnum,
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
 
@@ -73,9 +73,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentMethodSagaR
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(
-            set(payment_method.payment_operations)
-        ),
+        operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
@@ -83,7 +81,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentMethodSagaR
     result = domain.PaymentMethodSaga(
         unit_of_work=unit_of_work,
         initialize_block=fake_block(  # type:ignore[call-arg]
-            fake_response_status=payment_operations_status,
+            fake_response_status=operation_events_status,
             fake_response_actions=block_response_actions,
         ),
         process_action_block=fake_process_action_block(),
@@ -93,26 +91,26 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentMethodSagaR
         after_confirm_blocks=[],
     ).initialize(payment_method)
 
-    payment_operations = payment_method.payment_operations
-    assert len(payment_operations) == 2
+    operation_events = payment_method.operation_events
+    assert len(operation_events) == 2
 
-    assert payment_operations[0].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[0].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[0].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[0].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[1].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[1].status == (
-        payment_operations_status
-        if payment_operations_status in VALID_RESPONSE_STATUS
+    assert operation_events[1].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[1].status == (
+        operation_events_status
+        if operation_events_status in VALID_RESPONSE_STATUS
         else enums.OperationStatusEnum.FAILED
     )
 
-    payment_operations = unit_of_work.payment_operation_units
-    assert len(payment_operations) == 2
+    operation_events = unit_of_work.operation_event_units
+    assert len(operation_events) == 2
 
     assert result.type == enums.OperationTypeEnum.INITIALIZE
     assert result.status == (
-        payment_operations_status
-        if payment_operations_status in VALID_RESPONSE_STATUS
+        operation_events_status
+        if operation_events_status in VALID_RESPONSE_STATUS
         else enums.OperationStatusEnum.FAILED
     )
     assert result.actions == block_response_actions
@@ -121,7 +119,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentMethodSagaR
 
 
 @pytest.mark.parametrize(
-    "payment_operations_status",
+    "operation_events_status",
     [
         enums.OperationStatusEnum.COMPLETED,
         enums.OperationStatusEnum.NOT_PERFORMED,
@@ -138,8 +136,8 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentMethodSag
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -151,7 +149,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentMethodSag
         type[test_protocols.FakeRepository],
     ],
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
-    payment_operations_status: enums.OperationStatusEnum,
+    operation_events_status: enums.OperationStatusEnum,
 ) -> None:
 
     payment_attempt = factories.PaymentAttemptFactory()
@@ -164,9 +162,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentMethodSag
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(
-            set(payment_method.payment_operations)
-        ),
+        operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
@@ -175,10 +171,10 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentMethodSag
         unit_of_work=unit_of_work,
         initialize_block=(
             fake_block(  # type:ignore[call-arg]
-                fake_response_status=payment_operations_status,
+                fake_response_status=operation_events_status,
                 fake_response_actions=[],
             )
-            if payment_operations_status is not enums.OperationStatusEnum.NOT_PERFORMED
+            if operation_events_status is not enums.OperationStatusEnum.NOT_PERFORMED
             else None
         ),
         process_action_block=fake_process_action_block(),
@@ -188,23 +184,23 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentMethodSag
         after_confirm_blocks=[],
     ).initialize(payment_method)
 
-    payment_operations = payment_method.payment_operations
-    assert len(payment_operations) == 4
+    operation_events = payment_method.operation_events
+    assert len(operation_events) == 4
 
-    assert payment_operations[0].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[0].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[0].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[0].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[1].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[1].status == payment_operations_status
+    assert operation_events[1].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[1].status == operation_events_status
 
-    assert payment_operations[2].type == enums.OperationTypeEnum.PAY
-    assert payment_operations[2].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[2].type == enums.OperationTypeEnum.PAY
+    assert operation_events[2].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[3].type == enums.OperationTypeEnum.PAY
-    assert payment_operations[3].status == enums.OperationStatusEnum.COMPLETED
+    assert operation_events[3].type == enums.OperationTypeEnum.PAY
+    assert operation_events[3].status == enums.OperationStatusEnum.COMPLETED
 
-    payment_operations = unit_of_work.payment_operation_units
-    assert len(payment_operations) == 4
+    operation_events = unit_of_work.operation_event_units
+    assert len(operation_events) == 4
 
     assert result.type == enums.OperationTypeEnum.PAY
     assert result.status == enums.OperationStatusEnum.COMPLETED
@@ -224,8 +220,8 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentMet
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -244,8 +240,8 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentMet
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        payment_operations=[
-            domain.PaymentOperation(
+        operation_events=[
+            domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.STARTED,
                 payment_method_id=payment_method_id,
@@ -258,9 +254,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentMet
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(
-            set(payment_method.payment_operations)
-        ),
+        operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
@@ -290,8 +284,8 @@ def test_givenAPaymentMethodSagaWithoutInitializeBlock_whenInitializing_thenPaym
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
     ],
-    fake_payment_operation_repository_class: Callable[
-        [Optional[set[protocols.PaymentOperation]]],
+    fake_operation_event_repository_class: Callable[
+        [Optional[set[protocols.OperationEvent]]],
         type[test_protocols.FakeRepository],
     ],
     fake_block_event_repository_class: Callable[
@@ -315,9 +309,7 @@ def test_givenAPaymentMethodSagaWithoutInitializeBlock_whenInitializing_thenPaym
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
-        payment_operation_repository_class=fake_payment_operation_repository_class(
-            set(payment_method.payment_operations)
-        ),
+        operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),
         transaction_repository_class=fake_transaction_repository_class(set()),
     )
@@ -332,20 +324,20 @@ def test_givenAPaymentMethodSagaWithoutInitializeBlock_whenInitializing_thenPaym
         after_confirm_blocks=[],
     ).initialize(payment_method)
 
-    payment_operations = payment_method.payment_operations
-    assert len(payment_operations) == 4
+    operation_events = payment_method.operation_events
+    assert len(operation_events) == 4
 
-    assert payment_operations[0].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[0].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[0].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[0].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[1].type == enums.OperationTypeEnum.INITIALIZE
-    assert payment_operations[1].status == enums.OperationStatusEnum.NOT_PERFORMED
+    assert operation_events[1].type == enums.OperationTypeEnum.INITIALIZE
+    assert operation_events[1].status == enums.OperationStatusEnum.NOT_PERFORMED
 
-    assert payment_operations[2].type == enums.OperationTypeEnum.PAY
-    assert payment_operations[2].status == enums.OperationStatusEnum.STARTED
+    assert operation_events[2].type == enums.OperationTypeEnum.PAY
+    assert operation_events[2].status == enums.OperationStatusEnum.STARTED
 
-    assert payment_operations[3].type == enums.OperationTypeEnum.PAY
-    assert payment_operations[3].status == enums.OperationStatusEnum.COMPLETED
+    assert operation_events[3].type == enums.OperationTypeEnum.PAY
+    assert operation_events[3].status == enums.OperationStatusEnum.COMPLETED
 
     assert result.type == enums.OperationTypeEnum.PAY
     assert result.status == enums.OperationStatusEnum.COMPLETED
@@ -353,5 +345,5 @@ def test_givenAPaymentMethodSagaWithoutInitializeBlock_whenInitializing_thenPaym
     assert result.payment_method is not None
     assert result.payment_method.id == payment_method.id
 
-    db_payment_operations = unit_of_work.payment_operation_units
-    assert len(db_payment_operations) == 4
+    db_operation_events = unit_of_work.operation_event_units
+    assert len(db_operation_events) == 4

@@ -15,22 +15,22 @@ class PaymentMethod:
     payment_attempt_id: protocols.ExistingPaymentAttemptId
     confirmable: bool
     tokens: list["protocols.Token"] = field(default_factory=list)
-    payment_operations: list["protocols.PaymentOperation"] = field(default_factory=list)
+    operation_events: list["protocols.OperationEvent"] = field(default_factory=list)
 
     def __repr__(self) -> str:
         """String representation of the class"""
         return f"{self.__class__.__name__}:{self.id}"
 
     @deal.pure
-    def has_payment_operation(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> bool:
-        """Returns True if there is a PaymentOperation associated with this PaymentMethod of given type and status"""
-        return any(operation.type == type and operation.status == status for operation in self.payment_operations)
+    def has_operation_event(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> bool:
+        """Returns True if there is a OperationEvent associated with this PaymentMethod of given type and status"""
+        return any(operation.type == type and operation.status == status for operation in self.operation_events)
 
     @deal.pure
     @deal.post(lambda result: result >= 0)
-    def count_payment_operation(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> int:
-        """Returns the number of PaymentOperations associated with this PaymentMethod of given type and status"""
-        return sum(1 for operation in self.payment_operations if operation.type == type and operation.status == status)
+    def count_operation_event(self, type: "enums.OperationTypeEnum", status: "enums.OperationStatusEnum") -> int:
+        """Returns the number of OperationEvents associated with this PaymentMethod of given type and status"""
+        return sum(1 for operation in self.operation_events if operation.type == type and operation.status == status)
 
     class DoesNotExist(Exception):
         """
@@ -43,7 +43,7 @@ class PaymentMethod:
 
 
 @dataclass(frozen=True)
-class PaymentOperation:
+class OperationEvent:
     """Used to decide if the associated PaymentMethod can enter a given operation type in the PaymentMethodSaga"""
 
     created_at: datetime

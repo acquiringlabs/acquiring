@@ -10,7 +10,7 @@ def can_initialize(payment_method: "protocols.PaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the initialize operation.
     """
-    if payment_method.has_payment_operation(
+    if payment_method.has_operation_event(
         type=enums.OperationTypeEnum.INITIALIZE, status=enums.OperationStatusEnum.STARTED
     ):
         return False
@@ -23,18 +23,18 @@ def can_process_action(payment_method: "protocols.PaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the process_action operation.
     """
-    if payment_method.has_payment_operation(
+    if payment_method.has_operation_event(
         type=enums.OperationTypeEnum.PROCESS_ACTION,
         status=enums.OperationStatusEnum.STARTED,
     ):
         return False
 
     if not (
-        payment_method.has_payment_operation(
+        payment_method.has_operation_event(
             type=enums.OperationTypeEnum.INITIALIZE,
             status=enums.OperationStatusEnum.STARTED,
         )
-        and payment_method.has_payment_operation(
+        and payment_method.has_operation_event(
             type=enums.OperationTypeEnum.INITIALIZE,
             status=enums.OperationStatusEnum.REQUIRES_ACTION,
         )
@@ -49,7 +49,7 @@ def can_after_pay(payment_method: "protocols.PaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the after pay operation.
     """
-    if payment_method.has_payment_operation(
+    if payment_method.has_operation_event(
         type=enums.OperationTypeEnum.AFTER_PAY,
         status=enums.OperationStatusEnum.STARTED,
     ):
@@ -58,28 +58,28 @@ def can_after_pay(payment_method: "protocols.PaymentMethod") -> bool:
     if any([can_initialize(payment_method), can_process_action(payment_method)]):
         return False
 
-    if payment_method.has_payment_operation(
+    if payment_method.has_operation_event(
         type=enums.OperationTypeEnum.INITIALIZE,
         status=enums.OperationStatusEnum.STARTED,
     ):
-        if payment_method.has_payment_operation(
+        if payment_method.has_operation_event(
             type=enums.OperationTypeEnum.INITIALIZE,
             status=enums.OperationStatusEnum.REQUIRES_ACTION,
-        ) and not payment_method.has_payment_operation(
+        ) and not payment_method.has_operation_event(
             type=enums.OperationTypeEnum.PROCESS_ACTION,
             status=enums.OperationStatusEnum.COMPLETED,
         ):
             return False
-        elif not payment_method.has_payment_operation(
+        elif not payment_method.has_operation_event(
             type=enums.OperationTypeEnum.INITIALIZE,
             status=enums.OperationStatusEnum.REQUIRES_ACTION,
         ) and not any(
             [
-                payment_method.has_payment_operation(
+                payment_method.has_operation_event(
                     type=enums.OperationTypeEnum.INITIALIZE,
                     status=enums.OperationStatusEnum.COMPLETED,
                 ),
-                payment_method.has_payment_operation(
+                payment_method.has_operation_event(
                     type=enums.OperationTypeEnum.INITIALIZE,
                     status=enums.OperationStatusEnum.NOT_PERFORMED,
                 ),
@@ -87,19 +87,19 @@ def can_after_pay(payment_method: "protocols.PaymentMethod") -> bool:
         ):
             return False
 
-    if payment_method.has_payment_operation(
+    if payment_method.has_operation_event(
         type=enums.OperationTypeEnum.PAY,
         status=enums.OperationStatusEnum.STARTED,
-    ) and not payment_method.has_payment_operation(
+    ) and not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.PAY,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
         return False
 
-    if payment_method.has_payment_operation(
+    if payment_method.has_operation_event(
         type=enums.OperationTypeEnum.PAY,
         status=enums.OperationStatusEnum.STARTED,
-    ) and not payment_method.has_payment_operation(
+    ) and not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.PAY,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
@@ -125,13 +125,13 @@ def can_confirm(payment_method: "protocols.PaymentMethod") -> bool:
     ):
         return False
 
-    if not payment_method.has_payment_operation(
+    if not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.AFTER_PAY,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
         return False
 
-    if payment_method.has_payment_operation(
+    if payment_method.has_operation_event(
         type=enums.OperationTypeEnum.CONFIRM,
         status=enums.OperationStatusEnum.STARTED,
     ):
@@ -160,11 +160,11 @@ def can_after_confirm(payment_method: "protocols.PaymentMethod") -> bool:
 
     if not any(
         [
-            payment_method.has_payment_operation(
+            payment_method.has_operation_event(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.COMPLETED,
             ),
-            payment_method.has_payment_operation(
+            payment_method.has_operation_event(
                 type=enums.OperationTypeEnum.INITIALIZE,
                 status=enums.OperationStatusEnum.NOT_PERFORMED,
             ),
@@ -172,34 +172,34 @@ def can_after_confirm(payment_method: "protocols.PaymentMethod") -> bool:
     ):
         return False
 
-    if payment_method.has_payment_operation(
+    if payment_method.has_operation_event(
         type=enums.OperationTypeEnum.INITIALIZE,
         status=enums.OperationStatusEnum.REQUIRES_ACTION,
-    ) and not payment_method.has_payment_operation(
+    ) and not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.PROCESS_ACTION,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
         return False
 
-    if not payment_method.has_payment_operation(
+    if not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.PAY,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
         return False
 
-    if not payment_method.has_payment_operation(
+    if not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.AFTER_PAY,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
         return False
 
-    if not payment_method.has_payment_operation(
+    if not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.CONFIRM,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
         return False
 
-    if payment_method.has_payment_operation(
+    if payment_method.has_operation_event(
         type=enums.OperationTypeEnum.AFTER_CONFIRM,
         status=enums.OperationStatusEnum.STARTED,
     ):
@@ -224,22 +224,22 @@ def can_refund(payment_method: "protocols.PaymentMethod") -> bool:
     ):
         return False
 
-    if not payment_method.has_payment_operation(
+    if not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.AFTER_PAY,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
         return False
 
-    if payment_method.confirmable and not payment_method.has_payment_operation(
+    if payment_method.confirmable and not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.AFTER_CONFIRM,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
         return False
 
-    if payment_method.count_payment_operation(
+    if payment_method.count_operation_event(
         type=enums.OperationTypeEnum.REFUND,
         status=enums.OperationStatusEnum.STARTED,
-    ) > payment_method.count_payment_operation(
+    ) > payment_method.count_operation_event(
         type=enums.OperationTypeEnum.REFUND,
         status=enums.OperationStatusEnum.COMPLETED,
     ):
