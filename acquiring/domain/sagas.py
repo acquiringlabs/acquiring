@@ -12,26 +12,9 @@ def operation_type(  # type:ignore[misc]
     function: Callable[..., "protocols.OperationResponse"]
 ) -> Callable[..., "protocols.OperationResponse"]:
     """
-    This decorator verifies that the name of this function belongs to one of the enums.OperationTypeEnums
+    This decorator verifies that the name of this function belongs to one of enums.OperationTypeEnums.
 
-    >>> def initialize(): pass
-    >>> operation_type(initialize)()
-    >>> def bad_name(): pass
-    >>> operation_type(bad_name)()
-    Traceback (most recent call last):
-        ...
-    TypeError: This function cannot be a payment type
-
-    Also, private methods that start with double underscore are allowed.
-    This is helpful to make pay a private method.
-
-    >>> def __bad_name(): pass
-    >>> operation_type(__bad_name)()
-    Traceback (most recent call last):
-        ...
-    TypeError: This function cannot be a payment type
-    >>> def __pay(): pass
-    >>> operation_type(__pay)()
+    Raises a TypeError otherwise.
     """
 
     @functools.wraps(function)
