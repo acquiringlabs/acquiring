@@ -6,7 +6,7 @@ from typing import Callable, Optional
 import pytest
 
 from acquiring import domain, enums, protocols
-from acquiring.domain.sagas import OperationResponse, refresh_payment_method
+from acquiring.domain.sagas import OperationResponse, with_payment_method_refreshed_from_storage
 from tests import protocols as test_protocols
 from tests.domain import factories
 
@@ -43,7 +43,7 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
     class FakeSaga:
         unit_of_work: test_protocols.FakeUnitOfWork
 
-        @refresh_payment_method
+        @with_payment_method_refreshed_from_storage
         def initialize(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
             return OperationResponse(
                 status=enums.OperationStatusEnum.COMPLETED,
@@ -137,7 +137,7 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
     class FakeSaga:
         unit_of_work: test_protocols.FakeUnitOfWork
 
-        @refresh_payment_method
+        @with_payment_method_refreshed_from_storage
         def initialize(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
             return OperationResponse(
                 status=enums.OperationStatusEnum.COMPLETED,
@@ -210,7 +210,7 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
     class FakeSaga:
         unit_of_work: test_protocols.FakeUnitOfWork
 
-        @refresh_payment_method
+        @with_payment_method_refreshed_from_storage
         def do_something(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
             return OperationResponse(
                 status=enums.OperationStatusEnum.COMPLETED,

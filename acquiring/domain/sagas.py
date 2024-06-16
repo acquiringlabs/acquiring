@@ -8,6 +8,7 @@ import acquiring.domain.decision_logic as dl
 from acquiring import domain, enums, protocols
 
 
+# TODO Enforce that all subsequent decorators are run on functions that are first decorated with this decorator
 def operation_type(  # type:ignore[misc]
     function: Callable[..., "protocols.OperationResponse"]
 ) -> Callable[..., "protocols.OperationResponse"]:
@@ -64,7 +65,7 @@ def implements_blocks(  # type:ignore[misc]
     return wrapper
 
 
-def refresh_payment_method(  # type:ignore[misc]
+def with_payment_method_refreshed_from_storage(  # type:ignore[misc]
     function: Callable[..., "protocols.OperationResponse"]
 ) -> Callable[..., "protocols.OperationResponse"]:
     """
@@ -175,7 +176,7 @@ class PaymentMethodSaga:
 
     @deal.safe  # TODO Implement deal.has to consider database access
     @operation_type
-    @refresh_payment_method
+    @with_payment_method_refreshed_from_storage
     @verified_with_decision_logic(dl.can_initialize)
     @with_started_operation_event_before_running
     def initialize(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
@@ -250,7 +251,7 @@ class PaymentMethodSaga:
     @deal.reason(TypeError, lambda self, payment_method, action_data: not self.process_action_block)
     @operation_type
     @implements_blocks
-    @refresh_payment_method
+    @with_payment_method_refreshed_from_storage
     @verified_with_decision_logic(dl.can_process_action)
     @with_started_operation_event_before_running
     def process_action(
@@ -347,7 +348,7 @@ class PaymentMethodSaga:
     @deal.reason(TypeError, lambda self, payment_method: not self.after_pay_blocks)
     @operation_type
     @implements_blocks
-    @refresh_payment_method
+    @with_payment_method_refreshed_from_storage
     @verified_with_decision_logic(dl.can_after_pay)
     @with_started_operation_event_before_running
     def after_pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
@@ -394,7 +395,7 @@ class PaymentMethodSaga:
     @deal.reason(TypeError, lambda self, payment_method, action_data: not self.confirm_block)
     @operation_type
     @implements_blocks
-    @refresh_payment_method
+    @with_payment_method_refreshed_from_storage
     @verified_with_decision_logic(dl.can_confirm)
     @with_started_operation_event_before_running
     def confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
@@ -458,7 +459,7 @@ class PaymentMethodSaga:
     @deal.reason(TypeError, lambda self, payment_method, action_data: not self.after_confirm_blocks)
     @operation_type
     @implements_blocks
-    @refresh_payment_method
+    @with_payment_method_refreshed_from_storage
     @verified_with_decision_logic(dl.can_after_confirm)
     @with_started_operation_event_before_running
     def after_confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
