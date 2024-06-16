@@ -14,7 +14,7 @@ class PaymentAttempt:
     See https://www.etymonline.com/word/attempt#etymonline_v_41850
     """
 
-    id: UUID
+    id: protocols.ExistingPaymentAttemptId
     created_at: datetime
     amount: int
     currency: str
@@ -42,7 +42,7 @@ class PaymentMilestone:
     created_at: datetime
     type: "enums.MilestoneTypeEnum"
     payment_method_id: protocols.ExistingPaymentMethodId
-    payment_attempt_id: UUID
+    payment_attempt_id: protocols.ExistingPaymentAttemptId
 
 
 @dataclass
@@ -66,7 +66,7 @@ class DraftPaymentAttempt:
 class Item:
     id: UUID
     created_at: datetime
-    payment_attempt_id: UUID
+    payment_attempt_id: protocols.ExistingPaymentAttemptId
     reference: str
     name: str
     quantity: int

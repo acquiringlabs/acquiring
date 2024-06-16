@@ -40,7 +40,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
     fake_unit_of_work: type[test_protocols.FakeUnitOfWork],
 ) -> None:
     payment_attempt = domain.PaymentAttempt(
-        id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
+        id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
         amount=10,
         currency="USD",

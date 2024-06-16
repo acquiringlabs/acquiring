@@ -17,7 +17,7 @@ class TestCanInitialize:
             domain.sagas.dl.can_initialize(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                 )
@@ -34,7 +34,7 @@ class TestCanInitialize:
             domain.sagas.dl.can_initialize(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -63,7 +63,7 @@ class TestCanInitialize:
             domain.sagas.dl.can_initialize(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -93,7 +93,7 @@ class TestCanProcessAction:
             domain.sagas.dl.can_process_action(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -116,7 +116,7 @@ class TestCanProcessAction:
             domain.sagas.dl.can_process_action(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -138,7 +138,7 @@ class TestCanProcessAction:
             domain.sagas.dl.can_process_action(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -167,7 +167,7 @@ class TestCanProcessAction:
             domain.sagas.dl.can_process_action(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -199,7 +199,7 @@ class TestCanAfterPay:
             domain.sagas.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -227,7 +227,7 @@ class TestCanAfterPay:
             domain.sagas.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -255,7 +255,7 @@ class TestCanAfterPay:
             domain.sagas.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -278,7 +278,7 @@ class TestCanAfterPay:
             domain.sagas.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -299,7 +299,7 @@ class TestCanAfterPay:
             domain.sagas.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -322,7 +322,7 @@ class TestCanAfterPay:
             domain.sagas.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -347,7 +347,7 @@ class TestCanAfterPay:
             domain.sagas.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -374,7 +374,7 @@ class TestCanAfterPay:
             domain.sagas.dl.can_after_pay(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -406,7 +406,7 @@ class TestCanConfirm:
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -440,7 +440,7 @@ class TestCanConfirm:
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -475,7 +475,7 @@ class TestCanConfirm:
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -506,7 +506,7 @@ class TestCanConfirm:
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -536,7 +536,7 @@ class TestCanConfirm:
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -563,7 +563,7 @@ class TestCanConfirm:
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -588,7 +588,7 @@ class TestCanConfirm:
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -611,7 +611,7 @@ class TestCanConfirm:
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -642,7 +642,7 @@ class TestCanAfterConfirm:
             domain.sagas.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -676,7 +676,7 @@ class TestCanAfterConfirm:
             domain.sagas.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -714,7 +714,7 @@ class TestCanAfterConfirm:
             domain.sagas.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -754,7 +754,7 @@ class TestCanAfterConfirm:
             domain.sagas.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -788,7 +788,7 @@ class TestCanAfterConfirm:
             domain.sagas.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -818,7 +818,7 @@ class TestCanAfterConfirm:
             domain.sagas.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -842,7 +842,7 @@ class TestCanAfterConfirm:
             domain.sagas.dl.can_after_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -873,7 +873,7 @@ class TestRefund:
             domain.sagas.dl.can_refund(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -907,7 +907,7 @@ class TestRefund:
             domain.sagas.dl.can_refund(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=True,
                     payment_operations=[
@@ -936,7 +936,7 @@ class TestRefund:
             domain.sagas.dl.can_refund(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -969,7 +969,7 @@ class TestRefund:
             domain.sagas.dl.can_refund(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -1001,7 +1001,7 @@ class TestRefund:
             domain.sagas.dl.can_refund(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[
@@ -1033,7 +1033,7 @@ class TestRefund:
             domain.sagas.dl.can_refund(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=uuid.uuid4(),
+                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
                     confirmable=False,
                     payment_operations=[

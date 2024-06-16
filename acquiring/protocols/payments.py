@@ -15,6 +15,7 @@ from acquiring import enums
 from .storage import UnitOfWork
 
 ExistingPaymentMethodId = NewType("ExistingPaymentMethodId", UUID)
+ExistingPaymentAttemptId = NewType("ExistingPaymentAttemptId", UUID)
 
 
 @dataclass(frozen=True, match_args=False)
@@ -31,7 +32,7 @@ class PaymentOperation(Protocol):
 class PaymentMilestone(Protocol):
     created_at: datetime
     payment_method_id: ExistingPaymentMethodId
-    payment_attempt_id: UUID
+    payment_attempt_id: ExistingPaymentAttemptId
     type: enums.MilestoneTypeEnum
 
 
@@ -65,7 +66,7 @@ class DraftItem(Protocol):
 class Item(Protocol):
     id: UUID
     created_at: datetime
-    payment_attempt_id: UUID
+    payment_attempt_id: ExistingPaymentAttemptId
     reference: str
     name: str
     quantity: int
@@ -75,7 +76,7 @@ class Item(Protocol):
 
 # TODO Have this class the DoesNotExist internal class
 class PaymentAttempt(Protocol):
-    id: UUID
+    id: ExistingPaymentAttemptId
     created_at: datetime
     amount: int
     currency: str
@@ -90,7 +91,7 @@ class PaymentMethod(Protocol):
     id: ExistingPaymentMethodId
     created_at: datetime
     tokens: list[Token]
-    payment_attempt_id: UUID
+    payment_attempt_id: ExistingPaymentAttemptId
     confirmable: bool
     payment_operations: list[PaymentOperation]
 
@@ -110,7 +111,7 @@ class PaymentMethod(Protocol):
 
 
 class DraftPaymentMethod(Protocol):
-    payment_attempt_id: UUID
+    payment_attempt_id: ExistingPaymentAttemptId
     confirmable: bool
     tokens: list[DraftToken]
 

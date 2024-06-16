@@ -54,7 +54,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAdd_thenDoesNotEx
 ) -> None:
 
     payment_attempt = domain.PaymentAttempt(
-        id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
+        id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
         amount=10,
         currency="USD",

@@ -51,7 +51,7 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
 
     payment_method = domain.PaymentMethod(
         id=payment_method_id,
-        payment_attempt_id=uuid.uuid4(),
+        payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
         confirmable=False,
         payment_operations=[
@@ -66,7 +66,7 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
 
     db_payment_method = domain.PaymentMethod(
         id=payment_method_id,
-        payment_attempt_id=uuid.uuid4(),
+        payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=payment_method.created_at,
         confirmable=payment_method.confirmable,
         payment_operations=[
@@ -140,7 +140,7 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
 
     payment_method = domain.PaymentMethod(
         id=payment_method_id,
-        payment_attempt_id=uuid.uuid4(),
+        payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
         confirmable=False,
         payment_operations=[
@@ -208,7 +208,7 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
 
     payment_method = domain.PaymentMethod(
         id=payment_method_id,
-        payment_attempt_id=uuid.uuid4(),
+        payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
         confirmable=False,
         payment_operations=[

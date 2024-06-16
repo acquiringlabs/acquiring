@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
 import deal
 
 from acquiring import enums, protocols
@@ -13,7 +12,7 @@ class PaymentMethod:
 
     id: protocols.ExistingPaymentMethodId
     created_at: datetime
-    payment_attempt_id: UUID
+    payment_attempt_id: protocols.ExistingPaymentAttemptId
     confirmable: bool
     tokens: list["protocols.Token"] = field(default_factory=list)
     payment_operations: list["protocols.PaymentOperation"] = field(default_factory=list)
@@ -61,7 +60,7 @@ class PaymentOperation:
 class DraftPaymentMethod:
     """Parses the data needed to create a PaymentMethod via its Repository"""
 
-    payment_attempt_id: UUID
+    payment_attempt_id: protocols.ExistingPaymentAttemptId
     confirmable: bool
     tokens: list["protocols.DraftToken"] = field(default_factory=list)
 
