@@ -81,7 +81,7 @@ class PaymentMethod(Identifiable, Model):
         )
 
 
-class PaymentMilestone(Model):
+class Milestone(Model):
     __tablename__ = "acquiring_paymentmilestones"
 
     # The high amount of instances expected for this model justifies the use of UUID instead of Integer
@@ -109,8 +109,8 @@ class PaymentMilestone(Model):
     def __str__(self) -> str:
         return f"[type={self.type}, payment_attempt_id={self.payment_attempt_id}]"
 
-    def to_domain(self) -> protocols.PaymentMilestone:
-        return domain.PaymentMilestone(
+    def to_domain(self) -> protocols.Milestone:
+        return domain.Milestone(
             created_at=self.created_at,
             type=self.type,
             payment_attempt_id=self.payment_attempt_id,

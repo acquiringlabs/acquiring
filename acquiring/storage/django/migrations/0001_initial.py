@@ -72,13 +72,13 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='PaymentMilestone',
+            name='Milestone',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('type', models.CharField(choices=[('payment_method_added', 'Payment Method Added'), ('payment_method_completed', 'Payment Method Completed'), ('payment_method_failed', 'Payment Method Failed'), ('payment_method_requires_action', 'Payment Method Requires Action'), ('payment_method_requires_confirmation', 'Payment Method Requires Confirmation')], max_length=40)),
-                ('payment_attempt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_milestones', to='acquiring.paymentattempt')),
-                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_milestones', to='acquiring.paymentmethod')),
+                ('payment_attempt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='milestones', to='acquiring.paymentattempt')),
+                ('payment_method', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='milestones', to='acquiring.paymentmethod')),
             ],
         ),
         migrations.CreateModel(

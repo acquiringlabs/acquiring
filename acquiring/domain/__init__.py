@@ -1,6 +1,6 @@
 from .blocks import BlockResponse, wrapped_by_block_events
 from .events import BlockEvent
-from .payment_attempts import DraftItem, DraftPaymentAttempt, Item, PaymentAttempt, PaymentMilestone
+from .payment_attempts import DraftItem, DraftPaymentAttempt, Item, Milestone, PaymentAttempt
 from .payment_methods import DraftPaymentMethod, DraftToken, OperationEvent, PaymentMethod, Token
 from .providers import Transaction, wrapped_by_transaction
 from .sagas import PaymentMethodSaga
@@ -17,7 +17,7 @@ __all__ = [
     "PaymentMethodSaga",
     "PaymentMethod",
     "OperationEvent",
-    "PaymentMilestone",
+    "Milestone",
     "Token",
     "Transaction",
     "wrapped_by_block_events",

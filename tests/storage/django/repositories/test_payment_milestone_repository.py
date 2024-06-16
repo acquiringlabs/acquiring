@@ -14,16 +14,16 @@ fake = Faker()
 @skip_if_django_not_installed
 @pytest.mark.django_db
 @pytest.mark.parametrize("type", enums.AtemptStatusEnum)
-def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMilestoneGetsCreated(
+def test_givenCorrectData_whenCallingRepositoryAdd_thenMilestoneGetsCreated(
     type: enums.AtemptStatusEnum,
 ) -> None:
 
     db_payment_method = PaymentMethodFactory(payment_attempt_id=PaymentAttemptFactory().id)
 
-    result = storage.django.PaymentMilestoneRepository().add(db_payment_method.to_domain(), type)
+    result = storage.django.MilestoneRepository().add(db_payment_method.to_domain(), type)
 
-    db_payment_milestones = storage.django.models.PaymentMilestone.objects.all()
-    assert len(db_payment_milestones) == 1
-    db_payment_milestone = db_payment_milestones[0]
+    db_milestones = storage.django.models.Milestone.objects.all()
+    assert len(db_milestones) == 1
+    db_milestone = db_milestones[0]
 
-    assert db_payment_milestone.to_domain() == result
+    assert db_milestone.to_domain() == result

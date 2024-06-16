@@ -67,26 +67,26 @@ class OperationEventRepository:
     def get(self, id: UUID) -> "protocols.OperationEvent": ...  # type: ignore[empty-body]
 
 
-# TODO Control for IntegrityError when PaymentAttempt do not exist when adding PaymentMilestone
+# TODO Control for IntegrityError when PaymentAttempt do not exist when adding Milestone
 
 
-class PaymentMilestoneRepository:
+class MilestoneRepository:
 
     @deal.safe
     def add(
         self,
         payment_method: "protocols.PaymentMethod",
         type: enums.AtemptStatusEnum,
-    ) -> "protocols.PaymentMilestone":
-        db_payment_milestone = models.PaymentMilestone(
+    ) -> "protocols.Milestone":
+        db_milestone = models.Milestone(
             payment_method_id=payment_method.id,
             payment_attempt_id=payment_method.payment_attempt_id,
             type=type,
         )
-        db_payment_milestone.save()
-        return db_payment_milestone.to_domain()
+        db_milestone.save()
+        return db_milestone.to_domain()
 
-    def get(self, id: UUID) -> "protocols.PaymentMilestone": ...  # type:ignore[empty-body]
+    def get(self, id: UUID) -> "protocols.Milestone": ...  # type:ignore[empty-body]
 
 
 class BlockEventRepository:

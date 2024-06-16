@@ -136,7 +136,7 @@ class MilestoneTypeChoices(django.db.models.TextChoices):
     PAYMENT_METHOD_REQUIRES_CONFIRMATION = "payment_method_requires_confirmation"
 
 
-class PaymentMilestone(django.db.models.Model):
+class Milestone(django.db.models.Model):
     created_at = django.db.models.DateTimeField(auto_now_add=True)
 
     type = django.db.models.CharField(max_length=40, choices=MilestoneTypeChoices.choices)
@@ -144,19 +144,19 @@ class PaymentMilestone(django.db.models.Model):
     payment_method = django.db.models.ForeignKey(
         PaymentMethod,
         on_delete=django.db.models.CASCADE,
-        related_name="payment_milestones",
+        related_name="milestones",
     )
     payment_attempt = django.db.models.ForeignKey(
         PaymentAttempt,
         on_delete=django.db.models.CASCADE,
-        related_name="payment_milestones",
+        related_name="milestones",
     )
 
     def __str__(self) -> str:
         return f"[type={self.type}, payment_attempt_id={self.payment_attempt_id}]"
 
-    def to_domain(self) -> protocols.PaymentMilestone:
-        return domain.PaymentMilestone(
+    def to_domain(self) -> protocols.Milestone:
+        return domain.Milestone(
             created_at=self.created_at,
             type=self.type,
             payment_attempt_id=self.payment_attempt_id,

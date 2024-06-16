@@ -29,7 +29,7 @@ class OperationEvent(Protocol):
 
 
 @dataclass(frozen=True, match_args=False)
-class PaymentMilestone(Protocol):
+class Milestone(Protocol):
     created_at: datetime
     payment_method_id: ExistingPaymentMethodId
     payment_attempt_id: ExistingPaymentAttemptId

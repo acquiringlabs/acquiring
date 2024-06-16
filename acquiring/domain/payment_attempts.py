@@ -36,7 +36,7 @@ class PaymentAttempt:
 
 
 @dataclass(frozen=True)
-class PaymentMilestone:
+class Milestone:
     """Checkpoints being created after a certain threshold on the lifecycle of a PaymentMethod is reached"""
 
     created_at: datetime
