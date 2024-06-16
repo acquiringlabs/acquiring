@@ -18,6 +18,10 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         [Optional[list[protocols.PaymentAttempt]]],
         type[protocols.Repository],
     ],
+    fake_milestone_repository_class: Callable[
+        [Optional[list[protocols.Milestone]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -46,6 +50,7 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
 
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
+        milestone_repository_class=fake_milestone_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),

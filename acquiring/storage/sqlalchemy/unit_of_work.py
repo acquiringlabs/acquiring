@@ -20,6 +20,9 @@ class SqlAlchemyUnitOfWork:
     payment_attempt_repository_class: type[protocols.Repository]
     payment_attempts: protocols.Repository = field(init=False, repr=False)
 
+    milestone_repository_class: type[protocols.Repository]
+    milestones: protocols.Repository = field(init=False, repr=False)
+
     payment_method_repository_class: type[protocols.Repository]
     payment_methods: protocols.Repository = field(init=False, repr=False)
 
@@ -41,6 +44,7 @@ class SqlAlchemyUnitOfWork:
         self.session = self.session_factory()
 
         self.payment_attempts = self.payment_attempt_repository_class(session=self.session)  # type: ignore[call-arg]
+        self.milestones = self.milestone_repository_class(session=self.session)  # type:ignore[call-arg]
         self.payment_methods = self.payment_method_repository_class(session=self.session)  # type: ignore[call-arg]
         self.operation_events = self.operation_event_repository_class(session=self.session)  # type: ignore[call-arg]
         self.block_events = self.block_event_repository_class(session=self.session)  # type: ignore[call-arg]
@@ -54,7 +58,7 @@ class SqlAlchemyUnitOfWork:
         exc_value: Optional[type[BaseException]],
         exc_tb: Optional[TracebackType],
     ) -> None:
-        # Autocommit disasbled, see PEP 249 - Python Database API Specification v2.0
+        # Autocommit disabled, see PEP 249 - Python Database API Specification v2.0
         if exc_type is not None:
             self.rollback()
         self.session.close()

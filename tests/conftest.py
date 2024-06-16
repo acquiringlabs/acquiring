@@ -75,6 +75,43 @@ def fake_payment_attempt_repository_class() -> (
     return func
 
 
+@pytest.fixture(scope="module")
+def fake_milestone_repository_class() -> (
+    Callable[[Optional[set[protocols.Milestone]]], type[test_protocols.FakeRepository]]
+):
+
+    def func(milestones: Optional[set[protocols.Milestone]]) -> type[test_protocols.FakeRepository]:
+
+        @dataclass
+        class FakeMilestoneRepository:
+
+            def __init__(self) -> None:
+                """
+                Cloning the list into units attribute to simulate the independence of database versus objects in memory
+                """
+                self.units = milestones.copy() if milestones is not None else set()
+
+            def add(
+                self, payment_method: protocols.PaymentMethod, type: enums.MilestoneTypeEnum
+            ) -> protocols.Milestone:
+                milestone = domain.Milestone(
+                    created_at=datetime.now(),
+                    payment_method_id=payment_method.id,
+                    payment_attempt_id=payment_method.payment_attempt_id,
+                    type=type,
+                )
+                self.units.add(milestone)
+                return milestone
+
+            def get(  # type:ignore[empty-body]
+                self, id: uuid.UUID
+            ) -> protocols.Milestone: ...
+
+        return FakeMilestoneRepository
+
+    return func
+
+
 @pytest.fixture()
 def fake_payment_method_repository_class() -> (
     Callable[[Optional[list[protocols.PaymentMethod]]], type[protocols.Repository]]
@@ -243,6 +280,9 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
         payment_attempt_repository_class: type[protocols.Repository]
         payment_attempts: protocols.Repository = field(init=False, repr=False)
 
+        milestone_repository_class: type[protocols.Repository]
+        milestones: protocols.Repository = field(init=False, repr=False)
+
         payment_method_repository_class: type[protocols.Repository]
         payment_methods: protocols.Repository = field(init=False, repr=False)
 
@@ -263,6 +303,8 @@ def fake_unit_of_work() -> type[test_protocols.FakeUnitOfWork]:
 
         def __enter__(self) -> Self:
             self.payment_attempts = self.payment_attempt_repository_class()
+
+            self.milestones = self.milestone_repository_class()
 
             self.payment_methods = self.payment_method_repository_class()
             self.payment_method_units = self.payment_methods.units  # type:ignore[attr-defined]

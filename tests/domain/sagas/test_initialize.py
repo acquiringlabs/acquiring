@@ -42,6 +42,10 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentMethodSagaR
         [Optional[list[protocols.PaymentAttempt]]],
         type[protocols.Repository],
     ],
+    fake_milestone_repository_class: Callable[
+        [Optional[list[protocols.Milestone]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -72,6 +76,7 @@ def test_givenAValidPaymentMethod_whenInitializingReturns_thenPaymentMethodSagaR
 
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
+        milestone_repository_class=fake_milestone_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),
@@ -132,6 +137,10 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentMethodSag
         [Optional[list[protocols.PaymentAttempt]]],
         type[protocols.Repository],
     ],
+    fake_milestone_repository_class: Callable[
+        [Optional[list[protocols.Milestone]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -161,6 +170,7 @@ def test_givenAValidPaymentMethod_whenInitializingCompletes_thenPaymentMethodSag
 
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
+        milestone_repository_class=fake_milestone_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),
@@ -216,6 +226,10 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentMet
         [Optional[list[protocols.PaymentAttempt]]],
         type[protocols.Repository],
     ],
+    fake_milestone_repository_class: Callable[
+        [Optional[list[protocols.Milestone]]],
+        type[protocols.Repository],
+    ],
     fake_payment_method_repository_class: Callable[
         [Optional[list[protocols.PaymentMethod]]],
         type[protocols.Repository],
@@ -253,6 +267,7 @@ def test_givenAPaymentMethodThatCannotInitialize_whenInitializing_thenPaymentMet
 
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
+        milestone_repository_class=fake_milestone_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),
@@ -278,6 +293,10 @@ def test_givenAPaymentMethodSagaWithoutInitializeBlock_whenInitializing_thenPaym
     fake_process_action_block: type[protocols.Block],
     fake_payment_attempt_repository_class: Callable[
         [Optional[list[protocols.PaymentAttempt]]],
+        type[protocols.Repository],
+    ],
+    fake_milestone_repository_class: Callable[
+        [Optional[list[protocols.Milestone]]],
         type[protocols.Repository],
     ],
     fake_payment_method_repository_class: Callable[
@@ -308,6 +327,7 @@ def test_givenAPaymentMethodSagaWithoutInitializeBlock_whenInitializing_thenPaym
 
     unit_of_work = fake_unit_of_work(
         payment_attempt_repository_class=fake_payment_attempt_repository_class([]),
+        milestone_repository_class=fake_milestone_repository_class([]),
         payment_method_repository_class=fake_payment_method_repository_class([payment_method]),
         operation_event_repository_class=fake_operation_event_repository_class(set(payment_method.operation_events)),
         block_event_repository_class=fake_block_event_repository_class(set()),

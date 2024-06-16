@@ -18,6 +18,9 @@ class DjangoUnitOfWork:
     payment_attempt_repository_class: type[protocols.Repository]
     payment_attempts: protocols.Repository = field(init=False, repr=False)
 
+    milestone_repository_class: type[protocols.Repository]
+    milestones: protocols.Repository = field(init=False, repr=False)
+
     payment_method_repository_class: type[protocols.Repository]
     payment_methods: protocols.Repository = field(init=False, repr=False)
 
@@ -42,7 +45,9 @@ class DjangoUnitOfWork:
         """
         self.transaction = django.db.transaction.atomic()
         self.transaction.__enter__()
+
         self.payment_attempts = self.payment_attempt_repository_class()
+        self.milestones = self.milestone_repository_class()
         self.payment_methods = self.payment_method_repository_class()
         self.operation_events = self.operation_event_repository_class()
         self.block_events = self.block_event_repository_class()

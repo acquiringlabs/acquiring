@@ -17,6 +17,9 @@ class UnitOfWork(Protocol):
     payment_attempt_repository_class: type[Repository]
     payment_attempts: Repository = field(init=False, repr=False)
 
+    milestone_repository_class: type[Repository]
+    milestones: Repository = field(init=False, repr=False)
+
     payment_method_repository_class: type[Repository]
     payment_methods: Repository = field(init=False, repr=False)
 

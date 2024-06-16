@@ -100,6 +100,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
     with sqlalchemy_assert_num_queries(5):
         with storage.sqlalchemy.SqlAlchemyUnitOfWork(
             payment_attempt_repository_class=TemporaryRepository,
+            milestone_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
             operation_event_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
@@ -156,6 +157,7 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
     with sqlalchemy_assert_num_queries(5), pytest.raises(TestException):
         with storage.sqlalchemy.SqlAlchemyUnitOfWork(
             payment_attempt_repository_class=TemporaryRepository,
+            milestone_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
             operation_event_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
@@ -216,6 +218,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
     with sqlalchemy_assert_num_queries(5), pytest.raises(TestException):
         with storage.sqlalchemy.SqlAlchemyUnitOfWork(
             payment_attempt_repository_class=TemporaryRepository,
+            milestone_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
             operation_event_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
@@ -273,6 +276,7 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
     with sqlalchemy_assert_num_queries(5):
         with storage.sqlalchemy.SqlAlchemyUnitOfWork(
             payment_attempt_repository_class=TemporaryRepository,
+            milestone_repository_class=TemporaryRepository,
             payment_method_repository_class=TemporaryRepository,
             operation_event_repository_class=TemporaryRepository,
             block_event_repository_class=TemporaryRepository,
