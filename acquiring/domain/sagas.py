@@ -93,15 +93,35 @@ def refresh_payment_method(  # type:ignore[misc]
     return wrapper
 
 
-@dataclass
-class OperationResponse:
-    """Represents the outcome of a PaymentMethodSaga operation type method execution"""
+def verified_with_decision_logic(  # type:ignore[misc]
+    decision_logic_function: Callable[["protocols.PaymentMethod"], bool]
+) -> Callable[[Callable[..., "protocols.OperationResponse"]], Callable[..., "protocols.OperationResponse"]]:
+    """Verify that the payment can go through this operation type"""
 
-    status: enums.OperationStatusEnum
-    payment_method: Optional["protocols.PaymentMethod"]
-    type: enums.OperationTypeEnum
-    error_message: Optional[str] = None
-    actions: list[dict] = field(default_factory=list)
+    def decorator(  # type:ignore[misc]
+        function: Callable[..., "protocols.OperationResponse"]
+    ) -> Callable[..., "protocols.OperationResponse"]:
+
+        @functools.wraps(function)
+        def wrapper(
+            self: "protocols.PaymentMethodSaga",
+            payment_method: "protocols.PaymentMethod",
+            *args: Sequence,
+            **kwargs: dict,
+        ) -> "protocols.OperationResponse":
+            if not decision_logic_function(payment_method):
+                return OperationResponse(
+                    status=enums.OperationStatusEnum.FAILED,
+                    payment_method=None,
+                    error_message="PaymentMethod cannot go through this operation",
+                    type=enums.OperationTypeEnum(function.__name__),  # already valid thanks to @operation_type
+                )
+
+            return function(self, payment_method, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 # TODO Decorate this class to ensure that all operation_types are implemented as methods
@@ -127,15 +147,8 @@ class PaymentMethodSaga:
     @deal.safe  # TODO Implement deal.has to consider database access
     @operation_type
     @refresh_payment_method
+    @verified_with_decision_logic(dl.can_initialize)
     def initialize(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
-        # Verify that the payment can go through this operation type
-        if not dl.can_initialize(payment_method):
-            return OperationResponse(
-                status=enums.OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod cannot go through this operation",
-                type=enums.OperationTypeEnum.INITIALIZE,
-            )
 
         # Create Started OperationEvent
         with self.unit_of_work as uow:
@@ -217,18 +230,10 @@ class PaymentMethodSaga:
     @operation_type
     @implements_blocks
     @refresh_payment_method
+    @verified_with_decision_logic(dl.can_process_action)
     def process_action(
         self, payment_method: "protocols.PaymentMethod", action_data: dict
     ) -> "protocols.OperationResponse":
-        # Verify that the payment can go through this operation type
-
-        if not dl.can_process_action(payment_method):
-            return OperationResponse(
-                status=enums.OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod cannot go through this operation",
-                type=enums.OperationTypeEnum.PROCESS_ACTION,
-            )
 
         # Create Started OperationEvent
         with self.unit_of_work as uow:
@@ -338,15 +343,8 @@ class PaymentMethodSaga:
     @operation_type
     @implements_blocks
     @refresh_payment_method
+    @verified_with_decision_logic(dl.can_after_pay)
     def after_pay(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
-        # Verify that the payment can go through this operation type
-        if not dl.can_after_pay(payment_method):
-            return OperationResponse(
-                status=enums.OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod cannot go through this operation",
-                type=enums.OperationTypeEnum.AFTER_PAY,
-            )
 
         # Create Started OperationEvent
         with self.unit_of_work as uow:
@@ -400,15 +398,8 @@ class PaymentMethodSaga:
     @operation_type
     @implements_blocks
     @refresh_payment_method
+    @verified_with_decision_logic(dl.can_confirm)
     def confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
-        # Verify that the payment can go through this operation type
-        if not dl.can_confirm(payment_method):
-            return OperationResponse(
-                status=enums.OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod cannot go through this operation",
-                type=enums.OperationTypeEnum.CONFIRM,
-            )
 
         # Create Started OperationEvent
         with self.unit_of_work as uow:
@@ -479,15 +470,8 @@ class PaymentMethodSaga:
     @operation_type
     @implements_blocks
     @refresh_payment_method
+    @verified_with_decision_logic(dl.can_after_confirm)
     def after_confirm(self, payment_method: "protocols.PaymentMethod") -> "protocols.OperationResponse":
-        # Verify that the payment can go through this operation type
-        if not dl.can_after_confirm(payment_method):
-            return OperationResponse(
-                status=enums.OperationStatusEnum.FAILED,
-                payment_method=None,
-                error_message="PaymentMethod cannot go through this operation",
-                type=enums.OperationTypeEnum.AFTER_CONFIRM,
-            )
 
         # Create Started OperationEvent
         with self.unit_of_work as uow:
@@ -534,3 +518,14 @@ class PaymentMethodSaga:
                 [response.error_message for response in responses if response.error_message is not None]
             ),
         )
+
+
+@dataclass
+class OperationResponse:
+    """Represents the outcome of a PaymentMethodSaga operation type method execution"""
+
+    status: enums.OperationStatusEnum
+    payment_method: Optional["protocols.PaymentMethod"]
+    type: enums.OperationTypeEnum
+    error_message: Optional[str] = None
+    actions: list[dict] = field(default_factory=list)
