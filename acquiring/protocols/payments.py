@@ -7,18 +7,20 @@ https://typing.readthedocs.io/en/latest/spec/protocol.html#protocols
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, Protocol, Sequence, runtime_checkable
+from typing import NewType, Optional, Protocol, Sequence, runtime_checkable
 from uuid import UUID
+
 from acquiring import enums
 
-
 from .storage import UnitOfWork
+
+ExistingPaymentMethodId = NewType("ExistingPaymentMethodId", UUID)
 
 
 @dataclass(frozen=True, match_args=False)
 class PaymentOperation(Protocol):
     created_at: datetime
-    payment_method_id: UUID
+    payment_method_id: ExistingPaymentMethodId
     type: enums.OperationTypeEnum
     status: enums.OperationStatusEnum
 
@@ -28,7 +30,7 @@ class PaymentOperation(Protocol):
 @dataclass(frozen=True, match_args=False)
 class PaymentMilestone(Protocol):
     created_at: datetime
-    payment_method_id: UUID
+    payment_method_id: ExistingPaymentMethodId
     payment_attempt_id: UUID
     type: enums.MilestoneTypeEnum
 
@@ -44,7 +46,7 @@ class DraftToken(Protocol):
 class Token(Protocol):
     timestamp: datetime
     token: str
-    payment_method_id: UUID
+    payment_method_id: ExistingPaymentMethodId
     metadata: Optional[dict[str, str | int]]
     expires_at: Optional[datetime]
     fingerprint: Optional[str]
@@ -85,7 +87,7 @@ class PaymentAttempt(Protocol):
 
 # TODO Have this class the DoesNotExist internal class
 class PaymentMethod(Protocol):
-    id: UUID
+    id: ExistingPaymentMethodId
     created_at: datetime
     tokens: list[Token]
     payment_attempt_id: UUID

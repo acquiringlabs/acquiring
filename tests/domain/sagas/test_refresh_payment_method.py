@@ -47,7 +47,7 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
                 type=enums.OperationTypeEnum.INITIALIZE,
             )
 
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
 
     payment_method = domain.PaymentMethod(
         id=payment_method_id,
@@ -136,7 +136,7 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
                 type=enums.OperationTypeEnum.INITIALIZE,
             )
 
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
 
     payment_method = domain.PaymentMethod(
         id=payment_method_id,
@@ -204,7 +204,7 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
                 type=enums.OperationTypeEnum.INITIALIZE,
             )
 
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
 
     payment_method = domain.PaymentMethod(
         id=payment_method_id,

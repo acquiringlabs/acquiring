@@ -61,7 +61,7 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentMethodSagaR
 ) -> None:
 
     payment_attempt = factories.PaymentAttemptFactory()
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
@@ -192,7 +192,7 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentMethodSa
 ) -> None:
 
     payment_attempt = factories.PaymentAttemptFactory()
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id, id=payment_method_id, confirmable=False
     )

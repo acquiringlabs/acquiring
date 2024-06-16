@@ -11,7 +11,7 @@ from acquiring import enums, protocols
 class PaymentMethod:
     """Represents how a PaymentAttempt gets paid"""
 
-    id: UUID
+    id: protocols.ExistingPaymentMethodId
     created_at: datetime
     payment_attempt_id: UUID
     confirmable: bool
@@ -50,7 +50,7 @@ class PaymentOperation:
     created_at: datetime
     type: "enums.OperationTypeEnum"
     status: "enums.OperationStatusEnum"
-    payment_method_id: UUID
+    payment_method_id: protocols.ExistingPaymentMethodId
 
     def __repr__(self) -> str:
         """String representation of the class"""
@@ -70,7 +70,7 @@ class DraftPaymentMethod:
 class Token:
     timestamp: datetime
     token: str
-    payment_method_id: UUID
+    payment_method_id: protocols.ExistingPaymentMethodId
     metadata: Optional[dict[str, str | int]] = field(default_factory=dict)
     expires_at: Optional[datetime] = None
     fingerprint: Optional[str] = None

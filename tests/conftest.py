@@ -91,7 +91,7 @@ def fake_payment_method_repository_class() -> (
                 self.units = payment_methods.copy() if payment_methods is not None else []
 
             def add(self, data: protocols.DraftPaymentMethod) -> protocols.PaymentMethod:
-                payment_method_id = uuid.uuid4()
+                payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
                 payment_method = domain.PaymentMethod(
                     id=payment_method_id,
                     created_at=datetime.now(),

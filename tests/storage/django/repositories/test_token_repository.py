@@ -4,7 +4,7 @@ from typing import Callable
 
 import pytest
 from faker import Faker
-
+from acquiring import protocols
 from acquiring.utils import is_django_installed
 from tests.storage.utils import skip_if_django_not_installed
 
@@ -54,7 +54,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAdd_thenDoesNotEx
 ) -> None:
 
     payment_attempt = domain.PaymentAttempt(
-        id=uuid.uuid4(),
+        id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
         created_at=datetime.now(),
         amount=10,
         currency="USD",
@@ -62,7 +62,7 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAdd_thenDoesNotEx
     )
 
     payment_method = domain.PaymentMethod(
-        id=uuid.uuid4(),
+        id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
         payment_attempt_id=payment_attempt.id,
         created_at=datetime.now(),
         confirmable=False,

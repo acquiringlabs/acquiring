@@ -37,7 +37,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentMethodS
 ) -> None:
 
     payment_attempt = factories.PaymentAttemptFactory()
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
@@ -130,7 +130,7 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentMeth
 ) -> None:
 
     payment_attempt = factories.PaymentAttemptFactory()
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
@@ -227,7 +227,7 @@ def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenP
 ) -> None:
 
     payment_attempt = factories.PaymentAttemptFactory()
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
@@ -295,7 +295,7 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
 ) -> None:
 
     payment_attempt = factories.PaymentAttemptFactory()
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,

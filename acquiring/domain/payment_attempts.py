@@ -41,7 +41,7 @@ class PaymentMilestone:
 
     created_at: datetime
     type: "enums.MilestoneTypeEnum"
-    payment_method_id: UUID
+    payment_method_id: protocols.ExistingPaymentMethodId
     payment_attempt_id: UUID
 
 

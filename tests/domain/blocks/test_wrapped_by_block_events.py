@@ -54,7 +54,7 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_block_events_thenStarted
     )
 
     payment_attempt = factories.PaymentAttemptFactory()
-    payment_method_id = uuid.uuid4()
+    payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
