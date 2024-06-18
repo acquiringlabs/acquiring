@@ -13,7 +13,8 @@ ARG DJANGO_VERSION
 ARG ACQUIRING_VERSION
 
 RUN pip install -r requirements.txt
-RUN pip install Django==$DJANGO_VERSION acquiring==${ACQUIRING_VERSION}
+RUN pip install Django==$DJANGO_VERSION
+RUN pip install --extra-index-url https://testpypi.python.org/pypi acquiring==${ACQUIRING_VERSION}
 
 COPY wait-for-it.sh /wait-for-it.sh
 COPY entrypoint.sh /entrypoint.sh

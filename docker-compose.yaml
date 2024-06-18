@@ -46,7 +46,7 @@ services:
       context: ./qa
       args:
         DJANGO_VERSION: 4.2
-        ACQUIRING_VERSION: 0.4.1
+        ACQUIRING_VERSION: 0.4.4
     volumes:
       - ./qa:/code
     ports:

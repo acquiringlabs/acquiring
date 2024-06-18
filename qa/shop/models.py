@@ -65,7 +65,7 @@ class Order(django.db.models.Model):
 
     customers = django.db.models.ManyToManyField(Customer)
     payment_attempt = django.db.models.OneToOneField(
-        acquiring.storage.django.models.PaymentAttempt,
+        acquiring.storage.models.PaymentAttempt,
         on_delete=django.db.models.PROTECT,
         null=True,
         blank=True,
@@ -80,7 +80,7 @@ class Order(django.db.models.Model):
 
     @property
     def currency(self) -> str:
-        return self.items.first().currency
+        return self.items.first().currency if self.items.exists() else ""
 
     @property
     def invoice(self) -> dict:
@@ -88,7 +88,11 @@ class Order(django.db.models.Model):
         Invoice data is a mutable copy of all information related to an order.
         It may be used later to generate the data on the Receipt.
         """
-        return {}
+        return {
+            "items": [item.as_dict for item in self.items.all()],
+            "total": self.total,
+            "currency": self.currency,
+        }
 
 
 class Item(django.db.models.Model):
@@ -112,6 +116,16 @@ class Item(django.db.models.Model):
     @property
     def total(self) -> decimal.Decimal:
         return self.quantity * self.price
+
+    @property
+    def as_dict(self) -> dict:
+        return {
+            "product": str(self.variant),
+            "quantity": self.quantity,
+            "note": self.note,
+            "price": self.price,
+            "currency": self.currency,
+        }
 
 
 class Receipt(django.db.models.Model):
