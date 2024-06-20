@@ -57,7 +57,6 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         id=payment_method_id,
         payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
-        confirmable=False,
         operation_events=[
             factories.OperationEventFactory(
                 created_at=datetime.now(),
@@ -72,7 +71,6 @@ def test_givenAnExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDecora
         id=payment_method_id,
         payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=payment_method.created_at,
-        confirmable=payment_method.confirmable,
         operation_events=[
             factories.OperationEventFactory(
                 created_at=datetime.now(),
@@ -151,7 +149,6 @@ def test_givenANonExistingPM_whenCallingAMethodWrappedByRefreshPaymentMethodDeco
         id=payment_method_id,
         payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
-        confirmable=False,
         operation_events=[
             factories.OperationEventFactory(
                 created_at=datetime.now(),
@@ -224,7 +221,6 @@ def test_givenANonExistingPM_whenCallingAMethodWithInvalidNameWrappedByRefreshPa
         id=payment_method_id,
         payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
         created_at=datetime.now(),
-        confirmable=False,
         operation_events=[
             factories.OperationEventFactory(
                 created_at=datetime.now(),

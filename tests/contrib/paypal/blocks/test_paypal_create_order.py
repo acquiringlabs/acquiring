@@ -53,7 +53,6 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalCreateOrder_thenItReturnsRe
         id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
         created_at=datetime.now(),
         payment_attempt_id=payment_attempt.id,
-        confirmable=False,
     )
 
     responses.add(

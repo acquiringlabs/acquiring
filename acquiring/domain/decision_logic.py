@@ -113,8 +113,6 @@ def can_confirm(payment_method: "protocols.PaymentMethod") -> bool:
     """
     Return whether the payment_method can go through the confirm operation.
     """
-    if payment_method.confirmable is False:
-        return False
 
     if any(
         [
@@ -153,9 +151,6 @@ def can_after_confirm(payment_method: "protocols.PaymentMethod") -> bool:
             can_confirm(payment_method),
         ]
     ):
-        return False
-
-    if not payment_method.confirmable:
         return False
 
     if not any(
@@ -230,7 +225,7 @@ def can_refund(payment_method: "protocols.PaymentMethod") -> bool:
     ):
         return False
 
-    if payment_method.confirmable and not payment_method.has_operation_event(
+    if not payment_method.has_operation_event(
         type=enums.OperationTypeEnum.AFTER_CONFIRM,
         status=enums.OperationStatusEnum.COMPLETED,
     ):

@@ -59,8 +59,6 @@ class PaymentAttempt(Identifiable, Model):
 class PaymentMethod(Identifiable, Model):
     __tablename__ = "acquiring_paymentmethods"
 
-    confirmable = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False, server_default="False")
-
     payment_attempt_id = sqlalchemy.Column(
         sqlalchemy.String, sqlalchemy.ForeignKey("acquiring_paymentattempts.id"), nullable=False
     )
@@ -77,7 +75,6 @@ class PaymentMethod(Identifiable, Model):
             tokens=[],  # TODO Fill
             payment_attempt_id=self.payment_attempt_id,
             operation_events=[operation_event.to_domain() for operation_event in self.operation_events],
-            confirmable=self.confirmable,
         )
 
 

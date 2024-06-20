@@ -92,7 +92,6 @@ class PaymentMethod(Protocol):
     created_at: datetime
     tokens: list[Token]
     payment_attempt_id: ExistingPaymentAttemptId
-    confirmable: bool
     operation_events: list[OperationEvent]
 
     def __repr__(self) -> str: ...
@@ -112,7 +111,6 @@ class PaymentMethod(Protocol):
 
 class DraftPaymentMethod(Protocol):
     payment_attempt_id: ExistingPaymentAttemptId
-    confirmable: bool
     tokens: list[DraftToken]
 
 

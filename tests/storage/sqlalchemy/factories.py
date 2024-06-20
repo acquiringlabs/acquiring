@@ -19,7 +19,6 @@ if utils.is_sqlalchemy_installed():
             sqlalchemy_session_persistence = "commit"
 
     class PaymentMethodFactory(factory.alchemy.SQLAlchemyModelFactory):
-        confirmable = factory.LazyAttribute(lambda _: fake.boolean())
 
         class Meta:
             model = models.PaymentMethod

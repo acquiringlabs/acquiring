@@ -83,7 +83,6 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt_id,
-                confirmable=data.confirmable,
             )
             self.session.add(db_payment_method)
             self.session.flush()
@@ -109,7 +108,6 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddUnderUnitOfWork_thenComplexD
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
                     payment_attempt_id=payment_attempt.id,
-                    confirmable=False,
                 )
             )
             uow.commit()
@@ -140,7 +138,6 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt_id,
-                confirmable=data.confirmable,
             )
             self.session.add(db_payment_method)
             self.session.flush()
@@ -166,7 +163,6 @@ def test_givenAMoreComplexData_whenFakeRepositoryAddFailsUnderUnitOfWork_thenCom
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
                     payment_attempt_id=payment_attempt.id,
-                    confirmable=False,
                 )
             )
 
@@ -192,7 +188,6 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt_id,
-                confirmable=data.confirmable,
             )
             self.session.add(db_payment_method)
             self.session.flush()
@@ -227,7 +222,6 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithComm
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
                     payment_attempt_id=payment_attempt.id,
-                    confirmable=False,
                 )
             )
             uow.commit()
@@ -250,7 +244,6 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
         def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
             db_payment_method = storage.sqlalchemy.models.PaymentMethod(
                 payment_attempt_id=data.payment_attempt_id,
-                confirmable=data.confirmable,
             )
             self.session.add(db_payment_method)
             self.session.flush()
@@ -285,7 +278,6 @@ def test_givenAMoreComplexData_whenTwoFakeRepositoriesAddUnderUnitOfWorkWithRoll
             uow.payment_methods.add(
                 domain.DraftPaymentMethod(
                     payment_attempt_id=payment_attempt.id,
-                    confirmable=False,
                 )
             )
             uow.rollback()

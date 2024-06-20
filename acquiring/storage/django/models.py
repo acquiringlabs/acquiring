@@ -109,11 +109,6 @@ class PaymentMethod(Identifiable, django.db.models.Model):
         related_name="payment_methods",
     )
 
-    confirmable = django.db.models.BooleanField(
-        editable=False,
-        help_text="Whether this PaymentMethod can at some point run inside PaymentMethodSaga.confirm",
-    )
-
     def __str__(self) -> str:
         return f"[id={self.id}]"
 
@@ -124,7 +119,6 @@ class PaymentMethod(Identifiable, django.db.models.Model):
             tokens=[token.to_domain() for token in self.tokens.all()],
             payment_attempt_id=self.payment_attempt_id,
             operation_events=[operation_event.to_domain() for operation_event in self.operation_events.all()],
-            confirmable=self.confirmable,
         )
 
 

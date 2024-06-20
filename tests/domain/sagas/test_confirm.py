@@ -69,7 +69,6 @@ def test_givenAValidPaymentMethod_whenConfirmingCompletes_thenPaymentMethodSagaR
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=True,
         operation_events=[
             domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -200,9 +199,7 @@ def test_givenAPaymentMethodThatCannotConfirm_whenConfirming_thenPaymentMethodSa
 
     payment_attempt = factories.PaymentAttemptFactory()
     payment_method_id = protocols.ExistingPaymentMethodId(uuid.uuid4())
-    payment_method = factories.PaymentMethodFactory(
-        payment_attempt_id=payment_attempt.id, id=payment_method_id, confirmable=False
-    )
+    payment_method = factories.PaymentMethodFactory(payment_attempt_id=payment_attempt.id, id=payment_method_id)
     assert dl.can_confirm(payment_method) is False
 
     result = domain.PaymentMethodSaga(

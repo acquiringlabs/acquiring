@@ -28,7 +28,6 @@ class PaymentMethodRepository:
     def add(self, data: "protocols.DraftPaymentMethod") -> "protocols.PaymentMethod":
         db_payment_method = models.PaymentMethod(
             payment_attempt_id=data.payment_attempt_id,
-            confirmable=data.confirmable,
         )
         db_payment_method.save()
         return db_payment_method.to_domain()

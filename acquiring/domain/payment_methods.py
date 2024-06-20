@@ -13,7 +13,6 @@ class PaymentMethod:
     id: protocols.ExistingPaymentMethodId
     created_at: datetime
     payment_attempt_id: protocols.ExistingPaymentAttemptId
-    confirmable: bool
     tokens: list["protocols.Token"] = field(default_factory=list)
     operation_events: list["protocols.OperationEvent"] = field(default_factory=list)
 
@@ -47,7 +46,6 @@ class DraftPaymentMethod:
     """Parses the data needed to create a PaymentMethod via its Repository"""
 
     payment_attempt_id: protocols.ExistingPaymentAttemptId
-    confirmable: bool
     tokens: list["protocols.DraftToken"] = field(default_factory=list)
 
 

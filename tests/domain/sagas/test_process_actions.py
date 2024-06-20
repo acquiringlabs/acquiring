@@ -45,7 +45,6 @@ def test_givenAValidPaymentMethod_whenProcessingActionsFailed_thenPaymentMethodS
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=True,
         operation_events=[
             domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -143,7 +142,6 @@ def test_givenAValidPaymentMethod_whenProcessingActionsCompletes_thenPaymentMeth
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=True,
         operation_events=[
             domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -245,7 +243,6 @@ def test_givenAValidPaymentMethod_whenSagaDoesNotContainProcessActionBlock_thenP
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=True,
         operation_events=[
             domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -318,7 +315,6 @@ def test_givenAPaymentMethodThatCannotProcessActions_whenProcessingActions_thenP
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=True,
         operation_events=[
             domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,

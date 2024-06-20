@@ -69,7 +69,6 @@ def test_givenAValidPaymentMethod_whenAfterConfirmingCompletes_thenPaymentMethod
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=True,
         operation_events=[
             domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -225,7 +224,6 @@ def test_givenAPaymentMethodThatCannotAfterConfirm_whenAfterConfirming_thenPayme
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=False,
     )
     assert dl.can_after_confirm(payment_method) is False
 

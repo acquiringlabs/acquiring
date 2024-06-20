@@ -65,7 +65,6 @@ def test_givenNonExistingPaymentMethodRow_whenCallingRepositoryAdd_thenDoesNotEx
         id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
         payment_attempt_id=payment_attempt.id,
         created_at=datetime.now(),
-        confirmable=False,
     )
     token = domain.Token(payment_method_id=payment_method.id, timestamp=timezone.now(), token=fake.sha256())
 

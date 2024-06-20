@@ -26,7 +26,6 @@ def upgrade() -> None:
     op.create_table('acquiring_paymentmethods',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
-        sa.Column('confirmable', sa.Boolean(), server_default='False', nullable=False),
         sa.Column('payment_attempt_id', sa.String(), nullable=False),
         sa.ForeignKeyConstraint(['payment_attempt_id'], ['acquiring_paymentattempts.id'], ),
         sa.PrimaryKeyConstraint('id')

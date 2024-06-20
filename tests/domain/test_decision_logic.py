@@ -19,7 +19,6 @@ class TestCanInitialize:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                 )
             )
             is True
@@ -36,7 +35,6 @@ class TestCanInitialize:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                     ],
@@ -65,7 +63,6 @@ class TestCanInitialize:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         factories.OperationEventFactory(
@@ -95,7 +92,6 @@ class TestCanProcessAction:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_requires_action,
@@ -118,7 +114,6 @@ class TestCanProcessAction:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_requires_action,
@@ -140,7 +135,6 @@ class TestCanProcessAction:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                     ],
@@ -169,7 +163,6 @@ class TestCanProcessAction:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         factories.OperationEventFactory(
@@ -201,7 +194,6 @@ class TestCanAfterPay:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_completed,
@@ -229,7 +221,6 @@ class TestCanAfterPay:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_requires_action,
@@ -257,7 +248,6 @@ class TestCanAfterPay:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -280,7 +270,6 @@ class TestCanAfterPay:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                     ],
@@ -301,7 +290,6 @@ class TestCanAfterPay:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_failed,
@@ -324,7 +312,6 @@ class TestCanAfterPay:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -349,7 +336,6 @@ class TestCanAfterPay:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -376,7 +362,6 @@ class TestCanAfterPay:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -392,7 +377,7 @@ class TestCanAfterPay:
 
 class TestCanConfirm:
 
-    def test_paymentMethodConfirmableAndAfterPayCompletedCanConfirm(
+    def test_paymentMethodAlreadyAfterPayCompletedCanConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
@@ -401,14 +386,12 @@ class TestCanConfirm:
         operation_event_after_pay_started: protocols.OperationEvent,
         operation_event_after_pay_completed: protocols.OperationEvent,
     ) -> None:
-        """A Payment Method that is confirmable and has completed pay can go through."""
         assert (
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -426,7 +409,7 @@ class TestCanConfirm:
         "non_completed_after_pay_status",
         [status for status in enums.OperationStatusEnum if status != enums.OperationStatusEnum.COMPLETED],
     )
-    def test_paymentMethodConfirmableAndAfterPayFinishedWithNonCompletedStatusCanConfirm(
+    def test_paymentMethodAlreadyAfterPayFinishedWithNonCompletedStatusCanConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
@@ -435,14 +418,12 @@ class TestCanConfirm:
         operation_event_after_pay_started: protocols.OperationEvent,
         non_completed_after_pay_status: enums.OperationStatusEnum,
     ) -> None:
-        """A Payment Method that is confirmable and has completed pay can go through."""
         assert (
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -461,37 +442,7 @@ class TestCanConfirm:
             is False
         )
 
-    def test_paymentMethodNonConfirmableAndAfterPayCompletedCannotConfirm(
-        self,
-        operation_event_initialize_started: protocols.OperationEvent,
-        operation_event_initialize_not_performed: protocols.OperationEvent,
-        operation_event_pay_started: protocols.OperationEvent,
-        operation_event_pay_completed: protocols.OperationEvent,
-        operation_event_after_pay_started: protocols.OperationEvent,
-        operation_event_after_pay_completed: protocols.OperationEvent,
-    ) -> None:
-        """A Payment Method that is NOT confirmable and has completed pay cannot go through."""
-        assert (
-            domain.sagas.dl.can_confirm(
-                domain.PaymentMethod(
-                    id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
-                    created_at=datetime.now(),
-                    confirmable=False,
-                    operation_events=[
-                        operation_event_initialize_started,
-                        operation_event_initialize_not_performed,
-                        operation_event_pay_started,
-                        operation_event_pay_completed,
-                        operation_event_after_pay_started,
-                        operation_event_after_pay_completed,
-                    ],
-                )
-            )
-            is False
-        )
-
-    def test_paymentMethodConfirmableAndConfirmStartedCannotConfirm(
+    def test_paymentMethodAlreadyConfirmStartedCannotConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
@@ -501,14 +452,12 @@ class TestCanConfirm:
         operation_event_after_pay_completed: protocols.OperationEvent,
         operation_event_confirm_started: protocols.OperationEvent,
     ) -> None:
-        """A Payment Method that is confirmable and has completed pay can go through."""
         assert (
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -523,7 +472,7 @@ class TestCanConfirm:
             is False
         )
 
-    def test_paymentMethodConfirmableAndAfterPayNotCompletedCannotConfirm(
+    def test_paymentMethodAlreadyAfterPayNotCompletedCannotConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
@@ -531,14 +480,12 @@ class TestCanConfirm:
         operation_event_pay_completed: protocols.OperationEvent,
         operation_event_after_pay_started: protocols.OperationEvent,
     ) -> None:
-        """A Payment Method that is confirmable and has not completed after pay, then cannot go through."""
         assert (
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -551,21 +498,19 @@ class TestCanConfirm:
             is False
         )
 
-    def test_paymentMethodConfirmableAndPayCompletedCannotConfirm(
+    def test_paymentMethodAlreadyPayCompletedCannotConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
         operation_event_pay_started: protocols.OperationEvent,
         operation_event_pay_completed: protocols.OperationEvent,
     ) -> None:
-        """A Payment Method that is confirmable and has not completed after pay, then cannot go through."""
         assert (
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -577,20 +522,18 @@ class TestCanConfirm:
             is False
         )
 
-    def test_paymentMethodConfirmableAndPayNotCompletedCannotConfirm(
+    def test_paymentMethodAlreadyPayNotCompletedCannotConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
         operation_event_pay_started: protocols.OperationEvent,
     ) -> None:
-        """A Payment Method that is confirmable and has not completed pay, then cannot go through."""
         assert (
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -601,19 +544,17 @@ class TestCanConfirm:
             is False
         )
 
-    def test_paymentMethodConfirmableAndPayNotStartedCannotConfirm(
+    def test_paymentMethodAlreadyPayNotStartedCannotConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_completed: protocols.OperationEvent,
     ) -> None:
-        """A Payment Method that is confirmable and has not completed initialize, then cannot go through."""
         assert (
             domain.sagas.dl.can_confirm(
                 domain.PaymentMethod(
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_completed,
@@ -626,7 +567,7 @@ class TestCanConfirm:
 
 class TestCanAfterConfirm:
 
-    def test_paymentMethodConfirmableAndConfirmCompletedCanAfterConfirm(
+    def test_paymentMethodAlreadyConfirmCompletedCanAfterConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
@@ -644,7 +585,6 @@ class TestCanAfterConfirm:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -660,45 +600,11 @@ class TestCanAfterConfirm:
             is True
         )
 
-    def test_paymentMethodNotConfirmableCannotAfterConfirm(
-        self,
-        operation_event_initialize_started: protocols.OperationEvent,
-        operation_event_initialize_not_performed: protocols.OperationEvent,
-        operation_event_pay_started: protocols.OperationEvent,
-        operation_event_pay_completed: protocols.OperationEvent,
-        operation_event_after_pay_started: protocols.OperationEvent,
-        operation_event_after_pay_completed: protocols.OperationEvent,
-        operation_event_confirm_started: protocols.OperationEvent,
-        operation_event_confirm_completed: protocols.OperationEvent,
-    ) -> None:
-        """A Payment Method that is not confirmable cannot go through."""
-        assert (
-            domain.sagas.dl.can_after_confirm(
-                domain.PaymentMethod(
-                    id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
-                    created_at=datetime.now(),
-                    confirmable=False,
-                    operation_events=[
-                        operation_event_initialize_started,
-                        operation_event_initialize_not_performed,
-                        operation_event_pay_started,
-                        operation_event_pay_completed,
-                        operation_event_after_pay_started,
-                        operation_event_after_pay_completed,
-                        operation_event_confirm_started,
-                        operation_event_confirm_completed,
-                    ],
-                )
-            )
-            is False
-        )
-
     @pytest.mark.parametrize(
         "non_completed_confirm_status",
         [status for status in enums.OperationStatusEnum if status != enums.OperationStatusEnum.COMPLETED],
     )
-    def test_paymentMethodConfirmableAndConfirmHasNotCompletedCannotAfterConfirm(
+    def test_paymentMethodAlreadyConfirmHasNotCompletedCannotAfterConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
@@ -716,7 +622,6 @@ class TestCanAfterConfirm:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -737,7 +642,7 @@ class TestCanAfterConfirm:
             is False
         )
 
-    def test_paymentMethodConfirmableAndAfterConfirmStartedCannotAfterConfirm(
+    def test_paymentMethodAlreadyAfterConfirmStartedCannotAfterConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
@@ -756,7 +661,6 @@ class TestCanAfterConfirm:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -773,7 +677,7 @@ class TestCanAfterConfirm:
             is False
         )
 
-    def test_paymentMethodConfirmableAndConfirmNotCompletedCannotAfterConfirm(
+    def test_paymentMethodAlreadyConfirmNotCompletedCannotAfterConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
@@ -790,7 +694,6 @@ class TestCanAfterConfirm:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -805,7 +708,7 @@ class TestCanAfterConfirm:
             is False
         )
 
-    def test_paymentMethodConfirmableAndAfterPayNotCompletedCannotAfterConfirm(
+    def test_paymentMethodAlreadyAfterPayNotCompletedCannotAfterConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_not_performed: protocols.OperationEvent,
@@ -820,7 +723,6 @@ class TestCanAfterConfirm:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_not_performed,
@@ -833,7 +735,7 @@ class TestCanAfterConfirm:
             is False
         )
 
-    def test_paymentMethodConfirmableAndInitializeNotCompletedCannotAfterConfirm(
+    def test_paymentMethodAlreadyInitializeNotCompletedCannotAfterConfirm(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
     ) -> None:
@@ -844,7 +746,6 @@ class TestCanAfterConfirm:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                     ],
@@ -856,45 +757,7 @@ class TestCanAfterConfirm:
 
 class TestRefund:
 
-    @pytest.mark.parametrize(
-        "non_completed_after_pay_status",
-        [status for status in enums.OperationStatusEnum if status != enums.OperationStatusEnum.COMPLETED],
-    )
-    def test_paymentMethodNotConfirmableAndAfterPayNotCompletedCannotRefund(
-        self,
-        operation_event_initialize_started: protocols.OperationEvent,
-        operation_event_initialize_completed: protocols.OperationEvent,
-        operation_event_pay_started: protocols.OperationEvent,
-        operation_event_pay_completed: protocols.OperationEvent,
-        operation_event_after_pay_started: protocols.OperationEvent,
-        non_completed_after_pay_status: enums.OperationStatusEnum,
-    ) -> None:
-        assert (
-            domain.sagas.dl.can_refund(
-                domain.PaymentMethod(
-                    id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
-                    created_at=datetime.now(),
-                    confirmable=False,
-                    operation_events=[
-                        operation_event_initialize_started,
-                        operation_event_initialize_completed,
-                        operation_event_pay_started,
-                        operation_event_pay_completed,
-                        operation_event_after_pay_started,
-                        factories.OperationEventFactory(
-                            created_at=datetime.now(),
-                            payment_method_id=uuid.uuid4(),
-                            type=enums.OperationTypeEnum.AFTER_PAY,
-                            status=non_completed_after_pay_status,
-                        ),
-                    ],
-                )
-            )
-            is False
-        )
-
-    def test_paymentMethodConfirmableAndAfterPayCompletedCannotRefund(
+    def test_paymentMethodAlreadyAfterPayCompletedCannotRefund(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_completed: protocols.OperationEvent,
@@ -909,7 +772,6 @@ class TestRefund:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=True,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_completed,
@@ -923,36 +785,7 @@ class TestRefund:
             is False
         )
 
-    def test_paymentMethodNotConfirmableAndAfterPayCompletedCanRefund(
-        self,
-        operation_event_initialize_started: protocols.OperationEvent,
-        operation_event_initialize_completed: protocols.OperationEvent,
-        operation_event_pay_started: protocols.OperationEvent,
-        operation_event_pay_completed: protocols.OperationEvent,
-        operation_event_after_pay_started: protocols.OperationEvent,
-        operation_event_after_pay_completed: protocols.OperationEvent,
-    ) -> None:
-        assert (
-            domain.sagas.dl.can_refund(
-                domain.PaymentMethod(
-                    id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
-                    created_at=datetime.now(),
-                    confirmable=False,
-                    operation_events=[
-                        operation_event_initialize_started,
-                        operation_event_initialize_completed,
-                        operation_event_pay_started,
-                        operation_event_pay_completed,
-                        operation_event_after_pay_started,
-                        operation_event_after_pay_completed,
-                    ],
-                )
-            )
-            is True
-        )
-
-    def test_paymentMethodConfirmableAndAfterConfirmCompletedCanRefund(
+    def test_paymentMethodAlreadyAfterConfirmCompletedCanRefund(
         self,
         operation_event_initialize_started: protocols.OperationEvent,
         operation_event_initialize_completed: protocols.OperationEvent,
@@ -971,7 +804,6 @@ class TestRefund:
                     id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
                     payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
                     created_at=datetime.now(),
-                    confirmable=False,
                     operation_events=[
                         operation_event_initialize_started,
                         operation_event_initialize_completed,
@@ -981,70 +813,8 @@ class TestRefund:
                         operation_event_after_pay_completed,
                         operation_event_confirm_started,
                         operation_event_confirm_completed,
-                    ],
-                )
-            )
-            is True
-        )
-
-    def test_paymentMethodNonConfirmableAndRefundStartedCannotRefund(
-        self,
-        operation_event_initialize_started: protocols.OperationEvent,
-        operation_event_initialize_completed: protocols.OperationEvent,
-        operation_event_pay_started: protocols.OperationEvent,
-        operation_event_pay_completed: protocols.OperationEvent,
-        operation_event_after_pay_started: protocols.OperationEvent,
-        operation_event_after_pay_completed: protocols.OperationEvent,
-        operation_event_refund_started: protocols.OperationEvent,
-    ) -> None:
-        assert (
-            domain.sagas.dl.can_refund(
-                domain.PaymentMethod(
-                    id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
-                    created_at=datetime.now(),
-                    confirmable=False,
-                    operation_events=[
-                        operation_event_initialize_started,
-                        operation_event_initialize_completed,
-                        operation_event_pay_started,
-                        operation_event_pay_completed,
-                        operation_event_after_pay_started,
-                        operation_event_after_pay_completed,
-                        operation_event_refund_started,
-                    ],
-                )
-            )
-            is False
-        )
-
-    def test_paymentMethodNonConfirmableAndRefundCompletedCanRefundAgain(
-        self,
-        operation_event_initialize_started: protocols.OperationEvent,
-        operation_event_initialize_completed: protocols.OperationEvent,
-        operation_event_pay_started: protocols.OperationEvent,
-        operation_event_pay_completed: protocols.OperationEvent,
-        operation_event_after_pay_started: protocols.OperationEvent,
-        operation_event_after_pay_completed: protocols.OperationEvent,
-        operation_event_refund_started: protocols.OperationEvent,
-        operation_event_refund_completed: protocols.OperationEvent,
-    ) -> None:
-        assert (
-            domain.sagas.dl.can_refund(
-                domain.PaymentMethod(
-                    id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
-                    payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
-                    created_at=datetime.now(),
-                    confirmable=False,
-                    operation_events=[
-                        operation_event_initialize_started,
-                        operation_event_initialize_completed,
-                        operation_event_pay_started,
-                        operation_event_pay_completed,
-                        operation_event_after_pay_started,
-                        operation_event_after_pay_completed,
-                        operation_event_refund_started,
-                        operation_event_refund_completed,
+                        operation_event_after_confirm_started,
+                        operation_event_after_confirm_completed,
                     ],
                 )
             )

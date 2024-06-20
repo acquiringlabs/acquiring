@@ -22,7 +22,6 @@ class PaymentAttemptFactory(factory.Factory):
 class PaymentMethodFactory(factory.Factory):
     id = factory.LazyAttribute(lambda _: fake.uuid4())
     created_at = factory.LazyAttribute(lambda _: datetime.now())
-    confirmable = False
 
     class Meta:
         model = domain.PaymentMethod

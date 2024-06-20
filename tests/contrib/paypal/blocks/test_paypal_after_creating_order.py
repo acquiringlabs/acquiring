@@ -45,7 +45,6 @@ def test_givenACorrectPaymentMethod_whenRunningPayPalAfterCreatingOrder_thenItCo
         id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
         created_at=datetime.now(),
         payment_attempt_id=protocols.ExistingPaymentAttemptId(uuid.uuid4()),
-        confirmable=False,
     )
 
     unit_of_work = fake_unit_of_work(

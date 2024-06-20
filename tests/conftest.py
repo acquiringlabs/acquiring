@@ -133,7 +133,6 @@ def fake_payment_method_repository_class() -> (
                     id=payment_method_id,
                     created_at=datetime.now(),
                     payment_attempt_id=data.payment_attempt_id,
-                    confirmable=data.confirmable,
                     tokens=[
                         domain.Token(
                             timestamp=token.timestamp,

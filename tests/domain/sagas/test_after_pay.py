@@ -67,7 +67,6 @@ def test_givenAValidPaymentMethod_whenAfterPaying_thenPaymentMethodSagaReturnsTh
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=True,
         operation_events=[
             domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,
@@ -182,7 +181,6 @@ def test_givenAPaymentMethodThatCannotAfterPay_whenAfterPaying_thenPaymentMethod
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=True,
         operation_events=[
             domain.OperationEvent(
                 type=enums.OperationTypeEnum.INITIALIZE,

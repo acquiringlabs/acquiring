@@ -79,7 +79,6 @@ def test_givenValidFunction_whenDecoratedWithwrapped_by_transaction_thenTransact
     payment_method = factories.PaymentMethodFactory(
         payment_attempt_id=payment_attempt.id,
         id=payment_method_id,
-        confirmable=True,
     )
 
     unit_of_work = fake_unit_of_work(

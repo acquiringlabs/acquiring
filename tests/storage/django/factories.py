@@ -19,8 +19,6 @@ if is_django_installed():
 
     class PaymentMethodFactory(factory.django.DjangoModelFactory):
 
-        confirmable = False
-
         class Meta:
             model = "acquiring.PaymentMethod"
 

@@ -31,7 +31,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('confirmable', models.BooleanField(editable=False, help_text='Whether this PaymentMethod can at some point run inside PaymentMethodSaga.confirm')),
                 ('payment_attempt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payment_methods', to='acquiring.paymentattempt')),
             ],
             options={

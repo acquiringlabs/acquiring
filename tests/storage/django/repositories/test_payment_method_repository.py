@@ -31,7 +31,6 @@ def test_givenCorrectData_whenCallingRepositoryAdd_thenPaymentMethodGetsCreated(
     payment_attempt = PaymentAttemptFactory()
     data = domain.DraftPaymentMethod(
         payment_attempt_id=payment_attempt.id,
-        confirmable=True,
     )
 
     with django_assert_num_queries(3):
