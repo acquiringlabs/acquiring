@@ -66,24 +66,36 @@ class OperationEventRepository:
     def get(self, id: UUID) -> "protocols.OperationEvent": ...  # type: ignore[empty-body]
 
 
-# TODO Control for IntegrityError when PaymentAttempt do not exist when adding Milestone
-
-
 class MilestoneRepository:
 
-    @deal.safe
+    @deal.reason(
+        domain.PaymentMethod.DoesNotExist,
+        lambda _, payment_method, type: models.PaymentMethod.objects.filter(id=payment_method.id).count() == 0,
+    )
+    @deal.reason(
+        domain.PaymentAttempt.DoesNotExist,
+        lambda _, payment_method, type: models.PaymentAttempt.objects.filter(
+            id=payment_method.payment_attempt_id
+        ).count()
+        == 0,
+    )
     def add(
         self,
         payment_method: "protocols.PaymentMethod",
         type: enums.AtemptStatusEnum,
     ) -> "protocols.Milestone":
-        db_milestone = models.Milestone(
-            payment_method_id=payment_method.id,
-            payment_attempt_id=payment_method.payment_attempt_id,
-            type=type,
-        )
-        db_milestone.save()
-        return db_milestone.to_domain()
+        try:
+            db_milestone = models.Milestone(
+                payment_method_id=payment_method.id,
+                payment_attempt_id=payment_method.payment_attempt_id,
+                type=type,
+            )
+            db_milestone.save()
+            return db_milestone.to_domain()
+        except models.PaymentMethod.DoesNotExist:
+            raise domain.PaymentMethod.DoesNotExist
+        except models.PaymentAttempt.DoesNotExist:
+            raise domain.PaymentAttempt.DoesNotExist
 
     def get(self, id: UUID) -> "protocols.Milestone": ...  # type:ignore[empty-body]
 
