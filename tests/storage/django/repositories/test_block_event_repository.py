@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytest
 from faker import Faker
-from acquiring import enums
+from acquiring import enums, protocols
 from acquiring.utils import is_django_installed
 from tests.storage.utils import skip_if_django_not_installed
 
@@ -71,7 +71,7 @@ def test_givenPaymentMethodWithDifferentIdThanTheOneStoredInBlockEvent_thenError
     block_event = domain.BlockEvent(
         created_at=datetime.now(),
         status=enums.OperationStatusEnum.PENDING,
-        payment_method_id=uuid.uuid4(),
+        payment_method_id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
         block_name=block_name,
     )
 

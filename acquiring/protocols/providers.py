@@ -2,9 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
 from typing import Generic, Optional, Protocol, TypeVar
-from uuid import UUID
 
-from acquiring.protocols import storage
+from acquiring.protocols import primitives, storage
 
 Status = TypeVar("Status", bound=StrEnum)
 
@@ -30,6 +29,6 @@ class Transaction(Protocol):
     timestamp: datetime
     raw_data: str
     provider_name: str
-    payment_method_id: UUID
+    payment_method_id: primitives.ExistingPaymentMethodId
 
     def __repr__(self) -> str: ...

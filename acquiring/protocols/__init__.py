@@ -8,8 +8,6 @@ from .payments import (
     DraftPaymentAttempt,
     DraftPaymentMethod,
     DraftToken,
-    ExistingPaymentAttemptId,
-    ExistingPaymentMethodId,
     Item,
     Milestone,
     OperationEvent,
@@ -18,6 +16,7 @@ from .payments import (
     PaymentMethod,
     Token,
 )
+from .primitives import ExistingPaymentAttemptId, ExistingPaymentMethodId
 from .providers import Adapter, AdapterResponse, Transaction
 from .storage import Repository, UnitOfWork
 

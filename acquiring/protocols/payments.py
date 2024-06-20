@@ -7,21 +7,19 @@ https://typing.readthedocs.io/en/latest/spec/protocol.html#protocols
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import NewType, Optional, Protocol, Sequence, runtime_checkable
+from typing import Optional, Protocol, Sequence
 from uuid import UUID
 
 from acquiring import enums
 
+from . import primitives
 from .storage import UnitOfWork
-
-ExistingPaymentMethodId = NewType("ExistingPaymentMethodId", UUID)
-ExistingPaymentAttemptId = NewType("ExistingPaymentAttemptId", UUID)
 
 
 @dataclass(frozen=True, match_args=False)
 class OperationEvent(Protocol):
     created_at: datetime
-    payment_method_id: ExistingPaymentMethodId
+    payment_method_id: primitives.ExistingPaymentMethodId
     type: enums.OperationTypeEnum
     status: enums.OperationStatusEnum
 
@@ -31,8 +29,8 @@ class OperationEvent(Protocol):
 @dataclass(frozen=True, match_args=False)
 class Milestone(Protocol):
     created_at: datetime
-    payment_method_id: ExistingPaymentMethodId
-    payment_attempt_id: ExistingPaymentAttemptId
+    payment_method_id: primitives.ExistingPaymentMethodId
+    payment_attempt_id: primitives.ExistingPaymentAttemptId
     type: enums.MilestoneTypeEnum
 
 
@@ -47,7 +45,7 @@ class DraftToken(Protocol):
 class Token(Protocol):
     timestamp: datetime
     token: str
-    payment_method_id: ExistingPaymentMethodId
+    payment_method_id: primitives.ExistingPaymentMethodId
     metadata: Optional[dict[str, str | int]]
     expires_at: Optional[datetime]
     fingerprint: Optional[str]
@@ -66,7 +64,7 @@ class DraftItem(Protocol):
 class Item(Protocol):
     id: UUID
     created_at: datetime
-    payment_attempt_id: ExistingPaymentAttemptId
+    payment_attempt_id: primitives.ExistingPaymentAttemptId
     reference: str
     name: str
     quantity: int
@@ -76,7 +74,7 @@ class Item(Protocol):
 
 # TODO Have this class the DoesNotExist internal class
 class PaymentAttempt(Protocol):
-    id: ExistingPaymentAttemptId
+    id: primitives.ExistingPaymentAttemptId
     created_at: datetime
     amount: int
     currency: str
@@ -88,10 +86,10 @@ class PaymentAttempt(Protocol):
 
 # TODO Have this class the DoesNotExist internal class
 class PaymentMethod(Protocol):
-    id: ExistingPaymentMethodId
+    id: primitives.ExistingPaymentMethodId
     created_at: datetime
     tokens: list[Token]
-    payment_attempt_id: ExistingPaymentAttemptId
+    payment_attempt_id: primitives.ExistingPaymentAttemptId
     operation_events: list[OperationEvent]
 
     def __repr__(self) -> str: ...
@@ -110,7 +108,7 @@ class PaymentMethod(Protocol):
 
 
 class DraftPaymentMethod(Protocol):
-    payment_attempt_id: ExistingPaymentAttemptId
+    payment_attempt_id: primitives.ExistingPaymentAttemptId
     tokens: list[DraftToken]
 
 
@@ -134,7 +132,6 @@ class BlockResponse(Protocol):
     error_message: Optional[str] = None
 
 
-@runtime_checkable
 class Block(Protocol):
 
     def run(

@@ -5,7 +5,7 @@ from typing import Callable
 import pytest
 from faker import Faker
 
-from acquiring import enums, utils
+from acquiring import enums, protocols, utils
 from tests.storage.utils import skip_if_sqlalchemy_not_installed
 
 if utils.is_sqlalchemy_installed():
@@ -92,7 +92,7 @@ def test_givenPaymentMethodWithDifferentIdThanTheOneStoredInBlockEvent_thenError
     block_event = domain.BlockEvent(
         created_at=datetime.now(),
         status=enums.OperationStatusEnum.PENDING,
-        payment_method_id=uuid.uuid4(),
+        payment_method_id=protocols.ExistingPaymentMethodId(uuid.uuid4()),
         block_name=block_name,
     )
 

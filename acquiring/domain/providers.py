@@ -2,7 +2,6 @@ import functools
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Callable, Sequence
-from uuid import UUID
 
 from acquiring import domain, protocols
 
@@ -17,7 +16,7 @@ class Transaction:
     timestamp: datetime
     raw_data: str
     provider_name: str
-    payment_method_id: UUID
+    payment_method_id: protocols.ExistingPaymentMethodId
 
     def __repr__(self) -> str:
         """String representation of the class"""

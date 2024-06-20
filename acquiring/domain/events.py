@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from uuid import UUID
 from acquiring import enums, protocols
 
 
@@ -14,7 +13,7 @@ class BlockEvent:
 
     created_at: datetime
     status: "enums.OperationStatusEnum"
-    payment_method_id: UUID
+    payment_method_id: protocols.ExistingPaymentMethodId
     block_name: str
 
     def __repr__(self) -> str:
