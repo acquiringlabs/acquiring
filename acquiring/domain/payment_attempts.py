@@ -1,3 +1,8 @@
+"""Domain entities associated with the 'what' of the payment.
+
+The main entity is the PaymentAttempt, but some other important dataclasses are defined here.
+"""
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, Sequence

@@ -1,3 +1,8 @@
+"""Domain entities associated with the 'how' of the payment.
+
+The main entity is the PaymentMethod, but some other important dataclasses are defined here.
+"""
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
@@ -51,6 +56,15 @@ class DraftPaymentMethod:
 
 @dataclass
 class Token:
+    """
+    Some information associated with the PaymentMethod needs to be obfuscated
+    and stored in a separate, more secure environment, but referenced.
+
+    That is the purpose of a Token.
+
+    See https://news.alvaroduran.com/p/tokenization-or-how-i-learned-to
+    """
+
     timestamp: datetime
     token: str
     payment_method_id: protocols.ExistingPaymentMethodId
