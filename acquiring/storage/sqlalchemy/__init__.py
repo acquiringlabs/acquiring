@@ -1,6 +1,7 @@
 from . import models
 from .repositories import (
     BlockEventRepository,
+    MilestoneRepository,
     OperationEventRepository,
     PaymentAttemptRepository,
     PaymentMethodRepository,
@@ -16,4 +17,5 @@ __all__ = [
     "OperationEventRepository",
     "SqlAlchemyUnitOfWork",
     "TransactionRepository",
+    "MilestoneRepository",
 ]

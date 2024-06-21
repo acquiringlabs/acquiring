@@ -34,6 +34,29 @@ class PaymentAttemptRepository:
 
 
 @dataclass
+class MilestoneRepository:
+
+    session: orm.Session
+
+    @deal.safe
+    def add(
+        self,
+        payment_method: "protocols.PaymentMethod",
+        type: enums.AtemptStatusEnum,
+    ) -> "protocols.Milestone":
+        db_milestone = models.Milestone(
+            payment_method_id=payment_method.id,
+            payment_attempt_id=payment_method.payment_attempt_id,
+            type=type,
+        )
+        self.session.add(db_milestone)
+        self.session.flush()
+        return db_milestone.to_domain()
+
+    def get(self, id: UUID) -> "protocols.Milestone": ...  # type:ignore[empty-body]
+
+
+@dataclass
 class PaymentMethodRepository:
 
     session: orm.Session
