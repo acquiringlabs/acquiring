@@ -1,6 +1,6 @@
 # Acquiring
 
-Payment Orchestration Library for Python.
+Framework Agnostic Payment Orchestration Library for Python.
 
 [![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
 

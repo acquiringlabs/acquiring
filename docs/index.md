@@ -1,6 +1,6 @@
 # README
 
-Acquiring is a Payment Orchestration Library for Python.
+Acquiring is a Framework Agnostic Payment Orchestration Library for Python.
 
 ## Overview
 
